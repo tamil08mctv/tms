@@ -1,0 +1,51 @@
+{% extends 'TMS/base.html' %}
+{% block title %}All Leads - {{ store.name }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1>All Leads - {{ store.name }}</h1>
+    <p class="text-muted">Total: <strong>{{ leads.count }}</strong> enquiries</p>
+
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="table-success">
+                <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>City</th>
+                    <th>Product</th>
+                    <th>Message</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lead in leads %}
+                <tr>
+                    <td>{{ lead.created_at|date:"d M Y, h:i A" }}</td>
+                    <td>{{ lead.customer_name }}</td>
+                    <td>{{ lead.phone }}</td>
+                    <td>{{ lead.city|default:"-" }}</td>
+                    <td>{{ lead.product.name|default:"General Enquiry" }}</td>
+                    <td>{{ lead.message|truncatechars:50 }}</td>
+                    <td>
+                        <form method="post" action="{% url 'update_lead' lead.id %}">
+                            {% csrf_token %}
+                            <select name="status" onchange="this.form.submit()" class="form-select">
+                                {% for value, label in lead.STATUS_CHOICES %}
+                                <option value="{{ value }}" {% if lead.status == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </td>
+                    <td>
+                        <a href="https://wa.me/91{{ lead.phone }}" class="btn btn-success btn-sm">WhatsApp</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

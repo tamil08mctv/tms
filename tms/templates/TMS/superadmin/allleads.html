@@ -1,0 +1,25 @@
+{% extends 'TMS/base.html' %}
+{% block content %}
+<div class="container my-5">
+    <h1>All Leads - System Wide</h1>
+    <a href="/super-admin/export-all/" class="btn btn-success mb-3">Export All Leads (CSV)</a>
+    
+    <table class="table table-striped">
+        <thead>
+            <tr><th>Store</th><th>Name</th><th>Phone</th><th>Product</th><th>Status</th><th>Date</th></tr>
+        </thead>
+        <tbody>
+        {% for lead in leads %}
+        <tr>
+            <td>{{ lead.store.name }}</td>
+            <td>{{ lead.customer_name }}</td>
+            <td>{{ lead.phone }}</td>
+            <td>{{ lead.product.name|default:"-" }}</td>
+            <td><span class="badge bg-{{ lead.status }}">{{ lead.get_status_display }}</span></td>
+            <td>{{ lead.created_at|date:"d M Y" }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

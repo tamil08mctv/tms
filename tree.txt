@@ -1,0 +1,59 @@
+Folder PATH listing for volume tamil
+Volume serial number is 32B3-C9FC
+C:.
+|   manage.py
+|   tree.txt
+|   
++---tms
+|   |   admin.py
+|   |   apps.py
+|   |   forms.py
+|   |   models.py
+|   |   urls.py
+|   |   utils.py
+|   |   __init__.py
+|   |   
+|   +---media
+|   |   +---products
+|   |   \---stores
+|   +---static
+|   |   \---TMS
+|   |       +---css
+|   |       |       styles.css
+|   |       |       
+|   |       +---images
+|   |       \---js
+|   |               main.js
+|   |               
+|   +---templates
+|   |   \---TMS
+|   |       |   base.html
+|   |       |   login.html 
+|   |       +---public
+|   |       |       home.html
+|   |       |       productdetail.html
+|   |       |       productlist.html
+|   |       |       storedetail.html
+|   |       |       storelist.html
+|   |       |       
+|   |       +---storeadmin
+|   |       |       dashboard.html
+|   |       |       leads.html
+|   |       |       products.html
+|   |       |       
+|   |       \---superadmin
+|   |               allleads.html
+|   |               createstore.html
+|   |               dashboard.html
+|   |               
+|   \---views
+|           public.py
+|           storeadmin.py
+|           superadmin.py
+|           auth.py
+\---tmsgroups
+        asgi.py
+        settings.py
+        urls.py
+        wsgi.py
+        

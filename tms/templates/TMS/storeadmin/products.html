@@ -1,0 +1,38 @@
+{% extends 'TMS/base.html' %}
+{% block title %}Manage Products - {{ store.name }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="d-flex justify-content-between mb-4">
+        <h1>Your Products ({{ products.count }})</h1>
+        <a href="{% url 'add_product' %}" class="btn btn-success btn-lg">+ Add Product</a>
+    </div>
+
+    <div class="row">
+        {% for product in products %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow">
+                {% if product.images.first %}
+                <img src="{{ product.images.first.image.url }}" class="card-img-top" style="height: 220px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h5>{{ product.name|truncatechars:40 }}</h5>
+                    <p class="text-success fw-bold">{{ product.get_price_display }}</p>
+                    <div class="d-flex justify-content-between">
+                        <a href="/admin/tms/product/{{ product.id }}/change/" target="_blank" class="btn btn-sm btn-primary">Edit</a>
+                        <span class="badge bg-{% if product.is_featured %}danger{% else %}secondary{% endif %}">
+                            {% if product.is_featured %}Featured{% else %}Normal{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <h3>No products yet</h3>
+            <a href="{% url 'add_product' %}" class="btn btn-success btn-lg">Add Your First Product</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

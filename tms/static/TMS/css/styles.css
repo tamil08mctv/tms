@@ -1,0 +1,6 @@
+.text-gold { color: #FFD700 !important; }
+.btn-gold { background: linear-gradient(45deg, #FFD700, #FFA500); border: none; }
+.hero { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/static/TMS/images/hero.jpg') center/cover; min-height: 80vh; display: flex; align-items: center; }
+.hover-card { transition: all 0.3s; }
+.hover-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.2) !important; }
+.btn-success { background-color: #25D366 !important; border-color: #25D366 !important; }

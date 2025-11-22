@@ -1,0 +1,55 @@
+{% extends 'TMS/base.html' %}
+{% block title %}{{ store.name }} - TMS Groups{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    {% if store.banner %}
+    <img src="{{ store.banner.url }}" class="img-fluid rounded mb-4" alt="{{ store.name }}">
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="display-5 text-primary">{{ store.name }}</h1>
+            <p class="lead">{{ store.city }} • Open {{ store.working_hours }}</p>
+            <p>{{ store.address }}</p>
+            
+            <div class="my-4">
+                <a href="tel:{{ store.phone }}" class="btn btn-primary"><i class="fas fa-phone"></i> Call</a>
+                <a href="https://wa.me/{{ store.whatsapp }}" class="btn btn-success"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+            </div>
+
+            <h3 class="mt-5">Our Products</h3>
+            <div class="row g-4">
+                {% for product in products %}
+                <div class="col-md-4">
+                    <div class="card h-100 shadow hover-card">
+                        {% with product.images.first as img %}
+                        <img src="{% if img %}{{ img.image.url }}{% else %}https://via.placeholder.com/300{% endif %}" class="card-img-top">
+                        {% endwith %}
+                        <div class="card-body">
+                            <h6>{{ product.name }}</h6>
+                            <p class="text-success fw-bold">From ₹{{ product.starting_price }}</p>
+                            <a href="/store/{{ store.slug }}/product/{{ product.slug }}/" class="btn btn-outline-success btn-sm">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card sticky-top" style="top:100px;">
+                <div class="card-body">
+                    <h5>Contact Info</h5>
+                    <p><strong>Phone:</strong> {{ store.phone }}</p>
+                    <p><strong>WhatsApp:</strong> {{ store.whatsapp }}</p>
+                    <p><strong>Working Hours:</strong> {{ store.working_hours }}</p>
+                    {% if store.map_link %}
+                    <a href="{{ store.map_link }}" target="_blank" class="btn btn-danger btn-sm">Open in Google Maps</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

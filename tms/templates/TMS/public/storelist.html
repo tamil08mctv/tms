@@ -1,0 +1,44 @@
+{% extends 'TMS/base.html' %}
+{% block title %}All Stores - TMS Groups{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-5 text-primary">All Our Stores in Tamil Nadu</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <input type="text" class="form-control" placeholder="Search store or city..." value="{{ query }}">
+        </div>
+        <div class="col-md-4">
+            <select class="form-select">
+                <option>All Cities</option>
+                {% for city in cities %}
+                <option {% if city == selected_city %}selected{% endif %}>{{ city }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for store in stores %}
+        <div class="col-md-4">
+            <div class="card h-100 shadow hover-card">
+                {% if store.logo %}
+                <img src="{{ store.logo.url }}" class="card-img-top p-3" style="height:180px; object-fit:contain;">
+                {% endif %}
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ store.name }}</h5>
+                    <p class="text-muted"><i class="fas fa-map-marker-alt"></i> {{ store.city }}</p>
+                    <p class="text-success"><i class="fab fa-whatsapp"></i> {{ store.whatsapp }}</p>
+                    <a href="/store/{{ store.slug }}/" class="btn btn-success">Visit Store</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <h3>No stores found</h3>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

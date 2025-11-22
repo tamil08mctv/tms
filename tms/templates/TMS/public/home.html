@@ -1,0 +1,57 @@
+{% extends 'TMS/base.html' %}
+{% block title %}TMS Groups - Best Furniture in Tamil Nadu{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<div class="hero text-white text-center py-5">
+    <div class="container py-5">
+        <h1 class="display-3 fw-bold">Welcome to TMS GROUPS</h1>
+        <p class="lead fs-2">One Platform • All Stores • Best Prices</p>
+        <a href="/stores/" class="btn btn-warning btn-lg px-5">Explore Stores</a>
+    </div>
+</div>
+
+<!-- STORES GRID -->
+<div class="container my-5">
+    <h2 class="text-center mb-5 text-primary">Our Stores</h2>
+    <div class="row g-4">
+        {% for store in stores %}
+        <div class="col-md-3">
+            <div class="card h-100 shadow hover-card">
+                {% if store.logo %}
+                <img src="{{ store.logo.url }}" class="card-img-top p-4" style="height:180px; object-fit:contain;">
+                {% endif %}
+                <div class="card-body text-center">
+                    <h5>{{ store.name }}</h5>
+                    <p class="text-muted">{{ store.city }}</p>
+                    <a href="/store/{{ store.slug }}/" class="btn btn-success">Visit Store</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- FEATURED PRODUCTS -->
+<div class="bg-light py-5">
+    <div class="container">
+        <h2 class="text-center mb-5 text-primary">Featured Products</h2>
+        <div class="row g-4">
+            {% for p in featured_products %}
+            <div class="col-md-3">
+                <div class="card h-100 shadow hover-card">
+                    {% with p.images.first as img %}
+                    <img src="{% if img %}{{ img.image.url }}{% else %}https://via.placeholder.com/300{% endif %}" class="card-img-top" style="height:220px; object-fit:cover;">
+                    {% endwith %}
+                    <div class="card-body d-flex flex-column">
+                        <h6>{{ p.name }}</h6>
+                        <p class="text-success fw-bold fs-5 mt-auto">From ₹{{ p.starting_price }}</p>
+                        <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="btn btn-outline-success btn-sm">View</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

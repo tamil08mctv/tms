@@ -1,0 +1,46 @@
+{% extends 'TMS/base.html' %}
+{% block content %}
+<div class="bg-success text-white py-5 text-center">
+    <h1>Welcome, {{ user.username }}!</h1>
+    <p class="lead">Managing: <strong>{{ store.name }}</strong></p>
+</div>
+<div class="container my-5">
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h2>{{ stats.total_leads }}</h2>
+                    <p>Total Leads</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body text-center">
+                    <h2>{{ stats.new_leads }}</h2>
+                    <p>New Leads</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="mt-5">Recent Leads</h3>
+    <table class="table table-striped">
+        <thead><tr><th>Name</th><th>Phone</th><th>Product</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+        {% for lead in leads %}
+        <tr>
+            <td>{{ lead.customer_name }}</td>
+            <td>{{ lead.phone }}</td>
+            <td>{{ lead.product.name|default:"General" }}</td>
+            <td>
+                <a href="/store-admin/leads/update/{{ lead.id }}/contacted/" class="btn btn-sm btn-warning">Contacted</a>
+                <a href="/store-admin/leads/update/{{ lead.id }}/converted/" class="btn btn-sm btn-success">Converted</a>
+            </td>
+            <td><a href="https://wa.me/91{{ lead.phone }}" class="btn btn-success btn-sm">WhatsApp</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

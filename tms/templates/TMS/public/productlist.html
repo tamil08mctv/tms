@@ -1,0 +1,25 @@
+{% extends 'TMS/base.html' %}
+{% block title %}Products - {{ store.name }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1>All Products - {{ store.name }}</h1>
+    
+    <div class="row g-4">
+        {% for product in products %}
+        <div class="col-md-3">
+            <div class="card h-100 shadow hover-card">
+                {% with product.images.first as img %}
+                <img src="{% if img %}{{ img.image.url }}{% else %}https://via.placeholder.com/300{% endif %}" class="card-img-top">
+                {% endwith %}
+                <div class="card-body d-flex flex-column">
+                    <h6>{{ product.name }}</h6>
+                    <p class="text-success fw-bold mt-auto">₹{{ product.starting_price }} onwards</p>
+                    <a href="/store/{{ store.slug }}/product/{{ product.slug }}/" class="btn btn-success btn-sm">Enquire Now</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

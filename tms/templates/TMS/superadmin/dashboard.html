@@ -1,0 +1,67 @@
+{% extends 'TMS/base.html' %}
+{% block title %}Super Admin - TMS Empire{% endblock %}
+
+{% block content %}
+<div class="bg-primary text-white py-5 text-center">
+    <h1>SUPER ADMIN DASHBOARD</h1>
+    <p class="lead">Welcome, {{ user.get_full_name|default:user.username }}</p>
+</div>
+
+<div class="container my-5">
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white text-center">
+                <div class="card-body">
+                    <h2>{{ total_stores }}</h2>
+                    <p>Total Stores</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white text-center">
+                <div class="card-body">
+                    <h2>{{ total_leads }}</h2>
+                    <p>Total Leads</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <a href="/super-admin/create-store/" class="btn btn-warning btn-lg w-100 h-100 d-flex align-items-center justify-content-center">
+                <h4 class="mb-0">+ Create New Store</h4>
+            </a>
+        </div>
+    </div>
+
+    <h3 class="mt-5">Top Performing Stores</h3>
+    <div class="row">
+        {% for store in top_stores %}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6>{{ store.name }} ({{ store.city }})</h6>
+                    <p class="text-success fw-bold">{{ store.lead_count }} Leads</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <h3 class="mt-5">Recent Leads (All Stores)</h3>
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr><th>Store</th><th>Name</th><th>Phone</th><th>Product</th><th>Date</th></tr>
+        </thead>
+        <tbody>
+        {% for lead in leads %}
+        <tr>
+            <td><strong>{{ lead.store.name }}</strong></td>
+            <td>{{ lead.customer_name }}</td>
+            <td>{{ lead.phone }}</td>
+            <td>{{ lead.product.name|default:"General" }}</td>
+            <td>{{ lead.created_at|date:"d M Y" }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
