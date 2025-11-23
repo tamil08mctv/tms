@@ -1,12 +1,12 @@
-# tms/views/superadmin.py
-from itertools import count
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.db.models import Count  # ← FIXED: Import Count, not count
 from ..models import Store, Lead, StoreAdmin
 from ..forms import StoreForm
 import csv
+
 
 @login_required
 def super_dashboard(request):
@@ -15,7 +15,7 @@ def super_dashboard(request):
     
     stores = Store.objects.all()
     leads = Lead.objects.all().order_by('-created_at')[:20]
-    top_stores = Store.objects.annotate(lead_count=count('leads')).order_by('-lead_count')[:5]
+    top_stores = Store.objects.annotate(lead_count=Count('leads')).order_by('-lead_count')[:5]
     
     context = {
         'total_stores': stores.count(),

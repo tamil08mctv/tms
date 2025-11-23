@@ -1,4 +1,4 @@
-# tms/views/auth.py
+# tms/views/auth.py → ALREADY PERFECT
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 

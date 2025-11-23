@@ -1,4 +1,4 @@
-# tms/views/storeadmin.py
+# tms/views/storeadmin.py → FINAL FIXED VERSION
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
@@ -6,7 +6,7 @@ from django.db.models import Q, Count
 from ..models import Lead, Product, Store
 from ..forms import ProductForm
 import csv
-from datetime import datetime, timedelta
+from datetime import datetime
 
 @login_required
 def store_dashboard(request):
@@ -14,19 +14,26 @@ def store_dashboard(request):
         return redirect('super_dashboard')
     
     store = request.user.storeadmin.store
-    leads = Lead.objects.filter(store=store).order_by('-created_at')[:10]
-    today_leads = leads.filter(created_at__date=datetime.today()).count()
+    
+    # FIX: Get all leads first, THEN slice
+    all_leads = Lead.objects.filter(store=store).order_by('-created_at')
+    recent_leads = all_leads[:10]  # ← Now safe to slice
+    today_leads = all_leads.filter(created_at__date=datetime.today()).count()
+    
     products = Product.objects.filter(store=store)[:8]
     
     stats = {
-        'total_leads': Lead.objects.filter(store=store).count(),
-        'new_leads': Lead.objects.filter(store=store, status='new').count(),
-        'converted': Lead.objects.filter(store=store, status='converted').count(),
+        'total_leads': all_leads.count(),
+        'new_leads': all_leads.filter(status='new').count(),
+        'converted': all_leads.filter(status='converted').count(),
         'today': today_leads
     }
     
     return render(request, 'TMS/storeadmin/dashboard.html', {
-        'store': store, 'leads': leads, 'products': products, 'stats': stats
+        'store': store,
+        'leads': recent_leads,  # ← Pass sliced version
+        'products': products,
+        'stats': stats
     })
 
 @login_required
