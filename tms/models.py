@@ -1,7 +1,8 @@
-# tms/models.py → FINAL CLEAN VERSION (NO ProductImage MODEL!)
+# tms/models.py → FINAL COMPLETE VERSION
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
+from datetime import date
 import uuid
 
 class Store(models.Model):
@@ -25,12 +26,17 @@ class Store(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            base = slugify(self.name)
+            slug = base
+            i = 1
+            while Store.objects.filter(slug=slug).exists():
+                slug = f"{base}-{i}"
+                i += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
-
 
 class StoreAdmin(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -38,42 +44,70 @@ class StoreAdmin(models.Model):
     def __str__(self):
         return f"{self.user.username} → {self.store.name}"
 
-
 class Category(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='categories')
     name = models.CharField(max_length=100)
     slug = models.SlugField(blank=True)
+    image = models.ImageField(upload_to='categories/', blank=True, null=True)
+    icon = models.CharField(max_length=50, blank=True, help_text="e.g. fas fa-bed")
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            base = slugify(self.name)
+            slug = base
+            i = 1
+            while Category.objects.filter(slug=slug, store=self.store).exists():
+                slug = f"{base}-{i}"
+                i += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.store.name} - {self.name}"
 
+class SubCategory(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='subcategories')
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(blank=True)
+    image = models.ImageField(upload_to='subcategories/', blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = slugify(self.name)
+            slug = base
+            i = 1
+            while SubCategory.objects.filter(slug=slug, category=self.category).exists():
+                slug = f"{base}-{i}"
+                i += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.category} → {self.name}"
 
 class Product(models.Model):
-    PRICE_CHOICES = [
-        ('fixed', 'Fixed Price'), ('starting', 'Starting From'),
-        ('call', 'Call for Price'), ('request', 'Price on Request'), ('offer', 'Special Offer')
+    PRICE_STYLE_CHOICES = [
+        ('fixed', 'Fixed Price'),
+        ('offer', 'Discounted Offer'),
+        ('deal', 'Deal of the Day'),
+        ('call', 'Call for Best Price'),
     ]
 
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='products')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    subcategory = models.ForeignKey(SubCategory, on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=300)
     slug = models.SlugField(max_length=350, blank=True, unique=True)
-    short_desc = models.TextField()
+    short_desc = models.TextField(max_length=500)
     description = models.TextField(blank=True)
-    specs = models.TextField(default=dict, blank=True)
 
-    price_style = models.CharField(max_length=20, choices=PRICE_CHOICES, default='call')
-    fixed_price = models.DecimalField(max_digits=12, decimal_places=0, null=True, blank=True)
-    starting_price = models.DecimalField(max_digits=12, decimal_places=0, null=True, blank=True)
+    price_style = models.CharField(max_length=20, choices=PRICE_STYLE_CHOICES, default='offer')
+    regular_price = models.DecimalField(max_digits=12, decimal_places=0)           # ← NO default!
+    offer_price = models.DecimalField(max_digits=12, decimal_places=0, null=True, blank=True)
+    discount_percent = models.PositiveIntegerField(null=True, blank=True)
+    deal_end_date = models.DateField(null=True, blank=True)
 
     video = models.FileField(upload_to='products/videos/', blank=True, null=True)
-    view_360 = models.FileField(upload_to='products/360/', blank=True, null=True)
-
     is_featured = models.BooleanField(default=False)
     is_new = models.BooleanField(default=False)
     in_stock = models.BooleanField(default=True)
@@ -83,45 +117,48 @@ class Product(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            base_slug = slugify(self.name)
-            unique_slug = base_slug
+            base = slugify(self.name)
+            slug = base
             i = 1
-            while Product.objects.filter(slug=unique_slug).exists():
-                unique_slug = f"{base_slug}-{i}"
+            while Product.objects.filter(slug=slug).exists():
+                slug = f"{base}-{i}"
                 i += 1
-            self.slug = unique_slug
+            self.slug = slug
+
+        if self.regular_price and self.offer_price and self.offer_price < self.regular_price:
+            discount = ((self.regular_price - self.offer_price) / self.regular_price) * 100
+            self.discount_percent = int(discount)
+
         super().save(*args, **kwargs)
 
-    def __str__(self):
-        return f"{self.name} ({self.store.name})"
-
     def get_price_display(self):
-        if self.price_style == 'fixed' and self.fixed_price:
-            return f"₹{self.fixed_price:,.0f}"
-        elif self.price_style == 'starting' and self.starting_price:
-            return f"Starting from ₹{self.starting_price:,.0f}"
-        elif self.price_style == 'offer':
-            return "Special Offer"
-        elif self.price_style == 'request':
-            return "Price on Request"
-        else:
-            return "Call for Price"
+        if self.price_style in ['fixed', 'offer', 'deal'] and self.offer_price:
+            prefix = "Deal Price: " if self.is_deal_active() else ""
+            return f"{prefix}₹{self.offer_price:,.0f}"
+        return "Call for Best Price"
 
+    def get_striked_price(self):
+        if self.regular_price and self.offer_price and self.offer_price < self.regular_price:
+            return f"₹{self.regular_price:,.0f}"
+        return None
 
-# MULTIPLE IMAGES — DIRECTLY INSIDE PRODUCT (BEST WAY!)
+    def is_deal_active(self):
+        return self.price_style == 'deal' and self.deal_end_date and self.deal_end_date >= date.today()
+
+    def __str__(self):
+        return f"{self.name} - {self.store.name}"
+
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='products/images/')
     is_main = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Image for {self.product.name}"
-
+        return f"Image - {self.product.name}"
 
 class Lead(models.Model):
     STATUS_CHOICES = [('new','New'),('contacted','Contacted'),('converted','Converted'),('lost','Lost')]
     SOURCE_CHOICES = [('whatsapp','WhatsApp'),('form','Form'),('call','Call')]
-
     uid = models.UUIDField(default=uuid.uuid4, editable=False)
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='leads')
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)

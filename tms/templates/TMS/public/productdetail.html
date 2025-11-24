@@ -1,127 +1,197 @@
 {% extends 'TMS/base.html' %}
+{% load static %}
+{% block title %}{{ product.name }} - {{ product.store.name }}{% endblock %}
+
 {% block content %}
 <div class="container my-5">
-    <div class="row">
-        <div class="col-md-7">
-            <!-- Images Carousel -->
-            <div id="productCarousel" class="carousel slide mb-4">
-                <div class="carousel-inner">
-                    {% for img in images %}
-                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                        <img src="{{ img.image.url }}" class="d-block w-100" style="max-height:500px; object-fit:contain;">
+    <div class="row g-5">
+        <!-- LEFT: IMAGE GALLERY WITH ZOOM + THUMBNAILS -->
+        <div class="col-lg-5">
+            <div class="sticky-top" style="top: 20px;">
+                <!-- Main Image with Zoom -->
+                <div class="position-relative overflow-hidden rounded shadow mb-3" id="zoomContainer">
+                    <img id="mainImage" src="{{ product.images.first.image.url|default:'https://via.placeholder.com/600' }}"
+                         class="img-fluid w-100" style="max-height: 550px; object-fit: contain; cursor: zoom-in; transition: transform 0.3s;"
+                         alt="{{ product.name }}">
+                    <div class="position-absolute top-0 start-0 p-3">
+                        {% if product.is_deal_active %}
+                        <span class="badge bg-danger fs-6 px-3 py-2">DEAL OF THE DAY</span>
+                        {% elif product.discount_percent > 0 %}
+                        <span class="badge bg-success fs-6 px-3 py-2">{{ product.discount_percent }}% OFF</span>
+                        {% endif %}
                     </div>
+                </div>
+
+                <!-- Thumbnails -->
+                <div class="row g-2">
+                    {% for img in product.images.all %}
+                    <div class="col-3">
+                        <img src="{{ img.image.url }}" class="img-thumbnail border {% if forloop.first %}border-primary{% endif %} cursor-pointer"
+                             style="height: 90px; object-fit: cover;"
+                             onclick="document.getElementById('mainImage').src = this.src; this.parentElement.parentElement.querySelectorAll('img').forEach(i=>i.classList.remove('border-primary')); this.classList.add('border-primary')">
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center py-5 text-muted">No Images</div>
                     {% endfor %}
                 </div>
-                <button class="carousel-control-prev" data-bs-target="#productCarousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon"></span>
-                </button>
-                <button class="carousel-control-next" data-bs-target="#productCarousel" data-bs-slide="next">
-                    <span class="carousel-control-next-icon"></span>
-                </button>
+
+                <!-- Video -->
+                {% if product.video %}
+                <div class="mt-4">
+                    <video controls class="w-100 rounded shadow">
+                        <source src="{{ product.video.url }}" type="video/mp4">
+                        Your browser does not support video.
+                    </video>
+                </div>
+                {% endif %}
             </div>
-            
-            <!-- Video if exists -->
-            {% if product.video %}
-            <div class="mb-4">
-                <video controls class="w-100 rounded shadow">
-                    <source src="{{ product.video.url }}" type="video/mp4">
-                </video>
-            </div>
-            {% endif %}
         </div>
 
-        <div class="col-md-5">
-            <h1 class="display-5 fw-bold mb-3">{{ product.name }}</h1>
-            <p class="text-success fs-1 fw-bold mb-3">{{ product.get_price_display }}</p>
-            <p class="lead mb-4">{{ product.short_desc }}</p>
-            <p class="text-muted mb-4">
-                <i class="fas fa-store me-2"></i>{{ product.store.name }} • 
-                <i class="fas fa-map-marker-alt me-2"></i>{{ product.store.city }}
-            </p>
+        <!-- RIGHT: PRODUCT INFO -->
+        <div class="col-lg-7">
+            <h1 class="display-6 fw-bold mb-3">{{ product.name }}</h1>
 
-            <!-- 🔥 ULTIMATE AUTO-SEND BUTTON -->
-            <div class="my-4">
-                <a href="{% if is_android %}{{ mobile_whatsapp }}{% else %}{{ whatsapp_url }}{% endif %}" 
-                   {% if is_android %}target="_blank"{% endif %}
-                   class="btn btn-success btn-lg w-100 py-4 shadow-lg text-white text-center"
-                   style="font-size: 1.4rem; background: linear-gradient(45deg, #25D366, #128C7E) !important; border: none !important;">
-                    <i class="fab fa-whatsapp fa-2x me-3"></i>
-                    <strong>SEND ENQUIRY NOW →</strong>
-                    <br><small class="mt-1">Message opens instantly • 99% auto-send</small>
-                </a>
-                <div class="text-center mt-3">
-                    <small class="text-success">
-                        ✅ Works on Android, iPhone, Desktop<br>
-                        ✅ Message pre-filled & ready to send
-                    </small>
+            <!-- Price Section - Flipkart Style -->
+            <div class="d-flex align-items-center mb-3">
+                {% if product.get_striked_price %}
+                <span class="text-muted text-decoration-line-through fs-4 me-3">₹{{ product.regular_price|floatformat:0 }}</span>
+                <span class="text-success fs-1 fw-bold me-3">₹{{ product.offer_price|floatformat:0 }}</span>
+                <span class="badge bg-danger fs-5">{{ product.discount_percent }}% OFF</span>
+                {% else %}
+                <span class="text-success fs-1 fw-bold">₹{{ product.offer_price|floatformat:0|default:"Call for Price" }}</span>
+                {% endif %}
+            </div>
+
+            <p class="lead text-dark mb-4">{{ product.short_desc }}</p>
+
+            <!-- Store Info -->
+            <div class="border rounded p-3 bg-light mb-4">
+                <p class="mb-1"><strong>Store:</strong> {{ product.store.name }}</p>
+                <p class="mb-1"><i class="fas fa-map-marker-alt text-danger"></i> {{ product.store.city }}</p>
+                <p class="mb-0"><i class="fas fa-phone text-success"></i> {{ product.store.phone }}</p>
+            </div>
+
+            <!-- WHATSAPP BUTTON - MEESHO STYLE -->
+            <a href="{{ whatsapp_url }}" target="_blank"
+               class="btn btn-success btn-lg w-100 py-4 shadow-lg mb-4 text-white"
+               style="background: linear-gradient(45deg, #25D366, #128C7E); font-size: 1.5rem; border: none;">
+                <i class="fab fa-whatsapp fa-2x me-3"></i>
+                <strong>SEND ENQUIRY NOW → BEST PRICE</strong>
+                <br><small>Message opens instantly • 99% auto-send</small>
+            </a>
+
+            <!-- Quick Enquiry Form -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Get This Product Fast</h5>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">{{ form.customer_name }}</div>
+                        <div class="mb-3">{{ form.phone }}</div>
+                        <div class="mb-3">{{ form.city }}</div>
+                        <button type="submit" class="btn btn-primary w-100 py-3">
+                            <i class="fas fa-paper-plane"></i> Send Enquiry
+                        </button>
+                    </form>
                 </div>
             </div>
 
-            <!-- Quick Form -->
-            <div class="border rounded p-4 bg-light mb-4">
-                <h5 class="text-primary">📞 Or Call Us Directly</h5>
-                <p class="text-success fs-4">{{ product.store.phone }}</p>
-                <form method="post">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn btn-primary w-100">Submit Enquiry</button>
-                </form>
+            <!-- Specifications Table -->
+            {% if product.specs %}
+            <div class="mt-5">
+                <h4>Specifications</h4>
+                <table class="table table-bordered">
+                    {% for key, value in product.specs.items %}
+                    <tr>
+                        <td class="bg-light"><strong>{{ key|title }}</strong></td>
+                        <td>{{ value }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
             </div>
+            {% endif %}
+
+            <!-- Full Description -->
+            {% if product.description %}
+            <div class="mt-5">
+                <h4>Description</h4>
+                <div class="border rounded p-4 bg-light">
+                    {{ product.description|linebreaks }}
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 
-    <!-- 🔥 SIMILAR PRODUCTS SECTION -->
-    <div class="mt-5">
-        <h2 class="text-center mb-5">
-            {% if similar_category_count > 0 %}
-                More {{ product.category.name }} Products
-            {% else %}
-                Popular Products You May Like
-            {% endif %}
+    <!-- SIMILAR PRODUCTS - FULL WIDTH -->
+    {% if similar %}
+    <div class="mt-5 pt-5 border-top">
+        <h2 class="text-center mb-5 text-primary">
+            {% if product.subcategory %}More {{ product.subcategory.name }}{% else %}Similar Products{% endif %}
         </h2>
         <div class="row g-4">
             {% for p in similar %}
-            <div class="col-md-3 col-sm-6">
-                <div class="card h-100 shadow hover-card border-0">
-                    {% with p.images.first as img %}
-                    <img src="{% if img %}{{ img.image.url }}{% else %}https://via.placeholder.com/300x200?text=No+Image{% endif %}"
-                         class="card-img-top" style="height:200px; object-fit:cover;">
-                    {% endwith %}
-                    <div class="card-body text-center">
-                        <h6 class="card-title fw-bold">{{ p.name|truncatewords:6 }}</h6>
-                        <p class="text-success fw-bold fs-5">{{ p.get_price_display }}</p>
-                        <small class="text-muted d-block mb-2">{{ p.store.name }} • {{ p.store.city }}</small>
+            <div class="col-md-3 col-6">
+                <div class="card h-100 shadow-sm border-0 hover-card">
+                    <div class="position-relative">
+                        <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}"
+                             class="card-img-top" style="height: 220px; object-fit: cover;">
+                        {% if p.is_deal_active %}
+                        <div class="ribbon ribbon-top-right"><span>DEAL</span></div>
+                        {% endif %}
+                    </div>
+                    <div class="card-body text-center p-3">
+                        <h6 class="card-title fw-bold">{{ p.name|truncatewords:8 }}</h6>
+                        <div class="mb-2">
+                            {% if p.get_striked_price %}
+                            <small class="text-muted text-decoration-line-through">₹{{ p.regular_price }}</small><br>
+                            <span class="text-danger fs-5 fw-bold">₹{{ p.offer_price }}</span>
+                            <span class="badge bg-danger small">{{ p.discount_percent }}% OFF</span>
+                            {% else %}
+                            <span class="text-success fs-5 fw-bold">{{ p.get_price_display }}</span>
+                            {% endif %}
+                        </div>
+                        <small class="text-muted d-block mb-2">{{ p.store.name }}</small>
                         <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" 
                            class="btn btn-success btn-sm w-100">
-                            <i class="fab fa-whatsapp me-1"></i> Enquire Now
+                            <i class="fab fa-whatsapp"></i> Enquire
                         </a>
                     </div>
                 </div>
             </div>
-            {% empty %}
-            <div class="col-12 text-center py-5">
-                <h4>No similar products yet</h4>
-                <p>Browse our <a href="{% url 'all_products' %}" class="text-primary">all products</a> collection</p>
-            </div>
             {% endfor %}
         </div>
     </div>
+    {% endif %}
 </div>
 
-<!-- AUTO-SEND SCRIPT (AGGRESSIVE MODE) -->
+<!-- ZOOM SCRIPT + RIBBON CSS -->
+<style>
+    #zoomContainer:hover #mainImage { transform: scale(1.8); }
+    .ribbon {
+        position: absolute;
+        right: -5px; top: 10px;
+        background: #e91e63;
+        color: white;
+        padding: 5px 15px;
+        font-size: 12px;
+        font-weight: bold;
+        z-index: 10;
+    }
+    .ribbon-top-right { transform: rotate(45deg); width: 100px; }
+    .hover-card { transition: all 0.3s; }
+    .hover-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1)!important; }
+</style>
+
+<!-- AUTO OPEN WHATSAPP ON MOBILE -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    
-    // AUTO-TRIGGER ON MOBILE (g1 SECOND DELAY)
-    if (isAndroid || isIOS) {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
         setTimeout(() => {
-            const whatsappLink = document.querySelector('a[href*="wa.me"]');
-            if (whatsappLink) {
-                whatsappLink.click();
-            }
-        }, 1500);
+            const waLink = document.querySelector('a[href*="wa.me"]');
+            if (waLink) waLink.click();
+        }, 2000);
     }
 });
 </script>

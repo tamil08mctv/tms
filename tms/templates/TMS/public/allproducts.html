@@ -3,46 +3,43 @@
 
 {% block content %}
 <div class="container my-5">
-    <h1 class="text-center mb-4 text-primary">All Products Across Tamil Nadu</h1>
-    
-    <!-- Filters -->
+    <h1 class="text-center mb-5">All Products</h1>
+
+    <!-- FILTERS -->
     <div class="row mb-4">
         <div class="col-md-4">
-            <input type="text" class="form-control" placeholder="Search products..." value="{{ search_query }}" name="q">
+            <form method="get">
+                <input type="text" name="q" class="form-control" placeholder="Search products..." value="{{ request.GET.q }}">
+            </form>
         </div>
         <div class="col-md-3">
-            <select class="form-select" onchange="location = this.value;">
+            <select class="form-select" onchange="window.location.href='?category='+this.value">
                 <option value="">All Categories</option>
                 {% for cat in categories %}
-                <option value="?category={{ cat.slug }}" {% if cat.slug == current_category %}selected{% endif %}>{{ cat.name }}</option>
+                <option value="{{ cat.slug }}" {% if request.GET.category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
                 {% endfor %}
             </select>
         </div>
         <div class="col-md-3">
-            <select class="form-select" onchange="location = this.value;">
+            <select class="form-select" onchange="window.location.href='?sort='+this.value">
                 <option value="">Sort By</option>
-                <option value="?price=low">Price: Low to High</option>
-                <option value="?price=high">Price: High to High</option>
-                <option value="?price=new">Newest First</option>
+                <option value="new" {% if request.GET.sort == 'new' %}selected{% endif %}>Newest</option>
+                <option value="price_low" {% if request.GET.sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
             </select>
         </div>
     </div>
 
     <div class="row g-4">
         {% for p in products %}
-        <div class="col-md-3">
+        <div class="col-md-3 col-6">
             <div class="card h-100 shadow hover-card">
-                {% with p.images.first as img %}
-                <img src="{% if img %}{{ img.image.url }}{% else %}https://via.placeholder.com/300{% endif %}" 
-                     class="card-img-top" style="height:200px; object-fit:cover;">
-                {% endwith %}
-                <div class="card-body d-flex flex-column">
-                    <h6 class="card-title">{{ p.name|truncatewords:8 }}</h6>
-                    <p class="text-muted small">{{ p.store.name }} • {{ p.store.city }}</p>
-                    <p><a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="btn btn-outline-success btn-sm">View Details</a></p>
-                    <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" 
-                       class="btn btn-success mt-auto">
-                        WhatsApp Enquiry
+                <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:200px; object-fit:cover;">
+                <div class="card-body text-center">
+                    <h6 class="card-title">{{ p.name|truncatewords:6 }}</h6>
+                    <p class="text-success fw-bold fs-5">{{ p.get_price_display }}</p>
+                    <small class="text-muted d-block">{{ p.store.name }} • {{ p.store.city }}</small>
+                    <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="btn btn-success btn-sm w-100 mt-2">
+                        <i class="fab fa-whatsapp"></i> Enquire
                     </a>
                 </div>
             </div>
@@ -54,15 +51,17 @@
         {% endfor %}
     </div>
 
-    <!-- Pagination -->
-    <div class="mt-5">
-        {% if products.has_previous %}
-            <a href="?page={{ products.previous_page_number }}" class="btn btn-primary">Previous</a>
-        {% endif %}
-        <span class="mx-3">Page {{ products.number }} of {{ products.paginator.num_pages }}</span>
-        {% if products.has_next %}
-            <a href="?page={{ products.next_page_number }}" class="btn btn-primary">Next</a>
-        {% endif %}
-    </div>
+    <!-- PAGINATION -->
+    <nav class="mt-5">
+        <ul class="pagination justify-content-center">
+            {% if products.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ products.previous_page_number }}">Previous</a></li>
+            {% endif %}
+            <li class="page-item active"><a class="page-link">{{ products.number }}</a></li>
+            {% if products.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}">Next</a></li>
+            {% endif %}
+        </ul>
+    </nav>
 </div>
 {% endblock %}

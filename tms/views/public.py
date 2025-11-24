@@ -1,10 +1,12 @@
 # tms/views/public.py → ULTIMATE AUTO-SEND + SIMILAR PRODUCTS
-from django.shortcuts import render, get_object_or_404, redirect
+
 from django.core.paginator import Paginator
-from django.db.models import Q, Count, F
-from ..models import Store, Product, ProductImage, Category, Lead
+from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Q, F
+from ..models import Store, Product, Category, SubCategory, Lead
 from ..forms import EnquiryForm
 import urllib.parse
+from datetime import date
 
 def get_common_context():
     return {
@@ -47,12 +49,20 @@ def all_products(request):
     })
     return render(request, 'TMS/public/allproducts.html', context)
 
+
 def home(request):
     context = get_common_context()
+    today = date.today()
+    deals = Product.objects.filter(
+        price_style='deal',
+        deal_end_date__gte=today,
+        store__is_active=True
+    )[:20]
+
     context.update({
         'stores': Store.objects.filter(is_active=True)[:8],
-        'featured_products': Product.objects.filter(is_featured=True)[:12],
-        'popular_products': Product.objects.order_by('-views_count')[:6],
+        'deals_of_day': deals,
+        'featured_products': Product.objects.filter(is_featured=True)[:20],
     })
     return render(request, 'TMS/public/home.html', context)
 
@@ -120,10 +130,12 @@ def product_detail(request, store_slug, product_slug):
         similar_same_category = []
     
     # If no same category products, show popular products
-    if not similar_same_category:
+    # Similar products
+    similar = Product.objects.filter(subcategory=product.subcategory, store__is_active=True).exclude(id=product.id)[:8]
+    if not similar:
+        similar = Product.objects.filter(category=product.category, store__is_active=True).exclude(id=product.id)[:8]
+    if not similar:
         similar = Product.objects.filter(is_featured=True)[:8]
-    else:
-        similar = similar_same_category
     
     # PHONE CLEANING
     phone_raw = product.store.whatsapp
@@ -144,9 +156,6 @@ I'm very interested in:
 Price: {product.get_price_display()}
 Category: {product.category.name if product.category else 'General'}
 Store: {product.store.name}, {product.store.city}
-
-Please send me best offer & more photos!
-
 Link: {request.build_absolute_uri()}"""
 
     # WHATSAPP URLS

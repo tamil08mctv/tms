@@ -11,28 +11,34 @@
     </div>
 </div>
 
-<!-- STORES GRID -->
-<div class="container my-5 align-items-center">
-    <h2 class="text-center mb-5 text-primary">Our Stores</h2>
+<!-- DEAL OF THE DAY -->
+{% if deals_of_day %}
+<div class="container my-5">
+    <h2 class="text-center mb-5 text-danger"><i class="fas fa-fire"></i> DEAL OF THE DAY <i class="fas fa-fire"></i></h2>
     <div class="row g-4">
-        {% for store in stores %}
+        {% for p in deals_of_day %}
         <div class="col-md-3">
-            <div class="card h-100 shadow hover-card">
-                {% if store.logo %}
-                <img src="{{ store.logo.url }}" class="card-img-top p-4" style="height:180px; object-fit:contain;">
-                {% endif %}
+            <div class="card h-100 shadow position-relative overflow-hidden">
+                <div class="ribbon">DEAL</div>
+                <img src="{{ p.images.first.image.url }}" class="card-img-top" style="height:220px; object-fit:cover;">
                 <div class="card-body text-center">
-                    <h5>{{ store.name }}</h5>
-                    <p class="text-muted">{{ store.city }}</p>
-                    <a href="/store/{{ store.slug }}/" class="btn btn-success">Visit Store</a>
+                    <h6>{{ p.name|truncatewords:6 }}</h6>
+                    <del class="text-muted">₹{{ p.regular_price }}</del>
+                    <p class="text-danger fs-4 fw-bold">₹{{ p.offer_price }}</p>
+                    <span class="badge bg-danger">{{ p.discount_percent }}% OFF</span>
+                    <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="btn btn-success btn-sm mt-2 w-100">
+                        <i class="fab fa-whatsapp"></i> Grab Now
+                    </a>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
 </div>
+{% endif %}
 
-<!-- FEATURED PRODUCTS -->
+
+
 <div class="bg-light py-5">
     <div class="container">
         <h2 class="text-center mb-5 text-primary">Featured Products</h2>
@@ -78,4 +84,28 @@
             
     </div>
 </div>
+
+<!-- STORES GRID -->
+<div class="container my-5 align-items-center">
+    <h2 class="text-center mb-5 text-primary">Our Stores</h2>
+    <div class="row g-4">
+        {% for store in stores %}
+        <div class="col-md-3">
+            <div class="card h-100 shadow hover-card">
+                {% if store.logo %}
+                <img src="{{ store.logo.url }}" class="card-img-top p-4" style="height:180px; object-fit:contain;">
+                {% endif %}
+                <div class="card-body text-center">
+                    <h5>{{ store.name }}</h5>
+                    <p class="text-muted">{{ store.city }}</p>
+                    <a href="/store/{{ store.slug }}/" class="btn btn-success">Visit Store</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- FEATURED PRODUCTS -->
+
 {% endblock %}
