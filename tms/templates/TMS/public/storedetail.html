@@ -1,55 +1,141 @@
 {% extends 'TMS/base.html' %}
-{% block title %}{{ store.name }} - TMS Groups{% endblock %}
+{% block title %}{{ store.name }} - {{ store.city }} | TMS Groups{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <!-- {% if store.banner %}
-    <img src="{{ store.banner.url }}" style="height: 50px;" class="img-fluid rounded mb-4" alt="{{ store.name }}">
-    {% endif %} -->
+<!-- STORE HERO BANNER -->
 
-    <div class="row">
+<div class="container py-3">
+
+    <!-- STORE INFO -->
+    <div class="row  bg-white shadow-sm rounded p-4 mb-3" style="top: 90px; z-index: 10;">
         <div class="col-md-8">
-            <h1 class="display-5 text-primary">{{ store.name }}</h1>
-            <p class="lead">{{ store.city }} • Open {{ store.working_hours }}</p>
-            <p>{{ store.address }}</p>
-            
-            <div class="my-4">
-                <a href="tel:{{ store.phone }}" class="btn btn-primary"><i class="fas fa-phone"></i> Call</a>
-                <a href="https://wa.me/{{ store.whatsapp }}" class="btn btn-success"><i class="fab fa-whatsapp"></i> WhatsApp</a>
-            </div>
-
-            <h3 class="mt-5">Our Products</h3>
-            <div class="row g-4">
-                {% for product in products %}
-                <div class="col-md-4">
-                    <div class="card h-100 shadow hover-card">
-                        {% with product.images.first as img %}
-                        <img src="{% if img %}{{ img.image.url }}{% else %}https://via.placeholder.com/300{% endif %}" class="card-img-top">
-                        {% endwith %}
-                        <div class="card-body">
-                            <h6>{{ product.name }}</h6>
-                            <p class="text-success fw-bold">From ₹{{ product.starting_price }}</p>
-                            <a href="/store/{{ store.slug }}/product/{{ product.slug }}/" class="btn btn-outline-success btn-sm">View Details</a>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
+            <h2 class="fw-bold text-primary">{{ store.name }}</h2>
+            <p class="text-muted mb-2"><i class="fas fa-map-marker-alt"></i> {{ store.address }}</p>
+            <p class="text-muted"><i class="fas fa-clock"></i> {{ store.working_hours }}</p>
         </div>
-
-        <div class="col-md-4">
-            <div class="card sticky-top" style="top:100px;">
-                <div class="card-body">
-                    <h5>Contact Info</h5>
-                    <p><strong>Phone:</strong> {{ store.phone }}</p>
-                    <p><strong>WhatsApp:</strong> {{ store.whatsapp }}</p>
-                    <p><strong>Working Hours:</strong> {{ store.working_hours }}</p>
-                    {% if store.map_link %}
-                    <a href="{{ store.map_link }}" target="_blank" class="btn btn-danger btn-sm">Open in Google Maps</a>
-                    {% endif %}
-                </div>
-            </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            {% if store.map_link %}
+            <a href="{{ store.map_link }}" target="_blank" class="btn btn-danger rounded-pill px-4">
+                Open in Google Maps
+            </a>
+            {% endif %}
         </div>
     </div>
+
+    <!-- DEAL OF THE DAY FROM THIS STORE -->
+    {% if store_deals %}
+    <section class="mb-5">
+        <h3 class="text-center text-danger fw-bold mb-4">
+            DEAL OF THE DAY – Only at {{ store.name }}
+        </h3>
+        <div class="row g-4 justify-content-center">
+            {% for p in store_deals %}
+            <div class="col-lg-3 col-md-4 col-6">
+                <div class="card h-100 shadow hover-card border-0 position-relative overflow-hidden">
+                    <div class="ribbon-deal">DEAL TODAY</div>
+                    <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:220px; object-fit:cover;">
+                    <div class="card-body text-center p-3">
+                        <h6 class="fw-bold">{{ p.name|truncatewords:6 }}</h6>
+                        <del class="text-muted small">₹{{ p.regular_price }}</del>
+                        <p class="text-danger fs-4 fw-bold">₹{{ p.offer_price }}</p>
+                        <span class="badge bg-danger">{{ p.discount_percent }}% OFF</span>
+                        <a href="/store/{{ store.slug }}/product/{{ p.slug }}/" class="btn btn-success btn-sm w-100 mt-3 rounded-pill">
+                            Grab Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- FEATURED PRODUCTS FROM THIS STORE -->
+    {% if featured_store %}
+    <section class="py-5 bg-light rounded-4 mb-5">
+        <h3 class="text-center fw-bold text-success mb-4">
+            Featured Products
+        </h3>
+        <div class="row g-4  justify-content-center">
+            {% for p in featured_store %}
+            <div class="col-lg-3 col-md-4 col-6">
+                <div class="card h-100 shadow hover-card border-0 position-relative">
+                    {% if p.discount_percent > 0 %}
+                    <div class="ribbon-deal ribbon-offer">-{{ p.discount_percent }}%</div>
+                    {% endif %}
+                    <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:220px; object-fit:cover;">
+                    <div class="card-body text-center p-3">
+                        <h6 class="fw-bold">{{ p.name|truncatewords:6 }}</h6>
+                        <p class="text-success fs-4 fw-bold">{{ p.get_price_display }}</p>
+                        <a href="/store/{{ store.slug }}/product/{{ p.slug }}/" class="btn btn-success btn-sm w-100 mt-2 rounded-pill">
+                            Enquire
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- CATEGORIES FROM THIS STORE -->
+    {% if store.categories.exists %}
+    <section class="mb-5">
+        <h3 class="text-center fw-bold text-primary mb-4">Shop by Category</h3>
+        <div class="row g-4 justify-content-center">
+            {% for cat in store.categories.all %}
+            <div class="col-lg-3 col-md-4 col-6">
+                <a href="#cat-{{ cat.slug }}" class="text-decoration-none">
+                    <div class="category-card shadow text-center p-4 bg-white rounded">
+                        {% if cat.image %}
+                        <img src="{{ cat.image.url }}" class="img-fluid rounded" style="height:140px; object-fit:cover;">
+                        {% else %}
+                        <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="height:140px;">
+                            <i class="fas fa-chair fs-1 text-white"></i>
+                        </div>
+                        {% endif %}
+                        <h5 class="mt-3 fw-bold text-dark">{{ cat.name }}</h5>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- CATEGORY-WISE PRODUCTS -->
+    {% for cat in store.categories.all %}
+    {% with cat.product_set.all as cat_products %}
+    {% if cat_products %}
+    <section class="mb-5" id="cat-{{ cat.slug }}">
+        <h3 class="fw-bold text-primary mb-4 text-center">{{ cat.name }} ({{ cat_products.count }})</h3>
+        <div class="row g-4 justify-content-center">
+            {% for p in cat_products|slice:":12" %}
+            <div class="col-lg-3 col-md-4 col-6">
+                <div class="card h-100 shadow hover-card border-0">
+                    <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:200px; object-fit:cover;">
+                    <div class="card-body text-center p-3">
+                        <h6 class="fw-bold">{{ p.name|truncatewords:6 }}</h6>
+                        <p class="text-success fs-5 fw-bold">{{ p.get_price_display }}</p>
+                        <a href="/store/{{ store.slug }}/product/{{ p.slug }}/" class="btn btn-success btn-sm w-100 rounded-pill">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% if cat_products.count > 12 %}
+        <div class="text-center mt-4">
+            <a href="{% url 'all_products' %}?category={{ cat.slug }}&store={{ store.slug }}" class="btn btn-outline-primary">
+                View All {{ cat.name }}
+            </a>
+        </div>
+        {% endif %}
+    </section>
+    {% endif %}
+    {% endwith %}
+    {% endfor %}
+
 </div>
 {% endblock %}

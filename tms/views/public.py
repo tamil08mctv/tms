@@ -88,13 +88,19 @@ def store_list(request):
 def store_detail(request, slug):
     context = get_common_context()
     store = get_object_or_404(Store, slug=slug, is_active=True)
-    products = Product.objects.filter(store=store)
     
+    # PRE-FETCH DEALS & FEATURED FOR THIS STORE ONLY
+    store_deals = store.products.filter(
+        price_style='deal',
+        deal_end_date__gte=date.today()
+    )
+    featured_store = store.products.filter(is_featured=True)
+
     context.update({
         'store': store,
-        'products': products,
-        'featured': products.filter(is_featured=True)[:8],
-        'categories': store.categories.all()
+        'store_deals': store_deals,
+        'featured_store': featured_store,
+        'products': store.products.all(),  # fallback
     })
     return render(request, 'TMS/public/storedetail.html', context)
 

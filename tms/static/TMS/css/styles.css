@@ -1,6 +1,11 @@
-.text-gold { color: #FFD700 !important; }
-.btn-gold { background: linear-gradient(45deg, #FFD700, #FFA500); border: none; }
-.hero { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/static/TMS/images/hero.jpg') center/cover; min-height: 80vh; display: flex; align-items: center; }
-.hover-card { transition: all 0.3s; }
-.hover-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.2) !important; }
-.btn-success { background-color: #25D366 !important; border-color: #25D366 !important; }
+body { background: #f8f9fa; }
+.hero { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/static/TMS/images/hero.jpg') center/cover no-repeat; min-height: 80vh; display: flex; align-items: center; }
+.hover-card { transition: all 0.4s ease; border-radius: 16px; overflow: hidden; }
+.hover-card:hover { transform: translateY(-12px); box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important; }
+.btn-success { background: #25D366 !important; border: none !important; border-radius: 50px; font-weight: 600; }
+.btn-success:hover { background: #1DA851 !important; transform: scale(1.05); }
+.ribbon-deal { position: absolute; top: 12px; right: -40px; background: #e91e63; color: white; padding: 8px 50px; font-size: 12px; font-weight: bold; transform: rotate(45deg); z-index: 10; }
+.ribbon-offer { background: hsl(105, 100%, 57%); }
+.badge-discount { background: #d32f2f; font-weight: bold; }
+.category-card { transition: all 0.3s; }
+.category-card:hover { transform: translateY(-8px); }

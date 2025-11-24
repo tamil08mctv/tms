@@ -2,8 +2,31 @@
 {% block title %}All Products - TMS Groups{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <h1 class="text-center mb-5">All Products</h1>
+<div class="container my-3">
+   
+    <section class="py-3">
+    <div class="container">
+      
+        <div class="row justify-content-center">
+            {% for cat in categories_all %}
+            <div class="col-lg-2 col-md-3 col-6">
+                <a href="{% url 'all_products' %}?category={{ cat.slug }}" class="text-decoration-none">
+                    <div class="category-card shadow-sm text-center p-3">
+                        {% if cat.image %}
+                        <img src="{{ cat.image.url }}" class="img-fluid rounded" style="height:50px; width: 50px; object-fit:cover;">
+                        {% else %}
+                        <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height:50px; width: 50px;">
+                            <i class="fas fa-image fs-1 text-muted"></i>
+                        </div>
+                        {% endif %}
+                        <h5 class="mt-3 text-dark fw-bold">{{ cat.name }}</h5>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
 
     <!-- FILTERS -->
     <div class="row mb-4">
@@ -25,31 +48,61 @@
                 <option value="">Sort By</option>
                 <option value="new" {% if request.GET.sort == 'new' %}selected{% endif %}>Newest</option>
                 <option value="price_low" {% if request.GET.sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                <option value="price_high" {% if request.GET.sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                <option value="discount" {% if request.GET.sort == 'discount' %}selected{% endif %}>Highest Discount</option>
             </select>
         </div>
     </div>
 
-    <div class="row g-4">
-        {% for p in products %}
-        <div class="col-md-3 col-6">
-            <div class="card h-100 shadow hover-card">
-                <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:200px; object-fit:cover;">
-                <div class="card-body text-center">
-                    <h6 class="card-title">{{ p.name|truncatewords:6 }}</h6>
-                    <p class="text-success fw-bold fs-5">{{ p.get_price_display }}</p>
-                    <small class="text-muted d-block">{{ p.store.name }} • {{ p.store.city }}</small>
-                    <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="btn btn-success btn-sm w-100 mt-2">
-                        <i class="fab fa-whatsapp"></i> Enquire
-                    </a>
+       <h2 class="fw-bold mb-4 justify-content-center align-text-center">
+                {% if request.GET.deals %}Deal of the Day{% else %}All Products{% endif %}
+                <span class="text-muted fs-5">({{ products.paginator.count }} items)</span>
+            </h2>
+
+            <div class="row g-4 justify-content-center">
+                {% for p in products %}
+                <div class="col-xl-3 col-lg-4 col-md-6 col-6">
+                    <div class="card h-100 shadow hover-card border-0 position-relative overflow-hidden">
+                        <!-- RIBBON BADGES -->
+                        {% if p.price_style == 'deal' and p.is_deal_active %}
+                        <div class="ribbon-deal">Today Deal</div>
+                        {% elif p.discount_percent > 20 %}
+                        <div class="ribbon-deal ribbon-offer">-{{ p.discount_percent }}%</div>
+                        {% elif p.is_featured %}
+                        <div class="ribbon-deal" style="background:#4CAF50;">FEATURED</div>
+                        {% endif %}
+
+                        <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}"
+                             class="card-img-top" style="height:220px; object-fit:cover;">
+
+                        <div class="card-body text-center p-3">
+                            <h6 class="fw-bold mb-1">{{ p.name|truncatewords:6 }}</h6>
+                            <small class="text-muted d-block mb-2">{{ p.store.name }} • {{ p.store.city }}</small>
+
+                            {% if p.get_striked_price %}
+                            <del class="text-muted small">₹{{ p.regular_price }}</del>
+                            {% endif %}
+                            <p class="text-success fs-4 fw-bold mb-1">{{ p.offer_price }}</p>
+
+                            {% if p.discount_percent > 0 %}
+                            <span class="badge bg-danger badge-discount mb-2">{{ p.discount_percent }}% OFF</span>
+                            {% endif %}
+
+                            <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/"
+                               class="btn btn-success btn-sm w-100 mt-2 rounded-pill shadow-sm">
+                               See Details
+                            </a>
+                        </div>
+                    </div>
                 </div>
+                {% empty %}
+                <div class="col-12 text-center py-5">
+                    <h3 class="text-muted">No products found</h3>
+                    <a href="{% url 'all_products' %}" class="btn btn-primary mt-3 rounded-pill">Clear Filters</a>
+                </div>
+                {% endfor %}
             </div>
-        </div>
-        {% empty %}
-        <div class="col-12 text-center py-5">
-            <h3>No products found</h3>
-        </div>
-        {% endfor %}
-    </div>
+
 
     <!-- PAGINATION -->
     <nav class="mt-5">
