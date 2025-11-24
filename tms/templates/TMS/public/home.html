@@ -6,13 +6,13 @@
 <div class="hero text-white text-center py-5">
     <div class="container py-5">
         <h1 class="display-3 fw-bold">Welcome to TMS GROUPS</h1>
-        <p class="lead fs-2">One Platform • All Stores • Best Prices</p>
+        <p class="lead fs-2">One Brand • Multiple Stores • Best Prices • Premium Quality</p>
         <a href="/stores/" class="btn btn-warning btn-lg px-5">Explore Stores</a>
     </div>
 </div>
 
 <!-- STORES GRID -->
-<div class="container my-5">
+<div class="container my-5 align-items-center">
     <h2 class="text-center mb-5 text-primary">Our Stores</h2>
     <div class="row g-4">
         {% for store in stores %}
@@ -38,7 +38,7 @@
         <h2 class="text-center mb-5 text-primary">Featured Products</h2>
         <div class="row g-4">
             {% for p in featured_products %}
-            <div class="col-md-3">
+            <!-- <div class="col-md-3">
                 <div class="card h-100 shadow hover-card">
                     {% with p.images.first as img %}
                     <img src="{% if img %}{{ img.image.url }}{% else %}https://via.placeholder.com/300{% endif %}" class="card-img-top" style="height:220px; object-fit:cover;">
@@ -49,9 +49,33 @@
                         <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="btn btn-outline-success btn-sm">View</a>
                     </div>
                 </div>
+            </div> -->
+           
+            <div class="col-md-3 col-sm-6">
+                <div class="card h-100 shadow hover-card border-0">
+                    {% with p.images.first as img %}
+                    <img src="{% if img %}{{ img.image.url }}{% else %}https://via.placeholder.com/300x200?text=No+Image{% endif %}"
+                         class="card-img-top" style="height:200px; object-fit:cover;">
+                    {% endwith %}
+                    <div class="card-body text-center">
+                        <h6 class="card-title fw-bold">{{ p.name|truncatewords:6 }}</h6>
+                        <p class="text-success fw-bold fs-5">{{ p.get_price_display }}</p>
+                        <small class="text-muted d-block mb-2">{{ p.store.name }} • {{ p.store.city }}</small>
+                        <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" 
+                           class="btn btn-success btn-sm w-100">
+                            <i class="fab fa-whatsapp me-1"></i> Enquire Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <h4>No similar products yet</h4>
+                <p>Browse our <a href="{% url 'all_products' %}" class="text-primary">all products</a> collection</p>
             </div>
             {% endfor %}
         </div>
+            
     </div>
 </div>
 {% endblock %}

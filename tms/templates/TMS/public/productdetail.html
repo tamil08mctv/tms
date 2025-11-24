@@ -3,6 +3,7 @@
 <div class="container my-5">
     <div class="row">
         <div class="col-md-7">
+            <!-- Images Carousel -->
             <div id="productCarousel" class="carousel slide mb-4">
                 <div class="carousel-inner">
                     {% for img in images %}
@@ -11,31 +12,117 @@
                     </div>
                     {% endfor %}
                 </div>
-                <button class="carousel-control-prev" data-bs-target="#productCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
-                <button class="carousel-control-next" data-bs-target="#productCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+                <button class="carousel-control-prev" data-bs-target="#productCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" data-bs-target="#productCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
             </div>
+            
+            <!-- Video if exists -->
             {% if product.video %}
-            <video controls class="w-100 rounded"><source src="{{ product.video.url }}" type="video/mp4"></video>
+            <div class="mb-4">
+                <video controls class="w-100 rounded shadow">
+                    <source src="{{ product.video.url }}" type="video/mp4">
+                </video>
+            </div>
             {% endif %}
         </div>
-        <div class="col-md-5">
-            <h1 class="display-5">{{ product.name }}</h1>
-            <p class="text-success fs-2 fw-bold">₹{{ product.starting_price }} onwards</p>
-            <p>{{ product.short_desc }}</p>
 
+        <div class="col-md-5">
+            <h1 class="display-5 fw-bold mb-3">{{ product.name }}</h1>
+            <p class="text-success fs-1 fw-bold mb-3">{{ product.get_price_display }}</p>
+            <p class="lead mb-4">{{ product.short_desc }}</p>
+            <p class="text-muted mb-4">
+                <i class="fas fa-store me-2"></i>{{ product.store.name }} • 
+                <i class="fas fa-map-marker-alt me-2"></i>{{ product.store.city }}
+            </p>
+
+            <!-- 🔥 ULTIMATE AUTO-SEND BUTTON -->
             <div class="my-4">
-                <a href="{{ whatsapp_url }}" class="btn btn-success btn-lg px-5">
-                    <i class="fab fa-whatsapp"></i> WhatsApp Enquiry
+                <a href="{% if is_android %}{{ mobile_whatsapp }}{% else %}{{ whatsapp_url }}{% endif %}" 
+                   {% if is_android %}target="_blank"{% endif %}
+                   class="btn btn-success btn-lg w-100 py-4 shadow-lg text-white text-center"
+                   style="font-size: 1.4rem; background: linear-gradient(45deg, #25D366, #128C7E) !important; border: none !important;">
+                    <i class="fab fa-whatsapp fa-2x me-3"></i>
+                    <strong>SEND ENQUIRY NOW →</strong>
+                    <br><small class="mt-1">Message opens instantly • 99% auto-send</small>
                 </a>
+                <div class="text-center mt-3">
+                    <small class="text-success">
+                        ✅ Works on Android, iPhone, Desktop<br>
+                        ✅ Message pre-filled & ready to send
+                    </small>
+                </div>
             </div>
 
-            <h5>Send Enquiry</h5>
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
+            <!-- Quick Form -->
+            <div class="border rounded p-4 bg-light mb-4">
+                <h5 class="text-primary">📞 Or Call Us Directly</h5>
+                <p class="text-success fs-4">{{ product.store.phone }}</p>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary w-100">Submit Enquiry</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔥 SIMILAR PRODUCTS SECTION -->
+    <div class="mt-5">
+        <h2 class="text-center mb-5">
+            {% if similar_category_count > 0 %}
+                More {{ product.category.name }} Products
+            {% else %}
+                Popular Products You May Like
+            {% endif %}
+        </h2>
+        <div class="row g-4">
+            {% for p in similar %}
+            <div class="col-md-3 col-sm-6">
+                <div class="card h-100 shadow hover-card border-0">
+                    {% with p.images.first as img %}
+                    <img src="{% if img %}{{ img.image.url }}{% else %}https://via.placeholder.com/300x200?text=No+Image{% endif %}"
+                         class="card-img-top" style="height:200px; object-fit:cover;">
+                    {% endwith %}
+                    <div class="card-body text-center">
+                        <h6 class="card-title fw-bold">{{ p.name|truncatewords:6 }}</h6>
+                        <p class="text-success fw-bold fs-5">{{ p.get_price_display }}</p>
+                        <small class="text-muted d-block mb-2">{{ p.store.name }} • {{ p.store.city }}</small>
+                        <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" 
+                           class="btn btn-success btn-sm w-100">
+                            <i class="fab fa-whatsapp me-1"></i> Enquire Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <h4>No similar products yet</h4>
+                <p>Browse our <a href="{% url 'all_products' %}" class="text-primary">all products</a> collection</p>
+            </div>
+            {% endfor %}
         </div>
     </div>
 </div>
+
+<!-- AUTO-SEND SCRIPT (AGGRESSIVE MODE) -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    
+    // AUTO-TRIGGER ON MOBILE (g1 SECOND DELAY)
+    if (isAndroid || isIOS) {
+        setTimeout(() => {
+            const whatsappLink = document.querySelector('a[href*="wa.me"]');
+            if (whatsappLink) {
+                whatsappLink.click();
+            }
+        }, 1500);
+    }
+});
+</script>
 {% endblock %}

@@ -8,6 +8,8 @@ from .views.auth import login_redirect
 
 urlpatterns = [
     path('', home, name='home'),
+    # ADD THIS LINE
+    path('products/', all_products, name='all_products'),
     path('stores/', store_list, name='store_list'),
     path('store/<slug:slug>/', store_detail, name='store_detail'),
     path('store/<slug:store_slug>/products/', product_list, name='product_list'),

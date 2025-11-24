@@ -1,0 +1,68 @@
+{% extends 'TMS/base.html' %}
+{% block title %}All Products - TMS Groups{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-4 text-primary">All Products Across Tamil Nadu</h1>
+    
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <input type="text" class="form-control" placeholder="Search products..." value="{{ search_query }}" name="q">
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" onchange="location = this.value;">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                <option value="?category={{ cat.slug }}" {% if cat.slug == current_category %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" onchange="location = this.value;">
+                <option value="">Sort By</option>
+                <option value="?price=low">Price: Low to High</option>
+                <option value="?price=high">Price: High to High</option>
+                <option value="?price=new">Newest First</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for p in products %}
+        <div class="col-md-3">
+            <div class="card h-100 shadow hover-card">
+                {% with p.images.first as img %}
+                <img src="{% if img %}{{ img.image.url }}{% else %}https://via.placeholder.com/300{% endif %}" 
+                     class="card-img-top" style="height:200px; object-fit:cover;">
+                {% endwith %}
+                <div class="card-body d-flex flex-column">
+                    <h6 class="card-title">{{ p.name|truncatewords:8 }}</h6>
+                    <p class="text-muted small">{{ p.store.name }} • {{ p.store.city }}</p>
+                    <p><a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="btn btn-outline-success btn-sm">View Details</a></p>
+                    <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" 
+                       class="btn btn-success mt-auto">
+                        WhatsApp Enquiry
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <h3>No products found</h3>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-5">
+        {% if products.has_previous %}
+            <a href="?page={{ products.previous_page_number }}" class="btn btn-primary">Previous</a>
+        {% endif %}
+        <span class="mx-3">Page {{ products.number }} of {{ products.paginator.num_pages }}</span>
+        {% if products.has_next %}
+            <a href="?page={{ products.next_page_number }}" class="btn btn-primary">Next</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
