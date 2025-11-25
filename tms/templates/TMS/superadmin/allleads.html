@@ -1,25 +1,71 @@
-{% extends 'TMS/base.html' %}
+{% extends 'TMS/superadmin/base_superadmin.html' %}
+{% block title %}All Leads{% endblock %}
+
 {% block content %}
-<div class="container my-5">
-    <h1>All Leads - System Wide</h1>
-    <a href="/super-admin/export-all/" class="btn btn-success mb-3">Export All Leads (CSV)</a>
-    
-    <table class="table table-striped">
-        <thead>
-            <tr><th>Store</th><th>Name</th><th>Phone</th><th>Product</th><th>Status</th><th>Date</th></tr>
-        </thead>
-        <tbody>
-        {% for lead in leads %}
-        <tr>
-            <td>{{ lead.store.name }}</td>
-            <td>{{ lead.customer_name }}</td>
-            <td>{{ lead.phone }}</td>
-            <td>{{ lead.product.name|default:"-" }}</td>
-            <td><span class="badge bg-{{ lead.status }}">{{ lead.get_status_display }}</span></td>
-            <td>{{ lead.created_at|date:"d M Y" }}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+<div class="container-fluid">
+    <h2 class="fw-bold mb-4">All Leads ({{ leads.count }})</h2>
+
+    <!-- FILTERS -->
+    <div class="card mb-4 shadow">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label>Store</label>
+                    <select name="store" class="form-select">
+                        <option value="">All Stores</option>
+                        {% for s in stores %}
+                        <option value="{{ s.id }}" {% if request.GET.store == s.id|stringformat:"s" %}selected{% endif %}>{{ s.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label>From Date</label>
+                    <input type="date" name="from" value="{{ request.GET.from }}" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label>To Date</label>
+                    <input type="date" name="to" value="{{ request.GET.to }}" class="form-control">
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">Filter</button>
+                    <a href="/super-admin/export-all/?{{ request.GET.urlencode }}" class="btn btn-success">Export CSV</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="card shadow">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Date</th>
+                        <th>Store</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Product</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lead in leads %}
+                    <tr>
+                        <td>{{ lead.created_at|date:"d M Y, h:i A" }}</td>
+                        <td>{{ lead.store.name }}</td>
+                        <td>{{ lead.customer_name }}</td>
+                        <td>{{ lead.phone }}</td>
+                        <td>{{ lead.product.name|default:"General" }}</td>
+                        <td>
+                            <span class="badge bg-{% if lead.status == 'converted' %}success{% elif lead.status == 'new' %}warning{% else %}secondary{% endif %}">
+                                {{ lead.get_status_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 {% endblock %}

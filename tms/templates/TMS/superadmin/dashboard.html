@@ -1,67 +1,123 @@
-{% extends 'TMS/base.html' %}
-{% block title %}Super Admin - TMS Empire{% endblock %}
+{% extends 'TMS/superadmin/base_superadmin.html' %}
+{% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="bg-primary text-white py-5 text-center">
-    <h1>SUPER ADMIN DASHBOARD</h1>
-    <p class="lead">Welcome, {{ user.get_full_name|default:user.username }}</p>
-</div>
-
-<div class="container my-5">
-    <div class="row g-4">
-        <div class="col-md-3">
-            <div class="card bg-primary text-white text-center">
-                <div class="card-body">
-                    <h2>{{ total_stores }}</h2>
-                    <p>Total Stores</p>
-                </div>
-            </div>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="display-5 fw-bold text-primary">Welcome back, {{ user.username }}!</h1>
         </div>
-        <div class="col-md-3">
-            <div class="card bg-success text-white text-center">
-                <div class="card-body">
-                    <h2>{{ total_leads }}</h2>
-                    <p>Total Leads</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <a href="/super-admin/create-store/" class="btn btn-warning btn-lg w-100 h-100 d-flex align-items-center justify-content-center">
-                <h4 class="mb-0">+ Create New Store</h4>
-            </a>
+        <div class="text-end">
+            <h5>{{ "now"|date:"d M Y" }}</h5>
         </div>
     </div>
 
-    <h3 class="mt-5">Top Performing Stores</h3>
-    <div class="row">
-        {% for store in top_stores %}
-        <div class="col-md-4 mb-3">
-            <div class="card">
-                <div class="card-body">
-                    <h6>{{ store.name }} ({{ store.city }})</h6>
-                    <p class="text-success fw-bold">{{ store.lead_count }} Leads</p>
+    <!-- Stats Cards - Single Row -->
+    <div class="row g-4 mb-5">
+        <div class="col-xl-3 col-md-6">
+            <div class="card-modern bg-primary text-white">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h2 class="fw-bold">{{ total_stores }}</h2>
+                            <p class="mb-0 opacity-90">Total Stores</p>
+                        </div>
+                        <i class="fas fa-store fa-3x opacity-50"></i>
+                    </div>
                 </div>
             </div>
         </div>
-        {% endfor %}
+        <div class="col-xl-3 col-md-6">
+            <div class="card-modern bg-success text-white">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h2 class="fw-bold">{{ total_leads }}</h2>
+                            <p class="mb-0 opacity-90">Total Leads</p>
+                        </div>
+                        <i class="fas fa-users fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card-modern bg-warning text-white">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h2 class="fw-bold">{{ converted }}</h2>
+                            <p class="mb-0 opacity-90">Converted</p>
+                        </div>
+                        <i class="fas fa-check-circle fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card-modern bg-danger text-white">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h2 class="fw-bold">{{ pending }}</h2>
+                            <p class="mb-0 opacity-90">Pending</p>
+                        </div>
+                        <i class="fas fa-clock fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <h3 class="mt-5">Recent Leads (All Stores)</h3>
-    <table class="table table-bordered">
-        <thead class="table-dark">
-            <tr><th>Store</th><th>Name</th><th>Phone</th><th>Product</th><th>Date</th></tr>
-        </thead>
-        <tbody>
-        {% for lead in leads %}
-        <tr>
-            <td><strong>{{ lead.store.name }}</strong></td>
-            <td>{{ lead.customer_name }}</td>
-            <td>{{ lead.phone }}</td>
-            <td>{{ lead.product.name|default:"General" }}</td>
-            <td>{{ lead.created_at|date:"d M Y" }}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <!-- Recent & Top -->
+     <div class="card-modern">
+        <div class="card-body p-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold text-primary mb-0">Recent Leads (Last 20)</h3>
+                <a href="{% url 'all_leads' %}" class="btn btn-outline-primary rounded-pill">View All Leads →</a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Date</th>
+                            <th>Store</th>
+                            <th>Customer</th>
+                            <th>Phone</th>
+                            <th>Product</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lead in recent_leads %}
+                        <tr>
+                            <td>
+                                <small class="text-muted d-block">{{ lead.created_at|date:"d M Y" }}</small>
+                                <strong>{{ lead.created_at|time:"h:i A" }}</strong>
+                            </td>
+                            <td><span class="badge bg-primary fs-6">{{ lead.store.city }}</span></td>
+                            <td class="fw-bold">{{ lead.customer_name }}</td>
+                            <td><a href="tel:{{ lead.phone }}" class="text-success text-decoration-none fw-bold">{{ lead.phone }}</a></td>
+                            <td>{{ lead.product.name|default:"General" }}</td>
+                            <td>
+                                {% if lead.status == 'converted' %}
+                                    <span class="badge bg-success">Converted</span>
+                                {% elif lead.status == 'contacted' %}
+                                    <span class="badge bg-warning text-dark">Contacted</span>
+                                {% else %}
+                                    <span class="badge bg-danger">New</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted fs-5">No leads found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
