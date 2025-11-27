@@ -156,6 +156,17 @@ class ProductImage(models.Model):
     def __str__(self):
         return f"Image - {self.product.name}"
 
+# models.py → ADD THIS NEW MODEL
+class StoreBanner(models.Model):
+    store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='banners')
+    image = models.ImageField(upload_to='stores/banners/extra/')
+    caption = models.CharField(max_length=200, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.store.name} - Banner"
+
 class Lead(models.Model):
     STATUS_CHOICES = [('new','New'),('contacted','Contacted'),('converted','Converted'),('lost','Lost')]
     SOURCE_CHOICES = [('whatsapp','WhatsApp'),('form','Form'),('call','Call')]

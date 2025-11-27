@@ -1,0 +1,77 @@
+<!-- templates/TMS/public/featured.html -->
+{% extends 'TMS/base.html' %}
+{% load static %}
+
+{% block title %}Featured Products – TMS Furnitures{% endblock %}
+
+{% block extra_head %}
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<style>
+    .hover-card { transition: all 0.4s ease; cursor: pointer; }
+    .hover-card:hover { transform: translateY(-15px); box-shadow: 0 25px 50px rgba(0,0,0,0.22) !important; }
+    .ribbon-featured { position: absolute; top: 15px; right: -10px; background: #ff9800; color: white; padding: 6px 20px; font-weight: bold; z-index: 10; }
+    .ribbon-featured::before { content: ''; position: absolute; right: 0; bottom: -10px; border-right: 10px solid transparent; border-top: 10px solid #e68900; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="py-5 text-white text-center" style="background: linear-gradient(135deg, #11998e, #38ef7d);">
+    <div class="container py-5">
+        <h1 class="display-4 fw-bold">Featured Products</h1>
+        <p class="lead fs-3">Our Best Picks • Premium Quality • Special Prices</p>
+    </div>
+</section>
+
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+            {% for p in products %}
+            <div class="col-lg-3 col-md-4 col-6" data-aos="fade-up">
+                <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
+                    <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
+                        <!-- <div class="ribbon-featured">FEATURED</div> -->
+                        {% if p.discount_percent > 0 %}
+                        <div class="position-absolute top-0 start-0 bg-warning text-dark px-3 py-1" style="top:50px;left:-10px;z-index:10;">-{{ p.discount_percent }}%</div>
+                        {% endif %}
+                        <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:240px;object-fit:cover;">
+                        <div class="card-body text-center p-3">
+                            <h6 class="fw-bold text-dark">{{ p.name|truncatewords:6 }}</h6>
+                            <p class="text-success fs-4 fw-bold">{{ p.get_price_display }}</p>
+                            <small class="text-muted">{{ p.store.city }}</small>
+                            <button class="btn btn-success btn-sm w-100 mt-2 rounded-pill">Enquire Now</button>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5"><h3 class="text-muted">No featured products yet.</h3></div>
+            {% endfor %}
+        </div>
+
+        {% if products.has_other_pages %}
+        <nav class="mt-5">
+            <ul class="pagination justify-content-center">
+                {% if products.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ products.previous_page_number }}">Previous</a></li>
+                {% endif %}
+                {% for num in products.paginator.page_range %}
+                    {% if products.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if products.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}">Next</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script> AOS.init({ duration: 800, once: false }); </script>
+{% endblock %}

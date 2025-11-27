@@ -14,8 +14,58 @@ C:.
 |   |   __init__.py
 |   |   
 |   +---media
+|   |   +---categories
+|   |   |       bedsheet.jpeg
+|   |   |       interior-design-house-modern-wooden-table-chair.jpg
+|   |   |    -11-25_at_18.58.00_cafa1ce8.jpg
+|   |   |       
 |   |   +---products
-|   |   \---stores
+|   |   |   +---360
+|   |   |   |       3969436-uhd_3840_2160_25fps.mp4
+|   |   |   |       
+|   |   |   +---images
+|   |   |   |       
+|   |   |   \---videos
+|   |   |           3969436-uhd_3840_2160_25fps.mp4
+|   |   |         
+|   |   |           
+|   |   +---stores
+|   |   |   +---banners
+|   |   |   |   |   ChatGPT_Image_Oct_3_2025_06_59_47_PM.png
+|   |   |   |   |   ChatGPT_Image_Oct_3_2025_06_59_47_PM_ogT8f1R.png
+|   |   |   |   |   ChatGPT_Image_Oct_3_2025_06_59_47_PM_tdE67Ao.png
+|   |   |   |   |   Contemporary_Logo_Tovatra_Vault_Security.png
+|   |   |   |   |
+|   |   |   |   |   
+|   |   |   |   \---extra
+|   |   |   |           one_servie.png
+|   |   |   |           
+|   |   |   \---logos
+|   |   |           Contemporary_Logo_Tovatra_Vault_Security.png
+|   |   |           Contemporary_Logo_Tovatra_Vault_Security_6XZwEL3.png
+|   |   |           Contemporary_Logo_Tovatra_Vault_Security_auNgAmL.png
+|   |   |           Contemporary_Logo_Tovatra_Vault_Security_dLfXvh5.png
+|   |   |           github.png
+|   |   |           location.png
+|   |   |           Professional_Bright_Blue_and_Green_Logo.png
+|   |   |           ToVatra_Logo.jpg
+|   |   |           
+|   |   \---subcategories
+|   |           bedsheet.jpeg
+|   |           living_room.jpeg
+|   |         
+|   +---migrations
+|   |   |   0001_initial.py
+|   |   |   0002_remove_product_specs.py
+|   |   |   0003_storebanner.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           0001_initial.cpython-313.pyc
+|   |           0002_remove_product_specs.cpython-313.pyc
+|   |           0003_storebanner.cpython-313.pyc
+|   |           __init__.cpython-313.pyc
+|   |           
 |   +---static
 |   |   \---TMS
 |   |       +---css
@@ -28,12 +78,14 @@ C:.
 |   +---templates
 |   |   \---TMS
 |   |       |   base.html
-|   |       |   login.html 
+|   |       |   login.html
+|   |       |   
 |   |       +---public
-                    allproducts.html
+|   |       |       allproducts.html
+|   |       |       deals.html
+|   |       |       featured.html
 |   |       |       home.html
 |   |       |       productdetail.html
-|   |       
 |   |       |       storedetail.html
 |   |       |       storelist.html
 |   |       |       
@@ -44,17 +96,39 @@ C:.
 |   |       |       
 |   |       \---superadmin
 |   |               allleads.html
+|   |               base_superadmin.html
 |   |               createstore.html
 |   |               dashboard.html
+|   |               store_list.html
 |   |               
-|   \---views
-|           public.py
-|           storeadmin.py
-|           superadmin.py
-|           auth.py
+|   +---views
+|   |   |   auth.py
+|   |   |   public.py
+|   |   |   storeadmin.py
+|   |   |   superadmin.py
+|   |   |   
+|   |   \---__pycache__
+|   |           auth.cpython-313.pyc
+|   |           public.cpython-313.pyc
+|   |           storeadmin.cpython-313.pyc
+|   |           superadmin.cpython-313.pyc
+|   |           
+|   \---__pycache__
+|           admin.cpython-313.pyc
+|           apps.cpython-313.pyc
+|           forms.cpython-313.pyc
+|           models.cpython-313.pyc
+|           urls.cpython-313.pyc
+|           __init__.cpython-313.pyc
+|           
 \---tmsgroups
-        asgi.py
-        settings.py
-        urls.py
-        wsgi.py
-        
+    |   asgi.py
+    |   settings.py
+    |   urls.py
+    |   wsgi.py
+    |   
+    \---__pycache__
+            settings.cpython-313.pyc
+            urls.cpython-313.pyc
+            wsgi.cpython-313.pyc
+            

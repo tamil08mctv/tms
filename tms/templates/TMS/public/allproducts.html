@@ -1,120 +1,239 @@
 {% extends 'TMS/base.html' %}
-{% block title %}All Products - TMS Groups{% endblock %}
+{% load static %}
+
+{% block title %}
+    {% if request.GET.q %}Search: {{ request.GET.q }}{% elif request.GET.category %}Category: {{ current_category.name }}{% elif is_deal_page %}Deals of the Day{% elif is_featured_page %}Featured Products{% else %}All Products{% endif %} - TMS Groups
+{% endblock %}
+
+{% block extra_head %}
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<style>
+    .hover-card {
+        transition: all 0.4s ease;
+        cursor: pointer;
+    }
+    .hover-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.22) !important;
+    }
+    .ribbon-deal {
+        position: absolute; top: 15px; left: -10px; background: #e91e63; color: white;
+        padding: 6px 20px; font-weight: bold; font-size: 0.9rem; z-index: 10;
+    }
+    .ribbon-deal::after {
+        content: ''; position: absolute; left: 0; bottom: -10px;
+        border-left: 10px solid transparent; border-top: 10px solid #c2185b;
+    }
+    .ribbon-featured {
+        position: absolute; top: 15px; right: -10px; background: #ff9800; color: white;
+        padding: 6px 20px; font-weight: bold; z-index: 10;
+    }
+    .ribbon-featured::before {
+        content: ''; position: absolute; right: 0; bottom: -10px;
+        border-right: 10px solid transparent; border-top: 10px solid #e68900;
+    }
+    .filter-btn {
+        background: #f8f9fa; border: 1px solid #ddd; border-radius: 50px;
+        padding: 10px 20px; font-weight: 600; transition: all 0.3s;
+    }
+    .filter-btn:hover { background: #e9ecef; }
+    .dropdown-menu { max-height: 400px; overflow-y: auto; }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="container my-3">
-   
-    <section class="py-3">
+
+    <!-- CATEGORY CAROUSEL -->
+   <section class="py-2 bg-white" data-aos="fade-up">
     <div class="container">
-      
-        <div class="row justify-content-center">
-            {% for cat in categories_all %}
-            <div class="col-lg-2 col-md-3 col-6">
-                <a href="{% url 'all_products' %}?category={{ cat.slug }}" class="text-decoration-none">
-                    <div class="category-card shadow-sm text-center p-3">
-                        {% if cat.image %}
-                        <img src="{{ cat.image.url }}" class="img-fluid rounded" style="height:50px; width: 50px; object-fit:cover;">
-                        {% else %}
-                        <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height:50px; width: 50px;">
-                            <i class="fas fa-image fs-1 text-muted"></i>
+       
+        <div id="categoryCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000" data-bs-wrap="true">
+            <div class="carousel-inner">
+
+                <!-- Slide 1: First 8 Categories -->
+                <div class="carousel-item active">
+                    <div class="row g-4 justify-content-center">
+                        {% for cat in categories_all|slice:":10" %}
+                        <div class="col-4 col-sm-3 col-md-2 col-lg-1 text-center category-item" data-aos="zoom-in" data-aos-delay="100">
+                            <a href="{% url 'all_products' %}?category={{ cat.slug }}" class="text-decoration-none d-block">
+                                <div class="position-relative mb-3">
+                                    <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 90px; height: 70px; background: linear-gradient(180deg, #fce7f3 0%, transparent 100%); border-radius: 90px 90px 0 0; z-index: 1;"></div>
+                                    {% if cat.image %}
+                                    <img src="{{ cat.image.url }}" class="rounded-circle shadow-lg border border-5 border-white" style="width: 90px; height: 90px; object-fit: cover; z-index: 2; position: relative;" alt="{{ cat.name }}">
+                                    {% else %}
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle shadow-lg border border-5 border-white" style="width: 90px; height: 90px; background: linear-gradient(135deg, #ec4899, #f43f5e);">
+                                        <i class="fas fa-chair text-white fs-3"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <h6 class="fw-bold text-dark mt-2">{{ cat.name }}</h6>
+                            </a>
                         </div>
-                        {% endif %}
-                        <h5 class="mt-3 text-dark fw-bold">{{ cat.name }}</h5>
+                        {% endfor %}
                     </div>
-                </a>
+                </div>
+
+                <!-- Slide 2: Next 8 Categories -->
+                {% if categories_all|length > 8 %}
+                <div class="carousel-item">
+                    <div class="row g-4 justify-content-center">
+                        {% for cat in categories_all|slice:"8:16" %}
+                        <div class="col-4 col-sm-3 col-md-2 col-lg-1 text-center category-item" data-aos="zoom-in" data-aos-delay="100">
+                            <a href="{% url 'all_products' %}?category={{ cat.slug }}" class="text-decoration-none d-block">
+                                <div class="position-relative mb-3">
+                                    <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 90px; height: 70px; background: linear-gradient(180deg, #fce7f3 0%, transparent 100%); border-radius: 90px 90px 0 0; z-index: 1;"></div>
+                                    {% if cat.image %}
+                                    <img src="{{ cat.image.url }}" class="rounded-circle shadow-lg border border-5 border-white" style="width: 90px; height: 90px; object-fit: cover; z-index: 2; position: relative;" alt="{{ cat.name }}">
+                                    {% else %}
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle shadow-lg border border-5 border-white" style="width: 90px; height: 90px; background: linear-gradient(135deg, #ec4899, #f43f5e);">
+                                        <i class="fas fa-chair text-white fs-3"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <h6 class="fw-bold text-dark mt-2">{{ cat.name }}</h6>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
             </div>
-            {% endfor %}
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#categoryCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#categoryCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
         </div>
     </div>
 </section>
 
-    <!-- FILTERS -->
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <form method="get">
-                <input type="text" name="q" class="form-control" placeholder="Search products..." value="{{ request.GET.q }}">
-            </form>
-        </div>
-        <div class="col-md-3">
-            <select class="form-select" onchange="window.location.href='?category='+this.value">
-                <option value="">All Categories</option>
+
+
+    <!-- FILTER BAR — HOVER TO OPEN DROPDOWNS -->
+      <!-- FILTER BAR — HOVER TO OPEN DROPDOWNS -->
+    <div class="d-flex flex-wrap gap-3 mb-4 justify-content-center align-items-center">
+        <!-- Search -->
+        <form method="get" class="d-flex">
+            <input type="text" name="q" class="form-control rounded-pill" placeholder="Search products..." value="{{ request.GET.q|default:'' }}" style="width: 300px;">
+            <button type="submit" class="btn btn-primary ms-2 rounded-pill px-4">Search</button>
+        </form>
+
+        <!-- Category Dropdown -->
+        <div class="dropdown">
+            <button class="filter-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                {% if request.GET.category %}Category: {{ current_category.name }}{% else %}All Categories{% endif %}
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'all_products' %}">All Categories</a></li>
                 {% for cat in categories %}
-                <option value="{{ cat.slug }}" {% if request.GET.category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+                <li><a class="dropdown-item" href="?category={{ cat.slug }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">{{ cat.name }}</a></li>
                 {% endfor %}
-            </select>
+            </ul>
         </div>
-        <div class="col-md-3">
-            <select class="form-select" onchange="window.location.href='?sort='+this.value">
-                <option value="">Sort By</option>
-                <option value="new" {% if request.GET.sort == 'new' %}selected{% endif %}>Newest</option>
-                <option value="price_low" {% if request.GET.sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
-                <option value="price_high" {% if request.GET.sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
-                <option value="discount" {% if request.GET.sort == 'discount' %}selected{% endif %}>Highest Discount</option>
-            </select>
+
+        <!-- Sort Dropdown -->
+        <div class="dropdown">
+            <button class="filter-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                {% if request.GET.sort == 'price_low' %}Price: Low to High
+                {% elif request.GET.sort == 'price_high' %}Price: High to Low
+                {% elif request.GET.sort == 'new' %}Newest First
+                {% else %}Sort By{% endif %}
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode|cut:'&sort='|cut:'sort=' }}{% endif %}">Default</a></li>
+                <li><a class="dropdown-item" href="?sort=new{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Newest First</a></li>
+                <li><a class="dropdown-item" href="?sort=price_low{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Price: Low to High</a></li>
+                <li><a class="dropdown-item" href="?sort=price_high{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Price: High to Low</a></li>
+            </ul>
         </div>
+
+        <a href="{% url 'all_products' %}" class="btn btn-outline-danger rounded-pill px-4">Clear All</a>
     </div>
+    
+    <!-- TITLE -->
+    <h2 class="text-center fw-bold mb-4 text-primary">
+        {% if request.GET.q %}Results for "{{ request.GET.q }}"
+        {% elif request.GET.category %}{{ current_category.name }}
+        {% elif is_deal_page %}Deals of the Day
+        {% elif is_featured_page %}Featured Products
+        {% else %}All Products{% endif %}
+        <span class="text-muted fs-5">({{ products.paginator.count }} items)</span>
+    </h2>
 
-       <h2 class="fw-bold mb-4 justify-content-center align-text-center">
-                {% if request.GET.deals %}Deal of the Day{% else %}All Products{% endif %}
-                <span class="text-muted fs-5">({{ products.paginator.count }} items)</span>
-            </h2>
+    <!-- PRODUCTS GRID -->
+    <div class="row g-4 justify-content-center">
+        {% for p in products %}
+        <div class="col-xl-3 col-lg-4 col-md-6 col-6" data-aos="fade-up">
+            <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
+                <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
+                    {% if p.price_style == 'deal' and p.is_deal_active %}
+                    <div class="ribbon-deal">DEAL</div>
+                    {% elif p.is_featured %}
+                    <div class="ribbon-featured">FEATURED</div>
+                    {% endif %}
+                    {% if p.discount_percent > 0 %}
+                    <div class="position-absolute bg-warning text-dark px-3 py-1" style="top:50px;left:-10px;z-index:10;font-weight:bold;">-{{ p.discount_percent }}%</div>
+                    {% endif %}
 
-            <div class="row g-4 justify-content-center">
-                {% for p in products %}
-                <div class="col-xl-3 col-lg-4 col-md-6 col-6">
-                    <div class="card h-100 shadow hover-card border-0 position-relative overflow-hidden">
-                        <!-- RIBBON BADGES -->
-                        {% if p.price_style == 'deal' and p.is_deal_active %}
-                        <div class="ribbon-deal">Today Deal</div>
-                        {% elif p.discount_percent > 20 %}
-                        <div class="ribbon-deal ribbon-offer">-{{ p.discount_percent }}%</div>
-                        {% elif p.is_featured %}
-                        <div class="ribbon-deal" style="background:#4CAF50;">FEATURED</div>
+                    <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:260px;object-fit:cover;">
+                    <div class="card-body text-center p-3">
+                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:6 }}</h6>
+                        <small class="text-muted d-block">{{ p.store.name }} • {{ p.store.city }}</small>
+                        {% if p.get_striked_price %}
+                        <del class="text-muted small">₹{{ p.regular_price }}</del>
                         {% endif %}
-
-                        <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}"
-                             class="card-img-top" style="height:220px; object-fit:cover;">
-
-                        <div class="card-body text-center p-3">
-                            <h6 class="fw-bold mb-1">{{ p.name|truncatewords:6 }}</h6>
-                            <small class="text-muted d-block mb-2">{{ p.store.name }} • {{ p.store.city }}</small>
-
-                            {% if p.get_striked_price %}
-                            <del class="text-muted small">₹{{ p.regular_price }}</del>
-                            {% endif %}
-                            <p class="text-success fs-4 fw-bold mb-1">{{ p.offer_price }}</p>
-
-                            {% if p.discount_percent > 0 %}
-                            <span class="badge bg-danger badge-discount mb-2">{{ p.discount_percent }}% OFF</span>
-                            {% endif %}
-
-                            <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/"
-                               class="btn btn-success btn-sm w-100 mt-2 rounded-pill shadow-sm">
-                               See Details
-                            </a>
-                        </div>
+                        <p class="text-success fs-4 fw-bold mb-2">{{ p.get_price_display }}</p>
+                        <button class="btn btn-success btn-sm w-100 rounded-pill">View Details</button>
                     </div>
                 </div>
-                {% empty %}
-                <div class="col-12 text-center py-5">
-                    <h3 class="text-muted">No products found</h3>
-                    <a href="{% url 'all_products' %}" class="btn btn-primary mt-3 rounded-pill">Clear Filters</a>
-                </div>
-                {% endfor %}
-            </div>
+            </a>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <h3 class="text-muted">No products found</h3>
+            <a href="{% url 'all_products' %}" class="btn btn-primary rounded-pill px-5">Show All</a>
+        </div>
+        {% endfor %}
+    </div>
 
-
-    <!-- PAGINATION -->
+    <!-- PAGINATION — PRESERVES ALL FILTERS -->
+    {% if products.has_other_pages %}
     <nav class="mt-5">
         <ul class="pagination justify-content-center">
             {% if products.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page={{ products.previous_page_number }}">Previous</a></li>
+            <li class="page-item">
+                <a class="page-link rounded-pill" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode|cut:'page='|cut:'&page=' }}&{% endif %}page={{ products.previous_page_number }}">Previous</a>
+            </li>
             {% endif %}
-            <li class="page-item active"><a class="page-link">{{ products.number }}</a></li>
+
+            {% for num in products.paginator.page_range %}
+                {% if products.number == num %}
+                <li class="page-item active"><span class="page-link rounded-pill bg-primary border-0">{{ num }}</span></li>
+                {% elif num > products.number|add:'-2' and num < products.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link rounded-pill" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode|cut:'page='|cut:'&page=' }}&{% endif %}page={{ num }}">{{ num }}</a>
+                </li>
+                {% endif %}
+            {% endfor %}
+
             {% if products.has_next %}
-            <li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}">Next</a></li>
+            <li class="page-item">
+                <a class="page-link rounded-pill" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode|cut:'page='|cut:'&page=' }}&{% endif %}page={{ products.next_page_number }}">Next</a>
+            </li>
             {% endif %}
         </ul>
     </nav>
+    {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({ duration: 800, once: false });
+</script>
 {% endblock %}

@@ -1,6 +1,6 @@
-body { background: #f8f9fa; }
+body { background: #fcfcfa; }
 .hero { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/static/TMS/images/hero.jpg') center/cover no-repeat; min-height: 80vh; display: flex; align-items: center; }
-.hover-card { transition: all 0.4s ease; border-radius: 16px; overflow: hidden; }
+.hover-card { transition: all 0.4s ease; overflow: hidden; }
 .hover-card:hover { transform: translateY(-12px); box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important; }
 .btn-success { background: #25D366 !important; border: none !important; border-radius: 50px; font-weight: 600; }
 .btn-success:hover { background: #1DA851 !important; transform: scale(1.05); }

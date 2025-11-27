@@ -1,4 +1,5 @@
 # tms/urls.py → FINAL VERSION (100% WORKING)
+from django import views
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from .views.public import *
@@ -14,6 +15,8 @@ urlpatterns = [
     path('store/<slug:slug>/', store_detail, name='store_detail'),
     path('store/<slug:store_slug>/products/', product_list, name='product_list'),
     path('store/<slug:store_slug>/product/<slug:product_slug>/', product_detail, name='product_detail'),
+    path('deals/', deals_view, name='deals'),      
+    path('featured/', featured_view, name='featured'),
 
     # STORE ADMIN PANEL
     path('store-admin/', store_dashboard, name='store_dashboard'),

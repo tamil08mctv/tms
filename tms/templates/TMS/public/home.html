@@ -1,125 +1,305 @@
 {% extends 'TMS/base.html' %}
-{% block title %}TMS Groups – Premium Furniture | Best Prices in Tamil Nadu{% endblock %}
+{% load static %}
+
+{% block extra_head %}
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<style>
+    .hover-card { transition: all 0.4s ease; cursor: pointer; }
+    .hover-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.22) !important;
+    }
+    .ribbon-deal {
+        position: absolute; top: 15px; left: -10px; background: #e91e63; color: white;
+        padding: 6px 20px; font-weight: bold; font-size: 0.9rem; z-index: 10;
+    }
+    .ribbon-deal::after {
+        content: ''; position: absolute; left: 0; bottom: -10px;
+        border-left: 10px solid transparent; border-top: 10px solid #c2185b;
+    }
+    .ribbon-featured {
+        position: absolute; top: 15px; right: -10px; background: #ff9800; color: white;
+        padding: 6px 20px; font-weight: bold; z-index: 10;
+    }
+    .ribbon-featured::before {
+        content: ''; position: absolute; right: 0; bottom: -10px;
+        border-right: 10px solid transparent; border-top: 10px solid #e68900;
+    }
+</style>
+{% endblock %}
+
+{% block title %}TMS Furnitures – Premium Furniture | Best Prices in Tamil Nadu{% endblock %}
 
 {% block content %}
-<!-- HERO SECTION -->
-<section class=" text-white text-center py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    <div class="container py-5">
-        <h1 class="display-4 fw-bold">Welcome to <span class="text-warning">TMS Furnitures</span></h1>
-        <p class="lead fs-3 mt-3">One Brand • Best Prices • Premium Quality</p>
-        <div class="mt-4">
-            <a href="{% url 'all_products' %}" class="btn btn-warning btn-lg px-5 py-3 rounded-pill shadow-lg">Shop Now</a>
-            <a href="/stores/" class="btn btn-outline-light btn-lg px-5 py-3 ms-3 rounded-pill">Visit Stores</a>
+
+<!-- HERO BANNER -->
+<section class="py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 80vh;">
+    <div class="container py-4">
+        <div class="row align-items-center">
+            <div class="col-lg-6 text-white text-center text-lg-start" data-aos="fade-right">
+                <h1 class="display-3 fw-bold"> <span class="text-warning">TMS FURNITURES</span></h1>
+                <p class="lead fs-2">One Brand • Premium Quality • Best Prices</p>
+                <div class="mt-5">
+                    <a href="{% url 'all_products' %}" class="btn btn-warning btn-lg px-5 py-3 rounded-pill shadow-lg">Shop Now</a>
+                    <a href="/stores/" class="btn btn-outline-light btn-lg px-5 py-3 ms-3 rounded-pill">Visit Stores</a>
+                </div>
+            </div>
+            <div class="col-lg-6 mt-4 mt-lg-0" data-aos="fade-left">
+                {% if all_store_banners %}
+                <div id="heroCarousel" class="carousel slide shadow-lg rounded-4 overflow-hidden" data-bs-ride="carousel" data-bs-interval="3000">
+                    <div class="carousel-inner">
+                        {% for banner in all_store_banners %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            {% if banner.image %}
+                                <img src="{{ banner.image.url }}" class="d-block w-100" style="height: 460px; object-fit: cover;" alt="Banner">
+                            {% elif banner.banner %}
+                                <img src="{{ banner.banner.url }}" class="d-block w-100" style="height: 460px; object-fit: cover;" alt="Store Banner">
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if all_store_banners|length > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
         </div>
     </div>
 </section>
 
-<!-- DEAL OF THE DAY -->
+<!-- DEALS OF THE DAY - AUTO SLIDING (8 PER SLIDE) -->
 {% if deals_of_day %}
 <section class="py-5 bg-light">
     <div class="container">
-        <h2 class="text-center mb-3 text-danger fw-bold">
-            <i class="fas fa-bolt"></i> DEALS OF THE DAY <i class="fas fa-bolt"></i>
-        </h2>
-        <div class="row g-4 justify-content-center">
-            {% for p in deals_of_day %}
-            <div class="col-lg-3 col-md-4 col-6">
-                <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
-                    <div class="ribbon-deal">Special</div>
-                    <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:200px; object-fit:cover;">
-                    <div class="card-body text-center p-3">
-                        <h6 class="fw-bold">{{ p.name|truncatewords:6 }}</h6>
-                        <del class="text-muted small">₹{{ p.regular_price }}</del>
-                        <p class="text-danger fs-4 fw-bold">₹{{ p.offer_price }}</p>
-                        <span class="badge bg-danger badge-discount">{{ p.discount_percent }}% OFF</span>
-                        <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="btn btn-success btn-sm w-100 mt-3 rounded-pill">
-                            <i class="fab fa-whatsapp"></i> Grab Deal
-                        </a>
+        <h2 class="text-center mb-5 text-danger fw-bold fs-1" data-aos="zoom-in">Deals of the Day</h2>
+        <div id="dealsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
+            <div class="carousel-inner">
+                <!-- First 8 -->
+                <div class="carousel-item active">
+                    <div class="row g-4 justify-content-center">
+                        {% for p in deals_of_day|slice:":8" %}
+                        <div class="col-lg-3 col-md-4 col-6" data-aos="fade-up">
+                            <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
+                                <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
+                                    <div class="ribbon-deal">DEAL</div>
+                                    <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:240px; object-fit:cover;">
+                                    <div class="card-body text-center p-3">
+                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:6 }}</h6>
+                                        <del class="text-muted small">₹{{ p.regular_price }}</del>
+                                        <p class="text-danger fs-4 fw-bold">₹{{ p.offer_price }}</p>
+                                        <button class="btn btn-success btn-sm w-100 rounded-pill">Grab Now</button>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
+                <!-- Next 8 (if more than 8) -->
+                {% if deals_of_day|length > 8 %}
+                <div class="carousel-item">
+                    <div class="row g-4 justify-content-center">
+                        {% for p in deals_of_day|slice:"8:16" %}
+                        <div class="col-lg-3 col-md-4 col-6" data-aos="fade-up">
+                            <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
+                                <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
+                                    <div class="ribbon-deal">DEAL</div>
+                                    <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:240px; object-fit:cover;">
+                                    <div class="card-body text-center p-3">
+                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:6 }}</h6>
+                                        <del class="text-muted small">₹{{ p.regular_price }}</del>
+                                        <p class="text-danger fs-4 fw-bold">₹{{ p.offer_price }}</p>
+                                        <button class="btn btn-success btn-sm w-100 rounded-pill">Grab Now</button>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
             </div>
-            {% endfor %}
+            <button class="carousel-control-prev" type="button" data-bs-target="#dealsCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+            <button class="carousel-control-next" type="button" data-bs-target="#dealsCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+        </div>
+        <div class="text-center mt-5">
+            <a href="{% url 'deals' %}" class="btn btn-danger btn-lg px-5 py-3 rounded-pill">View All Deals</a>
         </div>
     </div>
 </section>
 {% endif %}
 
 <!-- CATEGORIES -->
-<section class="py-5">
+ <section class="py-5 bg-white" data-aos="fade-up">
     <div class="container">
-        <h2 class="text-center mb-5 fw-bold text-primary">Shop by Category</h2>
-        <div class="row g-4 justify-content-center">
-            {% for cat in categories_all %}
-            <div class="col-lg-3 col-md-5 col-6">
-                <a href="{% url 'all_products' %}?category={{ cat.slug }}" class="text-decoration-none">
-                    <div class="category-card shadow-sm text-center p-3">
-                        {% if cat.image %}
-                        <img src="{{ cat.image.url }}" class="img-fluid rounded" style="height:150px; width: 150px; object-fit:cover;">
-                        {% else %}
-                        <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height:150px; width: 150px;">
-                            <i class="fas fa-image fs-1 text-muted"></i>
+        <div id="categoryCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000" data-bs-wrap="true">
+            <div class="carousel-inner">
+
+                <!-- Slide 1: First 8 Categories -->
+                <div class="carousel-item active">
+                    <div class="row g-4 justify-content-center">
+                        {% for cat in categories_all|slice:":10" %}
+                        <div class="col-4 col-sm-3 col-md-2 col-lg-1 text-center category-item" data-aos="zoom-in" data-aos-delay="100">
+                            <a href="{% url 'all_products' %}?category={{ cat.slug }}" class="text-decoration-none d-block">
+                                <div class="position-relative mb-3">
+                                    <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 90px; height: 70px; background: linear-gradient(180deg, #fce7f3 0%, transparent 100%); border-radius: 90px 90px 0 0; z-index: 1;"></div>
+                                    {% if cat.image %}
+                                    <img src="{{ cat.image.url }}" class="rounded-circle shadow-lg border border-5 border-white" style="width: 90px; height: 90px; object-fit: cover; z-index: 2; position: relative;" alt="{{ cat.name }}">
+                                    {% else %}
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle shadow-lg border border-5 border-white" style="width: 90px; height: 90px; background: linear-gradient(135deg, #ec4899, #f43f5e);">
+                                        <i class="fas fa-chair text-white fs-3"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <h6 class="fw-bold text-dark mt-2">{{ cat.name }}</h6>
+                            </a>
                         </div>
-                        {% endif %}
-                        <h5 class="mt-3 text-dark fw-bold">{{ cat.name }}</h5>
+                        {% endfor %}
                     </div>
-                </a>
+                </div>
+
+                <!-- Slide 2: Next 8 Categories -->
+                {% if categories_all|length > 8 %}
+                <div class="carousel-item">
+                    <div class="row g-4 justify-content-center">
+                        {% for cat in categories_all|slice:"8:16" %}
+                        <div class="col-4 col-sm-3 col-md-2 col-lg-1 text-center category-item" data-aos="zoom-in" data-aos-delay="100">
+                            <a href="{% url 'all_products' %}?category={{ cat.slug }}" class="text-decoration-none d-block">
+                                <div class="position-relative mb-3">
+                                    <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 90px; height: 70px; background: linear-gradient(180deg, #fce7f3 0%, transparent 100%); border-radius: 90px 90px 0 0; z-index: 1;"></div>
+                                    {% if cat.image %}
+                                    <img src="{{ cat.image.url }}" class="rounded-circle shadow-lg border border-5 border-white" style="width: 90px; height: 90px; object-fit: cover; z-index: 2; position: relative;" alt="{{ cat.name }}">
+                                    {% else %}
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle shadow-lg border border-5 border-white" style="width: 90px; height: 90px; background: linear-gradient(135deg, #ec4899, #f43f5e);">
+                                        <i class="fas fa-chair text-white fs-3"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <h6 class="fw-bold text-dark mt-2">{{ cat.name }}</h6>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
             </div>
-            {% endfor %}
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#categoryCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#categoryCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
         </div>
     </div>
 </section>
 
-<!-- FEATURED PRODUCTS -->
+
+<!-- FEATURED PRODUCTS - AUTO SLIDING (8 PER SLIDE) -->
 <section class="py-5 bg-light">
     <div class="container">
-        <h2 class="text-center mb-5 fw-bold text-success">Featured Products</h2>
-        <div class="row g-4 justify-content-center">
-            {% for p in featured_products %}
-            <div class="col-lg-3 col-md-4 col-6">
-                <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
-                    {% if p.discount_percent > 0 %}
-                    <div class="ribbon-deal">-{{ p.discount_percent }}%</div>
-                    {% endif %}
-                    <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:200px; object-fit:cover;">
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold">{{ p.name|truncatewords:6 }}</h6>
-                        <p class="text-success fs-5 fw-bold">{{ p.get_price_display }}</p>
-                        <small class="text-muted">{{ p.store.city }}</small>
-                        <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="btn btn-success btn-sm w-100 mt-2 rounded-pill">
-                            <i class="fab fa-whatsapp"></i> Enquire
-                        </a>
+        <h2 class="text-center mb-5 text-success fw-bold fs-1" data-aos="zoom-in">Featured Products</h2>
+        <div id="featuredCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4500">
+            <div class="carousel-inner">
+                <!-- First 8 -->
+                <div class="carousel-item active">
+                    <div class="row g-4 justify-content-center">
+                        {% for p in featured_products|slice:":8" %}
+                        <div class="col-lg-3 col-md-4 col-6" data-aos="fade-up">
+                            <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
+                                <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
+                                    <!-- <div class="ribbon-featured">FEATURED</div> -->
+                                    {% if p.discount_percent > 0 %}
+                                    <div class="position-absolute bg-warning text-dark px-3 py-1" style="top:50px;left:-10px;z-index:10;">-{{ p.discount_percent }}%</div>
+                                    {% endif %}
+                                    <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:240px;object-fit:cover;">
+                                    <div class="card-body text-center p-3">
+                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:6 }}</h6>
+                                        <p class="text-success fs-4 fw-bold">{{ p.get_price_display }}</p>
+                                        <small class="text-muted">{{ p.store.city }}</small>
+                                        <button class="btn btn-success btn-sm w-100 mt-2 rounded-pill">Enquire Now</button>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
+                <!-- Next 8 -->
+                {% if featured_products|length > 8 %}
+                <div class="carousel-item">
+                    <div class="row g-4 justify-content-center">
+                        {% for p in featured_products|slice:"8:16" %}
+                        <div class="col-lg-3 col-md-4 col-6" data-aos="fade-up">
+                            <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
+                                <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
+                                    <div class="ribbon-featured">FEATURED</div>
+                                    {% if p.discount_percent > 0 %}
+                                    <div class="position-absolute bg-warning text-dark px-3 py-1" style="top:50px;left:-10px;z-index:10;">-{{ p.discount_percent }}%</div>
+                                    {% endif %}
+                                    <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:240px;object-fit:cover;">
+                                    <div class="card-body text-center p-3">
+                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:6 }}</h6>
+                                        <p class="text-success fs-4 fw-bold">{{ p.get_price_display }}</p>
+                                        <small class="text-muted">{{ p.store.city }}</small>
+                                        <button class="btn btn-success btn-sm w-100 mt-2 rounded-pill">Enquire Now</button>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
             </div>
-            {% endfor %}
+            <button class="carousel-control-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+            <button class="carousel-control-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+        </div>
+        <div class="text-center mt-5">
+            <a href="{% url 'featured' %}" class="btn btn-success btn-lg px-5 py-3 rounded-pill">View All Featured</a>
         </div>
     </div>
 </section>
 
-
 <!-- OUR STORES -->
-<div class="bg-light py-5">
+<section class="py-5">
     <div class="container">
-        <h2 class="text-center mb-5 fw-bold text-primary">Our Other Stores </h2>
+        <h2 class="text-center mb-5 text-primary fw-bold fs-1" data-aos="zoom-in">Our Stores</h2>
         <div class="row g-4 justify-content-center">
             {% for store in stores %}
-            <div class="col-lg-3 col-md-4 col-6">
-                <div class="card h-100 text-center shadow-sm border-0">
+            <div class="col-lg-3 col-md-4 col-6" data-aos="flip-left">
+                <div class="card h-100 text-center shadow-sm border-0 hover-card">
                     {% if store.logo %}
-                    <img src="{{ store.logo.url }}" class="card-img-top p-4" style="height: 160px; object-fit: contain;">
+                    <img src="{{ store.logo.url }}" class="card-img-top p-4" style="height:160px;object-fit:contain;">
                     {% endif %}
                     <div class="card-body">
-                        <h5 class="fw-bold">{{ store.name }}</h5>
-                        <p class="text-muted"><i class="fas fa-map-marker-alt"></i> {{ store.city }}</p>
-                        <a href="/store/{{ store.slug }}/" class="btn btn-outline-primary btn-sm">Visit Store</a>
+                        <h5 class="fw-bold text-primary">{{ store.name }}</h5>
+                        <p class="text-muted">{{ store.city }}</p>
+                        <a href="/store/{{ store.slug }}/" class="btn btn-outline-primary rounded-pill">Visit Store</a>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
-        <div class="text-center mt-4">
-            <a href="/stores/" class="btn btn-primary px-5">View All Stores →</a>
+        <div class="text-center mt-5">
+            <a href="/stores/" class="btn btn-primary btn-lg px-5 py-3 rounded-pill">View All Stores</a>
         </div>
     </div>
-</div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    AOS.init({ duration: 900, once: false, mirror: true });
+</script>
 {% endblock %}

@@ -1,0 +1,106 @@
+<!-- templates/TMS/public/deals.html -->
+{% extends 'TMS/base.html' %}
+{% load static %}
+
+{% block title %}Deals of the Day – TMS Furnitures{% endblock %}
+
+{% block extra_head %}
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<style>
+    .hover-card {
+        transition: all 0.4s ease;
+        cursor: pointer;
+    }
+    .hover-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.2) !important;
+    }
+    .ribbon-deal {
+        position: absolute;
+        top: 15px;
+        left: -10px;
+        background: #e91e63;
+        color: white;
+        padding: 6px 20px;
+        font-weight: bold;
+        z-index: 10;
+    }
+    .ribbon-deal::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -10px;
+        border-left: 10px solid transparent;
+        border-top: 10px solid #c2185b;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO FOR DEALS PAGE -->
+<section class="py-5 text-white text-center" style="background: linear-gradient(135deg, #ff416c, #ff4757);">
+    <div class="container py-5">
+        <h1 class="display-4 fw-bold">Deals of the Day</h1>
+        <p class="lead fs-3">Limited Time Offers • Grab Before It's Gone!</p>
+    </div>
+</section>
+
+<!-- DEALS GRID - 32 PER PAGE -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+            {% for p in products %}
+            <div class="col-lg-3 col-md-4 col-6" data-aos="fade-up">
+                <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
+                    <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
+                        <div class="ribbon-deal">DEAL</div>
+                        <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" 
+                             class="card-img-top" style="height:240px; object-fit:cover;">
+                        <div class="card-body text-center p-3">
+                            <h6 class="fw-bold text-dark">{{ p.name|truncatewords:6 }}</h6>
+                            <del class="text-muted small">₹{{ p.regular_price }}</del>
+                            <p class="text-danger fs-4 fw-bold">₹{{ p.offer_price }}</p>
+                            <button class="btn btn-success btn-sm w-100 rounded-pill">Grab Now</button>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <h3 class="text-muted">No active deals right now. Check back soon!</h3>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- PAGINATION -->
+        {% if products.has_other_pages %}
+        <nav class="mt-5">
+            <ul class="pagination justify-content-center">
+                {% if products.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ products.previous_page_number }}">Previous</a></li>
+                {% endif %}
+                {% for num in products.paginator.page_range %}
+                    {% if products.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if products.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}">Next</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({ duration: 800, once: false });
+</script>
+{% endblock %}
