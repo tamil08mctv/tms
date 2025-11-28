@@ -49,7 +49,7 @@ class Category(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(blank=True)
     image = models.ImageField(upload_to='categories/', blank=True, null=True)
-    icon = models.CharField(max_length=50, blank=True, help_text="e.g. fas fa-bed")
+   
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -65,25 +65,6 @@ class Category(models.Model):
     def __str__(self):
         return f"{self.store.name} - {self.name}"
 
-class SubCategory(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='subcategories')
-    name = models.CharField(max_length=100)
-    slug = models.SlugField(blank=True)
-    image = models.ImageField(upload_to='subcategories/', blank=True, null=True)
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            base = slugify(self.name)
-            slug = base
-            i = 1
-            while SubCategory.objects.filter(slug=slug, category=self.category).exists():
-                slug = f"{base}-{i}"
-                i += 1
-            self.slug = slug
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"{self.category} → {self.name}"
 
 class Product(models.Model):
     PRICE_STYLE_CHOICES = [
@@ -95,7 +76,6 @@ class Product(models.Model):
 
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='products')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
-    subcategory = models.ForeignKey(SubCategory, on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=300)
     slug = models.SlugField(max_length=350, blank=True, unique=True)
     short_desc = models.TextField(max_length=500)
@@ -152,6 +132,10 @@ class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='products/images/')
     is_main = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField(default=0)  # ← ADD THIS LINE
+
+    class Meta:
+        ordering = ['sort_order', 'id']
 
     def __str__(self):
         return f"Image - {self.product.name}"
@@ -176,7 +160,6 @@ class Lead(models.Model):
     customer_name = models.CharField(max_length=100)
     phone = models.CharField(max_length=15)
     city = models.CharField(max_length=100, blank=True)
-    message = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
     source = models.CharField(max_length=20, choices=SOURCE_CHOICES, default='form')
     notes = models.TextField(blank=True)

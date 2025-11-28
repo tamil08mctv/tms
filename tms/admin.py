@@ -2,7 +2,7 @@
 
 from django.contrib import admin
 from django.utils.text import slugify
-from .models import Store, StoreAdmin, Category, SubCategory, Product, ProductImage, Lead, StoreBanner
+from .models import Store, StoreAdmin, Category, Product, ProductImage, Lead, StoreBanner
 
 
 # INLINE FOR StoreAdmin
@@ -36,23 +36,13 @@ class ProductImageInline(admin.TabularInline):
     fields = ('image', 'is_main')
 
 
-class SubCategoryInline(admin.TabularInline):
-    model = SubCategory
-    extra = 1
+
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['name', 'store']
     list_filter = ['store']
-    inlines = [SubCategoryInline]
-    prepopulated_fields = {'slug': ('name',)}
-
-
-@admin.register(SubCategory)
-class SubCategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'category']
-    list_filter = ['category']
     prepopulated_fields = {'slug': ('name',)}
 
 

@@ -1,38 +1,288 @@
-{% extends 'TMS/base.html' %}
-{% block title %}Manage Products - {{ store.name }}{% endblock %}
+{% extends 'TMS/storeadmin/base.html' %}
+{% load static %}
+
+{% block title %}Products - {{ store.name }}{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="d-flex justify-content-between mb-4">
-        <h1>Your Products ({{ products.count }})</h1>
-        <a href="{% url 'add_product' %}" class="btn btn-success btn-lg">+ Add Product</a>
+<div class="container-fluid py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="mb-1 text-success fw-bold">Manage Products</h2>
+            <p class="text-muted mb-0">Total: <strong>{{ products.paginator.count }}</strong> products</p>
+        </div>
+        <button type="button" class="btn btn-success btn-lg shadow-sm" data-bs-toggle="modal" data-bs-target="#addProductModal">
+            Add New Product
+        </button>
     </div>
 
-    <div class="row">
-        {% for product in products %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow">
-                {% if product.images.first %}
-                <img src="{{ product.images.first.image.url }}" class="card-img-top" style="height: 220px; object-fit: cover;">
+    <!-- SEARCH & FILTER BAR -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+            <div class="row g-3">
+                <div class="col-12 col-md-8">
+                    <input type="text" id="searchInput" class="form-control form-control-lg rounded-pill" 
+                           placeholder="Search products by name..." autocomplete="off">
+                </div>
+                <div class="col-12 col-md-4">
+                    <select id="categoryFilter" class="form-select form-select-lg rounded-pill">
+                        <option value="">All Categories</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat.name|lower }}">{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCTS GRID — 5 PER ROW + CENTERED -->
+    <div class="row g-4 justify-content-center" id="productsGrid">
+        {% for p in products %}
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2-4 product-card" 
+             data-name="{{ p.name|lower }}" 
+             data-category="{{ p.category.name|default:'uncategorized'|lower }}">
+            <div class="card h-100 border-0 shadow-sm hover-lift transition rounded-4 overflow-hidden">
+                {% if p.images.first %}
+                    <img src="{{ p.images.first.image.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
+                {% else %}
+                    <div class="bg-light d-flex align-items-center justify-content-center" style="height:200px;">
+                        <i class="fas fa-image text-muted" style="font-size:60px;"></i>
+                    </div>
                 {% endif %}
-                <div class="card-body">
-                    <h5>{{ product.name|truncatechars:40 }}</h5>
-                    <p class="text-success fw-bold">{{ product.get_price_display }}</p>
-                    <div class="d-flex justify-content-between">
-                        <a href="/admin/tms/product/{{ product.id }}/change/" target="_blank" class="btn btn-sm btn-primary">Edit</a>
-                        <span class="badge bg-{% if product.is_featured %}danger{% else %}secondary{% endif %}">
-                            {% if product.is_featured %}Featured{% else %}Normal{% endif %}
-                        </span>
+                <div class="card-body d-flex flex-column p-3">
+                    <h6 class="card-title mb-2 text-dark fw-bold text-center">{{ p.name|truncatechars:45 }}</h6>
+                    <p class="text-success fw-bold fs-5 mb-1 text-center">{{ p.get_price_display }}</p>
+                    {% if p.offer_price and p.offer_price < p.regular_price %}
+                        <small class="text-muted d-block text-center"><del>₹{{ p.regular_price }}</del> → {{ p.discount_percent }}% OFF</small>
+                    {% endif %}
+                    <small class="text-danger fw-bold fs-5  text-center mt-2">{{ p.category.name|default:"No Category" }}</small>
+                    <div class="mt-auto pt-3 d-flex gap-2">
+                        <a href="{% url 'edit_product' p.pk %}" class="btn btn-primary btn-sm flex-fill"> Edit</a>
+                        <form method="post" action="{% url 'delete_product' p.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm flex-fill" 
+                                    onclick="return confirm('Delete {{ p.name|escapejs }}?')">Delete</button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
         {% empty %}
         <div class="col-12 text-center py-5">
-            <h3>No products yet</h3>
-            <a href="{% url 'add_product' %}" class="btn btn-success btn-lg">Add Your First Product</a>
+            <h3 class="text-muted">No products found</h3>
         </div>
         {% endfor %}
     </div>
+
+    <!-- PAGINATION — CENTERED -->
+    {% if products.has_other_pages %}
+    <nav class="mt-5">
+        <ul class="pagination justify-content-center pagination-lg">
+            {% if products.has_previous %}
+                <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page=1">First</a></li>
+                <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ products.previous_page_number }}">Previous</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link rounded-pill mx-1">First</span></li>
+                <li class="page-item disabled"><span class="page-link rounded-pill mx-1">Previous</span></li>
+            {% endif %}
+
+            {% for num in products.paginator.page_range %}
+                {% if products.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link rounded-pill bg-success border-success mx-1">{{ num }}</span>
+                    </li>
+                {% elif num > products.number|add:'-2' and num < products.number|add:'3' %}
+                    <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if products.has_next %}
+                <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ products.next_page_number }}">Next</a></li>
+                <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ products.paginator.num_pages }}">Last</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link rounded-pill mx-1">Next</span></li>
+                <li class="page-item disabled"><span class="page-link rounded-pill mx-1">Last</span></li>
+            {% endif %}
+        </ul>
+        <p class="text-center text-muted mt-3">
+            Page {{ products.number }} of {{ products.paginator.num_pages }} 
+            • Showing {{ products.start_index }}–{{ products.end_index }} of {{ products.paginator.count }}
+        </p>
+    </nav>
+    {% endif %}
 </div>
+
+<!-- ADD PRODUCT MODAL (UNCHANGED) -->
+<div class="modal fade" id="addProductModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fw-bold">Add New Product</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body p-4 p-lg-5">
+                    <!-- YOUR FULL FORM HERE (NO CHANGE) -->
+                    <div class="row g-4">
+                        <div class="row justify-content-center">
+        <div class="col-12 col-xl-11">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+               
+
+                <div class="card-body p-4 p-lg-5">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- PRODUCT INFORMATION -->
+                        <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
+                            <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Product Information</h5>
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Product Name</label>
+                                    {{ form.name }}
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold">Category</label>
+                                    {{ form.category }}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Short Description</label>
+                                    {{ form.short_desc }}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Full Description</label>
+                                    {{ form.description }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PRICE & STATUS -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-12 col-lg-6">
+                                <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+                                    <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Price & Offer</h5>
+                                    <label class="form-label fw-bold text-primary">Price Style</label>
+                                    <div class="mb-3">{{ form.price_style }}</div>
+                                    <label class="form-label fw-bold text-danger">Regular Price (MRP)</label>
+                                    <div class="mb-3">{{ form.regular_price }}</div>
+                                    <label class="form-label fw-bold text-success">Offer / Deal Price</label>
+                                    <div class="mb-3">{{ form.offer_price }}</div>
+                                    <label class="form-label fw-bold text-warning">Deal End Date</label>
+                                    <div class="mb-3">{{ form.deal_end_date }}</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6">
+                                <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+                                    <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Status</h5>
+                                    <div class="form-check form-switch mb-3">{{ form.is_featured }} <label class="form-check-label ms-3">{{ form.is_featured.label }}</label></div>
+                                    <div class="form-check form-switch mb-3">{{ form.is_new }} <label class="form-check-label ms-3">{{ form.is_new.label }}</label></div>
+                                    <div class="form-check form-switch">{{ form.in_stock }} <label class="form-check-label ms-3">{{ form.in_stock.label }}</label></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PRODUCT VIDEO -->
+                        <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
+                            <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Product Video</h5>
+                            {% if product.video %}
+                                <div class="mb-4 align-items-center">
+                                    <video controls style="width:100%; max-height:300px;">
+                                        <source src="{{ product.video.url }}" type="video/mp4">
+                                        Your browser does not support video.
+                                    </video>
+                                </div>
+                                <p class="mb-3"><strong>Current Video:</strong> {{ product.video.name|slice:"15:" }}</p>
+                            {% else %}
+                                <p class="text-muted mb-3">No video uploaded</p>
+                            {% endif %}
+                            <label class="form-label fw-bold">Replace Video (MP4 recommended)</label>
+                            <input type="file" name="video" accept="video/*" class="form-control form-control-lg">
+                            <small class="text-muted">Max 25MB recommended</small>
+                        </div>
+
+                        <!-- ADD MORE IMAGES -->
+                        <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
+                            <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Add More Images</h5>
+                            <input type="file" name="extra_images" multiple accept="image/*" class="form-control form-control-lg">
+                            <small class="text-muted d-block mt-2">Hold Ctrl (Windows) or Cmd (Mac) to select multiple images</small>
+                        </div>
+
+                        <!-- CURRENT IMAGES -->
+                        {% if product.images.exists %}
+                        <div class="bg-white rounded-4 shadow-sm p-4">
+                            <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Current Images ({{ product.images.count }})</h5>
+                            <div class="row g-4" id="image-sortable">
+                                {% for img in product.images.all %}
+                                <div class="col-6 col-md-4 col-lg-3 image-item" data-id="{{ img.id }}">
+                                    <div class="card border-0 shadow-sm h-100 hover-lift">
+                                        <img src="{{ img.image.url }}" class="card-img-top" style="height:180px; object-fit:cover;">
+                                        <div class="card-body p-3 d-flex flex-column gap-2">
+                                            {% if img.is_main %}
+                                                <span class="badge bg-primary w-100 py-2">MAIN IMAGE</span>
+                                            {% else %}
+                                                <button type="submit" name="main_image" value="{{ img.id }}" class="btn btn-outline-primary btn-sm w-100">Set as Main</button>
+                                            {% endif %}
+                                            <button type="submit" name="delete_image" value="{{ img.id }}"
+                                                    onclick="return confirm('Delete this image permanently?')"
+                                                    class="btn btn-danger btn-sm w-100">Delete</button>
+                                            <input type="hidden" name="image_order" value="{{ img.id }}" class="order-input">
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- SAVE BUTTONS -->
+                        <div class="d-flex flex-column flex-md-row gap-3 justify-content-end mt-5 pt-4 border-top">
+                            <a href="{% url 'store_products' %}" class="btn btn-secondary btn-lg w-100 w-md-auto order-2 order-md-1">Cancel</a>
+                            <button type="submit" class="btn btn-success btn-lg w-100 w-md-auto fw-bold order-1 order-md-2">SAVE ALL Product</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<style>
+    @media (min-width: 1200px) {
+        .col-lg-2-4 { flex: 0 0 20%; max-width: 20%; }
+    }
+    .hover-lift {
+        transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .hover-lift:hover {
+        transform: translateY(-20px) scale(1.05) !important;
+        box-shadow: 0 35px 80px rgba(0,0,0,0.35) !important;
+        z-index: 100;
+    }
+    .blink { animation: blink 1.6s infinite; }
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+    }
+    .card { border-radius: 18px !important; }
+    .badge { font-size: 0.8rem !important; border-radius: 12px !important; }
+</style>
+
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+
+    function filterProducts() {
+        const search = searchInput.value.toLowerCase().trim();
+        const category = categoryFilter.value.toLowerCase();
+        document.querySelectorAll('.product-card').forEach(card => {
+            const name = card.dataset.name;
+            const cat = card.dataset.category;
+            const show = name.includes(search) && (category === '' || cat.includes(category));
+            card.style.display = show ? 'block' : 'none';
+        });
+    }
+
+    searchInput.addEventListener('input', filterProducts);
+    categoryFilter.addEventListener('change', filterProducts);
+</script>
 {% endblock %}

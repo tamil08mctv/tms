@@ -1,0 +1,181 @@
+{% extends 'TMS/storeadmin/base.html' %}
+{% load static %}
+
+{% block title %}Banners - {{ store.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5 px-4">
+
+    <!-- HEADER -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold text-success mb-3">
+            Store Banners
+        </h1>
+        <p class="text-muted fs-5">Manage your homepage sliders & promotional banners</p>
+      <span></span>  <button class="btn btn-success btn-lg px-5 shadow-lg rounded-pill fw-bold" 
+                data-bs-toggle="modal" data-bs-target="#addBannerModal">
+            Add New Banner
+        </button> 
+    </div>
+
+    <!-- BANNERS GRID — 5 PER ROW + CENTERED -->
+    <div class="row g-4 justify-content-center" id="bannersGrid">
+        {% for b in banners %}
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2-4 banner-card">
+            <div class="card border-0 shadow hover-lift rounded-4 overflow-hidden h-100 position-relative">
+
+                <!-- BANNER IMAGE -->
+                <div class="position-relative">
+                    <img src="{{ b.image.url }}" class="card-img-top" 
+                         style="height: 180px; object-fit: cover;" alt="{{ b.caption|default:'Banner' }}">
+
+                    <!-- ACTIVE BADGE -->
+                    <div class="position-absolute top-0 end-0 m-3">
+                        <span class="badge {% if b.is_active %}bg-success{% else %}bg-secondary{% endif %} px-3 py-2 shadow-lg">
+                            {% if b.is_active %}ACTIVE{% else %}INACTIVE{% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- CARD BODY — DELETE BUTTON ALWAYS CLICKABLE -->
+                <div class="card-body p-3 text-center d-flex flex-column">
+
+                    <h6 class="fw-bold text-dark mb-2">{{ b.caption|default:"No Caption"|truncatechars:35 }}</h6>
+                    <small class="text-muted mb-3">{{ b.created_at|date:"d M Y" }}</small>
+
+                    <!-- DELETE BUTTON — NOW 100% CLICKABLE & TOUCHABLE -->
+                    <div class="mt-auto">
+                        <form method="post" action="{% url 'delete_banner' b.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" 
+                                    class="btn btn-danger btn-sm w-100 fw-bold rounded-pill shadow-sm py-2 position-relative"
+                                    style="z-index: 10;"
+                                    onclick="return confirm('Delete this banner permanently? This cannot be undone.')">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- HOVER OVERLAY — BUT DOES NOT BLOCK BUTTON -->
+                <div class="position-absolute inset-0 bg-dark opacity-0 hover-overlay pointer-events-none transition"></div>
+
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="py-5">
+                <i class="fas fa-images fa-5x text-muted mb-4"></i>
+                <h3 class="text-muted fw-light">No banners added yet</h3>
+                <p class="text-muted mb-4">Start by adding your first promotional banner!</p>
+                <button class="btn btn-success btn-lg px-5 rounded-pill shadow" 
+                        data-bs-toggle="modal" data-bs-target="#addBannerModal">
+                    Add First Banner
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- TOTAL COUNT -->
+    <div class="text-center mt-5">
+        <p class="fs-4 text-muted">
+            Total Banners: <strong class="text-success">{{ banners.count }}</strong>
+            {% if banners.count >= 10 %}
+                <span class="text-warning ms-3">Maximum limit reached (10)</span>
+            {% endif %}
+        </p>
+    </div>
+</div>
+
+<!-- ADD BANNER MODAL — SAME AS BEFORE -->
+<div class="modal fade" id="addBannerModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header bg-success text-white border-0 rounded-top-4">
+                <h5 class="modal-title fw-bold fs-4">Add New Banner</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-image fa-4x text-success mb-3"></i>
+                        <p class="text-muted">Recommended: 1920×600px • Max 2MB • JPG/PNG/WebP</p>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-success">Banner Image <span class="text-danger">*</span></label>
+                        {{ form.image }}
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Caption (Optional)</label>
+                        {{ form.caption }}
+                    </div>
+                    <div class="form-check form-switch mb-4">
+                        {{ form.is_active }}
+                        <label class="form-check-label fw-bold ms-3">Show on homepage</label>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pb-4">
+                    <button type="button" class="btn btn-secondary btn-lg px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success btn-lg px-5 fw-bold rounded-pill shadow">
+                        Upload Banner
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- FINAL CSS — DELETE BUTTON 100% CLICKABLE -->
+<style>
+    @media (min-width: 1200px) {
+        .col-lg-2-4 { flex: 0 0 20%; max-width: 20%; }
+    }
+
+    .hover-lift {
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        border: 1px solid #e9ecef !important;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-15px) scale(1.05);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.25) !important;
+        z-index: 10;
+    }
+
+    .hover-overlay {
+        transition: opacity 0.4s ease;
+    }
+
+    .hover-lift:hover .hover-overlay {
+        opacity: 0.35;
+    }
+
+    /* MOST IMPORTANT: Overlay must NOT block clicks */
+    .hover-overlay {
+        pointer-events: none !important;
+    }
+
+    /* Button always on top */
+    .btn-danger {
+        position: relative;
+        z-index: 20 !important;
+    }
+
+    .card-img-top {
+        border-bottom: 4px solid #198754;
+    }
+
+    .badge {
+        font-size: 0.8rem;
+        border-radius: 50px;
+        font-weight: bold;
+    }
+
+    /* Mobile Fix */
+    @media (max-width: 576px) {
+        .btn-sm { padding: 0.6rem 1rem; font-size: 1rem; }
+    }
+</style>
+{% endblock %}

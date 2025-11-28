@@ -1,51 +1,151 @@
-{% extends 'TMS/base.html' %}
+{% extends 'TMS/storeadmin/base.html' %}
+{% load static %}
+
 {% block title %}All Leads - {{ store.name }}{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <h1>All Leads - {{ store.name }}</h1>
-    <p class="text-muted">Total: <strong>{{ leads.count }}</strong> enquiries</p>
+<div class="container-fluid py-4">
 
-    <div class="table-responsive">
-        <table class="table table-bordered">
-            <thead class="table-success">
-                <tr>
-                    <th>Date</th>
-                    <th>Name</th>
-                    <th>Phone</th>
-                    <th>City</th>
-                    <th>Product</th>
-                    <th>Message</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-success mb-0">
+            <i class="fas fa-headphones"></i> All Leads 
+            <span class="text-muted fs-5">({{ leads.paginator.count }})</span>
+        </h2>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" onclick="document.getElementById('filterCard').classList.toggle('d-none')">
+                <i class="fas fa-filter"></i> Filters
+            </button>
+            <a href="{% url 'export_leads_csv' %}?{{ request.GET.urlencode }}" class="btn btn-success">
+                <i class="fas fa-download"></i> Export CSV
+            </a>
+        </div>
+    </div>
+
+    <!-- FILTER CARD (HIDDEN BY DEFAULT) -->
+    <div id="filterCard" class="card border-0 shadow-sm rounded-4 mb-4 d-none">
+        <div class="card-body p-4">
+            <form method="get">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">From Date</label>
+                        <input type="date" name="from_date" value="{{ request.GET.from_date }}" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">To Date</label>
+                        <input type="date" name="to_date" value="{{ request.GET.to_date }}" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Status</label>
+                        <select name="status" class="form-select">
+                            <option value="">All Status</option>
+                            {% for val, label in lead_status_choices %}
+                                <option value="{{ val }}" {% if request.GET.status == val %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SEARCH BAR -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 shadow">
+        <div class="card-body p-4">
+            <input type="text" id="searchInput" class="form-control form-control-lg rounded-pill" 
+                   placeholder="Search by name, phone, product..." autocomplete="off">
+        </div>
+    </div>
+
+    <!-- LEADS TABLE -->
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle" id="leadsTable">
+                <thead class="bg-success text-white">
+                    <tr>
+                        <th>DATE</th>
+                        <th>NAME</th>
+                        <th>PHONE</th>
+                        <th>CITY</th>
+                        <th>PRODUCT</th>
+                        <th>STATUS</th>
+                        <th>ACTION</th>
+                    </tr>
+                </thead>
+                <tbody>
                 {% for lead in leads %}
-                <tr>
-                    <td>{{ lead.created_at|date:"d M Y, h:i A" }}</td>
-                    <td>{{ lead.customer_name }}</td>
-                    <td>{{ lead.phone }}</td>
-                    <td>{{ lead.city|default:"-" }}</td>
-                    <td>{{ lead.product.name|default:"General Enquiry" }}</td>
-                    <td>{{ lead.message|truncatechars:50 }}</td>
+                <tr class="lead-row" data-name="{{ lead.customer_name|lower }}" data-phone="{{ lead.phone }}" data-product="{{ lead.product.name|default:''|lower }}">
+                    <td><small class="fw-bold">{{ lead.created_at|date:"d M" }}</small><br>{{ lead.created_at|time:"h:i A" }}</td>
+                    <td><strong>{{ lead.customer_name }}</strong></td>
                     <td>
-                        <form method="post" action="{% url 'update_lead' lead.id %}">
+                        <a href="tel:{{ lead.phone }}" class="text-decoration-none">{{ lead.phone }}</a>
+                    </td>
+                    <td>{{ lead.city|default:"—" }}</td>
+                    <td>{{ lead.product.name|default:"<em>General</em>"|safe }}</td>
+                    <td>
+                        <form method="post" action="{% url 'update_lead_status' lead.id %}">
                             {% csrf_token %}
-                            <select name="status" onchange="this.form.submit()" class="form-select">
-                                {% for value, label in lead.STATUS_CHOICES %}
-                                <option value="{{ value }}" {% if lead.status == value %}selected{% endif %}>{{ label }}</option>
+                            <select name="status" onchange="this.form.submit()" class="form-select form-select-sm w-auto">
+                                {% for val, label in lead.STATUS_CHOICES %}
+                                <option value="{{ val }}" {% if lead.status == val %}selected{% endif %}>{{ label }}</option>
                                 {% endfor %}
                             </select>
                         </form>
                     </td>
                     <td>
-                        <a href="https://wa.me/91{{ lead.phone }}" class="btn btn-success btn-sm">WhatsApp</a>
+                        <a href="https://wa.me/91{{ lead.phone }}?text=Hi {{ lead.customer_name|urlencode }}! Thanks for your interest!" 
+                           target="_blank" class="btn btn-success btn-sm px-3">
+                            WhatsApp
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center py-5 text-muted">
+                        No leads found
                     </td>
                 </tr>
                 {% endfor %}
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINATION -->
+        {% if leads.has_other_pages %}
+        <nav class="m-4">
+            <ul class="pagination justify-content-center pagination-lg">
+                {% if leads.has_previous %}
+                    <li class="page-item"><a class="page-link rounded-pill mx-1" href="?{{ page_params }}page=1">First</a></li>
+                    <li class="page-item"><a class="page-link rounded-pill mx-1" href="?{{ page_params }}page={{ leads.previous_page_number }}">Prev</a></li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <span class="page-link rounded-pill bg-success border-success mx-1">{{ leads.number }}</span>
+                </li>
+
+                {% if leads.has_next %}
+                    <li class="page-item"><a class="page-link rounded-pill mx-1" href="?{{ page_params }}page={{ leads.next_page_number }}">Next</a></li>
+                    <li class="page-item"><a class="page-link rounded-pill mx-1" href="?{{ page_params }}page={{ leads.paginator.num_pages }}">Last</a></li>
+                {% endif %}
+            </ul>
+            <p class="text-center text-muted mt-3">
+                Showing {{ leads.start_index }}–{{ leads.end_index }} of {{ leads.paginator.count }} leads
+            </p>
+        </nav>
+        {% endif %}
     </div>
 </div>
+
+<script>
+    // LIVE SEARCH
+    document.getElementById('searchInput').addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        document.querySelectorAll('.lead-row').forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(query) ? '' : 'none';
+        });
+    });
+</script>
 {% endblock %}

@@ -1,46 +1,137 @@
-{% extends 'TMS/base.html' %}
+{% extends 'TMS/storeadmin/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - {{ store.name }}{% endblock %}
+
 {% block content %}
-<div class="bg-success text-white py-5 text-center">
-    <h1>Welcome, {{ user.username }}!</h1>
-    <p class="lead">Managing: <strong>{{ store.name }}</strong></p>
-</div>
-<div class="container my-5">
-    <div class="row g-4">
-        <div class="col-md-3">
-            <div class="card bg-success text-white">
-                <div class="card-body text-center">
-                    <h2>{{ stats.total_leads }}</h2>
-                    <p>Total Leads</p>
+<div class="container-fluid py-4">
+
+    <!-- STATS CARDS -->
+    <div class="row g-4 mb-5">
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-lg rounded-4 text-white" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-users fa-3x mb-3 opacity-75"></i>
+                    <h2 class="fw-bold mb-0">{{ total_leads }}</h2>
+                    <p class="mb-0 fs-5">Total Leads</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card bg-warning text-dark">
-                <div class="card-body text-center">
-                    <h2>{{ stats.new_leads }}</h2>
-                    <p>New Leads</p>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-lg rounded-4 text-white" style="background: linear-gradient(135deg, #10b981, #059669);">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-calendar-day fa-3x mb-3 opacity-75"></i>
+                    <h2 class="fw-bold mb-0">{{ today_leads }}</h2>
+                    <p class="mb-0 fs-5">Today's Leads</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-lg rounded-4 text-white" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-bell fa-3x mb-3 opacity-75"></i>
+                    <h2 class="fw-bold mb-0">{{ new_leads }}</h2>
+                    <p class="mb-0 fs-5">New Leads</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-lg rounded-4 text-white" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-check-circle fa-3x mb-3 opacity-75"></i>
+                    <h2 class="fw-bold mb-0">{{ converted }}</h2>
+                    <p class="mb-0 fs-5">Converted</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <h3 class="mt-5">Recent Leads</h3>
-    <table class="table table-striped">
-        <thead><tr><th>Name</th><th>Phone</th><th>Product</th><th>Status</th><th>Action</th></tr></thead>
-        <tbody>
-        {% for lead in leads %}
-        <tr>
-            <td>{{ lead.customer_name }}</td>
-            <td>{{ lead.phone }}</td>
-            <td>{{ lead.product.name|default:"General" }}</td>
-            <td>
-                <a href="/store-admin/leads/update/{{ lead.id }}/contacted/" class="btn btn-sm btn-warning">Contacted</a>
-                <a href="/store-admin/leads/update/{{ lead.id }}/converted/" class="btn btn-sm btn-success">Converted</a>
-            </td>
-            <td><a href="https://wa.me/91{{ lead.phone }}" class="btn btn-success btn-sm">WhatsApp</a></td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <!-- QUICK ACTIONS -->
+    <div class="row g-4 mb-5 ">
+        <div class="col-md-4">
+            <a href="{% url 'store_products' %}" class="text-decoration-none">
+                <div class="card border-0 shadow hover-lift rounded-4 text-center p-4 bg-white">
+                    <i class="fas fa-couch fa-4x text-success mb-3"></i>
+                    <h5 class="fw-bold">Manage Products</h5>
+                    <small class="text-muted">{{ store.products.count }} products live</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'store_leads' %}" class="text-decoration-none">
+                <div class="card border-0 shadow hover-lift rounded-4 text-center p-4 bg-white">
+                    <i class="fas fa-headphones fa-4x text-primary mb-3"></i>
+                    <h5 class="fw-bold">View All Leads</h5>
+                    <small class="text-muted">Click to filter & export</small>
+                </div>
+            </a>
+        </div>
+      
+    </div>
+
+    <!-- RECENT LEADS TABLE -->
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-header bg-success text-white py-4">
+            <h4 class="mb-0 fw-bold"><i class="fas fa-clock"></i> Recent Leads (Last 10)</h4>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Customer</th>
+                        <th>Phone</th>
+                        <th>Product</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for lead in recent_leads %}
+                <tr>
+                    <td><small>{{ lead.created_at|date:"d M" }}</small><br>{{ lead.created_at|time:"h:i A" }}</td>
+                    <td><strong>{{ lead.customer_name }}</strong></td>
+                    <td>
+                        <a href="tel:{{ lead.phone }}" class="text-decoration-none">{{ lead.phone }}</a>
+                    </td>
+                    <td>{{ lead.product.name|default:"<em>General Enquiry</em>"|safe }}</td>
+                    <td>
+                        <span class="badge 
+                            {% if lead.status == 'new' %}bg-danger
+                            {% elif lead.status == 'contacted' %}bg-warning text-dark
+                            {% elif lead.status == 'converted' %}bg-success
+                            {% else %}bg-secondary{% endif %} px-3 py-2">
+                            {{ lead.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="https://wa.me/91{{ lead.phone }}?text=Hi {{ lead.customer_name|urlencode }}! Thanks for your enquiry about {{ lead.product.name|default:'our products'|urlencode }}. How can we help you today?" 
+                           target="_blank" class="btn btn-success btn-sm px-3">
+                            <i class="fab fa-whatsapp"></i> Chat
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        <i class="fas fa-inbox fa-3x mb-3"></i><br>
+                        No leads yet. Share your store link!
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer bg-light text-center">
+            <a href="{% url 'store_leads' %}" class="btn btn-outline-success btn-lg px-5 fw-bold">
+                View All Leads →
+            </a>
+        </div>
+    </div>
 </div>
+
+<style>
+    .hover-lift { transition: all 0.3s ease; }
+    .hover-lift:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.15)!important; }
+</style>
 {% endblock %}

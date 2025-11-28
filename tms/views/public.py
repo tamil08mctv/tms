@@ -3,7 +3,7 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q, F
-from ..models import Store, Product, Category, SubCategory, Lead,StoreBanner
+from ..models import Store, Product, Category, Lead,StoreBanner
 from ..forms import EnquiryForm
 import urllib.parse
 from datetime import date
@@ -189,7 +189,7 @@ def product_detail(request, store_slug, product_slug):
     
     # If no same category products, show popular products
     # Similar products
-    similar = Product.objects.filter(subcategory=product.subcategory, store__is_active=True).exclude(id=product.id)[:8]
+    similar = Product.objects.filter(store__is_active=True).exclude(id=product.id)[:8]
     if not similar:
         similar = Product.objects.filter(category=product.category, store__is_active=True).exclude(id=product.id)[:8]
     if not similar:
