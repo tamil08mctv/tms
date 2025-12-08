@@ -158,26 +158,62 @@
                         </div>
 
                         <!-- PRICE & STATUS -->
-                        <div class="row g-4 mb-4">
+                              <div class="row g-4 mb-4">
                             <div class="col-12 col-lg-6">
                                 <div class="bg-white rounded-4 shadow-sm p-4 h-100">
                                     <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Price & Offer</h5>
-                                    <label class="form-label fw-bold text-primary">Price Style</label>
-                                    <div class="mb-3">{{ form.price_style }}</div>
-                                    <label class="form-label fw-bold text-danger">Regular Price (MRP)</label>
                                     <div class="mb-3">{{ form.regular_price }}</div>
-                                    <label class="form-label fw-bold text-success">Offer / Deal Price</label>
                                     <div class="mb-3">{{ form.offer_price }}</div>
-                                    <label class="form-label fw-bold text-warning">Deal End Date</label>
                                     <div class="mb-3">{{ form.deal_end_date }}</div>
                                 </div>
                             </div>
+
+                            <!-- STATUS & BADGES -->
                             <div class="col-12 col-lg-6">
                                 <div class="bg-white rounded-4 shadow-sm p-4 h-100">
-                                    <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Status</h5>
-                                    <div class="form-check form-switch mb-3">{{ form.is_featured }} <label class="form-check-label ms-3">{{ form.is_featured.label }}</label></div>
-                                    <div class="form-check form-switch mb-3">{{ form.is_new }} <label class="form-check-label ms-3">{{ form.is_new.label }}</label></div>
-                                    <div class="form-check form-switch">{{ form.in_stock }} <label class="form-check-label ms-3">{{ form.in_stock.label }}</label></div>
+                                    <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Status & Badges</h5>
+                                    
+                                    <div class="form-check form-switch mb-3">
+                                        {{ form.is_featured }}
+                                        <label class="form-check-label ms-3">{{ form.is_featured.label }}</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-3">
+                                        {{ form.is_new }}
+                                        <label class="form-check-label ms-3">{{ form.is_new.label }}</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-3">
+                                        {{ form.in_stock }}
+                                        <label class="form-check-label ms-3">{{ form.in_stock.label }}</label>
+                                    </div>
+
+                                    <!-- NEW BADGES -->
+                                    <hr class="my-4">
+                                    <h6 class="fw-bold text-primary mb-3">Special Badges (Only one will show on site)</h6>
+                                    
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" name="is_best_seller" id="id_is_best_seller"
+                                               {% if product.is_best_seller %}checked{% endif %}>
+                                        <label class="form-check-label ms-3 fw-bold text-warning" for="id_is_best_seller">
+                                            BEST SELLER (Gold Badge - Highest Priority)
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" name="is_limited_deal" id="id_is_limited_deal"
+                                               {% if product.is_limited_deal %}checked{% endif %}>
+                                        <label class="form-check-label ms-3 fw-bold text-danger" for="id_is_limited_deal">
+                                            LIMITED DEAL (Red Urgency Badge)
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" name="is_special_offer" id="id_is_special_offer"
+                                               {% if product.is_special_offer %}checked{% endif %}>
+                                        <label class="form-check-label ms-3 fw-bold" 
+                                                  for="id_is_special_offer" style="color: purple;">
+                                            SPECIAL OFFER (Purple Premium Badge)
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>

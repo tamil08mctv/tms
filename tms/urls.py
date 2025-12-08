@@ -18,6 +18,7 @@ urlpatterns = [
     path('store/<slug:store_slug>/product/<slug:product_slug>/', product_detail, name='product_detail'),
     path('deals/', deals_view, name='deals'),      
     path('featured/', featured_view, name='featured'),
+    path('categories/', categories_page, name='categories_page'),
 
     # STORE ADMIN PANEL
     path('store-admin/', storeadmin.store_dashboard, name='store_dashboard'),

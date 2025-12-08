@@ -1,0 +1,142 @@
+{% extends 'TMS/base.html' %}
+{% load static %}
+
+{% block title %}All Categories – TMS Furnitures{% endblock %}
+
+{% block extra_head %}
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
+
+<style>
+    :root {
+        --primary: #667eea;
+        --secondary: #764ba2;
+        --success: #00c853;
+    }
+
+    .category-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        transition: all 0.4s ease;
+        border: 1px solid #f0f0f0;
+        height: 100%;
+    }
+    .category-card:hover {
+        transform: translateY(-18px);
+        box-shadow: 0 30px 70px rgba(102,126,234,0.3) !important;
+        border-color: var(--primary);
+    }
+    .category-card::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        opacity: 0; transition: opacity 0.4s;
+    }
+    .category-card:hover::before { opacity: 1; }
+
+    .category-img {
+        height: 160px; object-fit: cover; transition: transform 0.6s ease;
+    }
+    .category-card:hover .category-img { transform: scale(1.1); }
+
+    .fallback-icon {
+        height: 160px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white; font-size: 3.5rem;
+        display: flex; align-items: center; justify-content: center;
+    }
+
+    .category-name {
+        font-size: 1.3rem; font-weight: 800; color: #222; margin: 15px 0 8px;
+    }
+
+    .product-count-badge {
+        background: linear-gradient(45deg, var(--success), #00bfa5);
+        color: white; padding: 6px 16px; border-radius: 50px;
+        font-size: 0.9rem; font-weight: bold;
+    }
+
+    .hero-title {
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        -webkit-text-fill-color: transparent;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="py-3 text-white text-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container py-5">
+        <h1 class="display-2 fw-bold hero-title" data-aos="fade-up">All Categories</h1>
+        <p class="lead fs-2" data-aos="fade-up" data-aos-delay="100">
+            Explore {{ paginator.count|default:"200+" }} Premium Collections
+        </p>
+    </div>
+</section>
+
+<!-- CATEGORIES GRID — YOUR FAVORITE CARD STYLE -->
+<section class="py-3 bg-light">
+    <div class="container">
+     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-4">
+            {% for category in categories %}
+            <div class="col">
+                <a href="{% url 'all_products' %}?category={{ category.slug }}" class="text-decoration-none">
+                    <div class="category-card text-center p-4 position-relative">
+                        {% if category.image %}
+                        <img src="{{ category.image.url }}" class="img-fluid rounded category-img" style="height: 150px; width: 150px;" alt="{{ category.name }}">
+                        {% else %}
+                        <div class="fallback-icon rounded">
+                            <i class="fas fa-couch"></i>
+                        </div>
+                        {% endif %}
+
+                        <h5 class="category-name mt-4">{{ category.name }}</h5>
+                    
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <h4 class="text-muted">No categories found</h4>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- PAGINATION -->
+        {% if is_paginated %}
+        <div class="d-flex justify-content-center mt-5">
+            <nav>
+                <ul class="pagination pagination-lg">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link rounded-pill px-4" href="?page=1">First</a></li>
+                    <li class="page-item"><a class="page-link rounded-pill px-4" href="?page={{ page_obj.previous_page_number }}">Prev</a></li>
+                    {% endif %}
+
+                    {% for num in paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active"><span class="page-link rounded-pill bg-primary border-0">{{ num }}</span></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item"><a class="page-link rounded-pill" href="?page={{ num }}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link rounded-pill px-4" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                    <li class="page-item"><a class="page-link rounded-pill px-4" href="?page={{ paginator.num_pages }}">Last</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    AOS.init({ duration: 800, once: false });
+</script>
+{% endblock %}

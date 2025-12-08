@@ -50,6 +50,9 @@ def store_products(request):
     paginator = Paginator(products, 50)
     page = request.GET.get('page')
     products_page = paginator.get_page(page)
+
+
+   
     
 
     if request.method == 'POST':
@@ -104,6 +107,10 @@ def edit_product(request, pk):
             ProductImage.objects.filter(product=product).update(is_main=False)
             ProductImage.objects.filter(id=main_image_id, product=product).update(is_main=True)
             messages.success(request, "Main image updated!")
+
+        product.is_best_seller = 'is_best_seller' in request.POST
+        product.is_limited_deal = 'is_limited_deal' in request.POST
+        product.is_special_offer = 'is_special_offer' in request.POST
 
         # NOW PROCESS FORM
         if form.is_valid():
@@ -245,7 +252,7 @@ def export_leads_csv(request):
             lead.phone,
             lead.city or '-',
             lead.product.name if lead.product else 'General',
-            lead.message[:100],
+      
             lead.get_status_display(),
             lead.get_source_display()
         ])

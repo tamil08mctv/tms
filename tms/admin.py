@@ -49,7 +49,7 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ['name', 'store', 'category', 'get_price_display', 'discount_percent', 'is_deal_active', 'is_featured']
-    list_filter = ['store', 'category', 'price_style', 'deal_end_date', 'is_featured']
+    list_filter = ['store', 'category', 'deal_end_date', 'is_featured']  # ← REMOVED price_style
     search_fields = ['name', 'short_desc']
     inlines = [ProductImageInline]
     readonly_fields = ['discount_percent', 'views_count', 'enquiry_count']

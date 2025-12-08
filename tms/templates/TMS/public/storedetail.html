@@ -28,9 +28,9 @@
         <h3 class="text-center text-danger fw-bold mb-4">
             DEAL OF THE DAY – Only at {{ store.name }}
         </h3>
-        <div class="row g-4 justify-content-center">
-            {% for p in store_deals %}
-            <div class="col-lg-3 col-md-4 col-6">
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-4">
+            {% for p in products %}
+            <div class="col">
                 <div class="card h-100 shadow hover-card border-0 position-relative overflow-hidden">
                     <div class="ribbon-deal">DEAL TODAY</div>
                     <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:220px; object-fit:cover;">
@@ -56,9 +56,9 @@
         <h3 class="text-center fw-bold text-success mb-4">
             Featured Products
         </h3>
-        <div class="row g-4  justify-content-center">
-            {% for p in featured_store %}
-            <div class="col-lg-3 col-md-4 col-6">
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-4">
+            {% for p in products %}
+            <div class="col">
                 <div class="card h-100 shadow hover-card border-0 position-relative">
                     {% if p.discount_percent > 0 %}
                     <div class="ribbon-deal ribbon-offer">-{{ p.discount_percent }}%</div>
@@ -82,9 +82,9 @@
     {% if store.categories.exists %}
     <section class="mb-5">
         <h3 class="text-center fw-bold text-primary mb-4">Shop by Category</h3>
-        <div class="row g-4 justify-content-center">
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-4">
             {% for cat in store.categories.all %}
-            <div class="col-lg-3 col-md-4 col-6">
+            <div class="col">
                 <a href="#cat-{{ cat.slug }}" class="text-decoration-none">
                     <div class="category-card shadow text-center p-4 bg-white rounded">
                         {% if cat.image %}
@@ -109,9 +109,9 @@
     {% if cat_products %}
     <section class="mb-5" id="cat-{{ cat.slug }}">
         <h3 class="fw-bold text-primary mb-4 text-center">{{ cat.name }} ({{ cat_products.count }})</h3>
-        <div class="row g-4 justify-content-center">
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-4">
             {% for p in cat_products|slice:":12" %}
-            <div class="col-lg-3 col-md-4 col-6">
+            <div class="col">
                 <div class="card h-100 shadow hover-card border-0">
                     <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:200px; object-fit:cover;">
                     <div class="card-body text-center p-3">

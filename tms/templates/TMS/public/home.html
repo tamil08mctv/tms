@@ -34,244 +34,556 @@
 
 {% block content %}
 
-<!-- HERO BANNER -->
-<section class="py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 80vh;">
-    <div class="container py-4">
-        <div class="row align-items-center">
-            <div class="col-lg-6 text-white text-center text-lg-start" data-aos="fade-right">
-                <h1 class="display-3 fw-bold"> <span class="text-warning">TMS FURNITURES</span></h1>
-                <p class="lead fs-2">One Brand • Premium Quality • Best Prices</p>
-                <div class="mt-5">
-                    <a href="{% url 'all_products' %}" class="btn btn-warning btn-lg px-5 py-3 rounded-pill shadow-lg">Shop Now</a>
-                    <a href="/stores/" class="btn btn-outline-light btn-lg px-5 py-3 ms-3 rounded-pill">Visit Stores</a>
-                </div>
+<!-- FINAL HERO — ARROWS ONLY ON HOVER | CLEAN BLACK BOX BELOW IMAGE -->
+<section class="position-relative" style="background:#000;">
+    <!-- FULL SCREEN SLIDER -->
+    {% if all_store_banners %}
+    <div class="swiper hero-swiper position-relative" style=" max-height: 400px;">
+        <div class="swiper-wrapper">
+            {% for banner in all_store_banners %}
+            <div class="swiper-slide">
+                <img src="{% if banner.image %}{{ banner.image.url }}{% else %}{{ banner.banner.url }}{% endif %}" 
+                     class="w-100 h-100" style="object-fit: cover;" alt="TMS Furniture">
             </div>
-            <div class="col-lg-6 mt-4 mt-lg-0" data-aos="fade-left">
-                {% if all_store_banners %}
-                <div id="heroCarousel" class="carousel slide shadow-lg rounded-4 overflow-hidden" data-bs-ride="carousel" data-bs-interval="3000">
-                    <div class="carousel-inner">
-                        {% for banner in all_store_banners %}
-                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                            {% if banner.image %}
-                                <img src="{{ banner.image.url }}" class="d-block w-100" style="height: 460px; object-fit: cover;" alt="Banner">
-                            {% elif banner.banner %}
-                                <img src="{{ banner.banner.url }}" class="d-block w-100" style="height: 460px; object-fit: cover;" alt="Store Banner">
-                            {% endif %}
-                        </div>
-                        {% endfor %}
+            {% endfor %}
+        </div>
+
+        <!-- ARROWS — HIDDEN BY DEFAULT, SHOW ON HOVER -->
+        <div class="swiper-button-next text-white arrow-btn"></div>
+        <div class="swiper-button-prev text-white arrow-btn"></div>
+
+        <!-- DOTS -->
+        <div class="swiper-pagination"></div>
+    </div>
+    {% endif %}
+
+
+        <div class="row justify-content-center">
+            <div class="col-lg-11 col-xl-10">
+                <div class="text-center py-1 px-4 rounded-4 shadow-2xl" 
+                    >
+
+                    <!-- SUBTITLE -->
+                    <p class="fs-3 text-white mb-2 opacity-95" style="letter-spacing: 1.5px;">
+                        • One Brand • Premium Quality • Best Prices Across Tamil Nadu
+                    </p>
+
+                    <!-- ELEGANT BUTTONS -->
+                    <div class="d-flex flex-column flex-sm-row gap-4 justify-content-center">
+                        <a href="{% url 'all_products' %}" 
+                           class="btn btn-warning btn-lg rounded-pill fw-bold shadow-lg border-0 px-2"
+                           style="font-size: 1.15rem; min-width: 190px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                            SHOP NOW
+                        </a>
+                        <a href="/stores/" 
+                           class="btn btn-outline-warning btn-lg rounded-pill fw-bold border-3 shadow-lg px-5"
+                           style="font-size: 1.15rem; min-width: 190px; height: 50px; color: #FFD700; border-color: #FFD700; display: flex; align-items: center; justify-content: center;">
+                            Visit Stores
+                        </a>
                     </div>
-                    {% if all_store_banners|length > 1 %}
-                    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon"></span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon"></span>
-                    </button>
-                    {% endif %}
                 </div>
-                {% endif %}
             </div>
         </div>
     </div>
 </section>
 
-<!-- DEALS OF THE DAY - AUTO SLIDING (8 PER SLIDE) -->
-{% if deals_of_day %}
-<section class="py-5 bg-light">
+<!-- SWIPER CDN (ADD ONCE IN base.html) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<style>
+    /* ARROWS — HIDDEN UNTIL HOVER (LIKE FLIPKART/AMAZON) */
+    .arrow-btn {
+        width: 56px !important;
+        height: 56px !important;
+        background: rgba(255,255,255,0.15) !important;
+        border-radius: 50%;
+        backdrop-filter: blur(12px);
+        border: 2px solid rgba(255,255,255,0.3);
+        color: white !important;
+        opacity: 0;
+        transition: all 0.5s ease;
+    }
+    
+    /* SHOW ARROWS ONLY WHEN HOVER ON SLIDER */
+    .hero-swiper:hover .arrow-btn {
+        opacity: 1 !important;
+    }
+    
+    .arrow-btn:hover {
+        background: white !important;
+        color: #000 !important;
+        transform: scale(1.15);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    
+    .arrow-btn:after {
+        font-size: 22px !important;
+        font-weight: bold;
+    }
+
+    /* GOLDEN DOTS — PREMIUM */
+    .swiper-pagination-bullet {
+        width: 11px;
+        height: 11px;
+        background: rgba(255,255,255,0.5);
+        margin: 0 6px !important;
+        transition: all 0.4s;
+    }
+    .swiper-pagination-bullet-active {
+        background: #FFD700;
+        transform: scale(1.5);
+        box-shadow: 0 0 20px rgba(255,215,0,0.8);
+    }
+
+    /* SMOOTH FADE */
+    .swiper-slide {
+        transition: opacity 1.2s ease;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        new Swiper('.hero-swiper', {
+            loop: true,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            speed: 1200,
+            effect: 'fade',
+            fadeEffect: { crossFade: true },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            }
+        });
+    });
+</script>
+
+<!-- ================================================== -->
+<!-- 1. DEALS OF THE DAY — MEESHO STYLE CORAL -->
+<!-- ================================================== -->
+{% if has_deals %}
+<section class="py-4" style="background: #def8f3;">
     <div class="container">
-        <h2 class="text-center mb-5 text-danger fw-bold fs-1" data-aos="zoom-in">Deals of the Day</h2>
-        <div id="dealsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
-            <div class="carousel-inner">
-                <!-- First 8 -->
-                <div class="carousel-item active">
-                    <div class="row g-4 justify-content-center">
-                        {% for p in deals_of_day|slice:":8" %}
-                        <div class="col-lg-3 col-md-4 col-6" data-aos="fade-up">
-                            <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
-                                <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
-                                    <div class="ribbon-deal">DEAL</div>
-                                    <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:240px; object-fit:cover;">
-                                    <div class="card-body text-center p-3">
-                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:6 }}</h6>
-                                        <del class="text-muted small">₹{{ p.regular_price }}</del>
-                                        <p class="text-danger fs-4 fw-bold">₹{{ p.offer_price }}</p>
-                                        <button class="btn btn-success btn-sm w-100 rounded-pill">Grab Now</button>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <!-- Next 8 (if more than 8) -->
-                {% if deals_of_day|length > 8 %}
-                <div class="carousel-item">
-                    <div class="row g-4 justify-content-center">
-                        {% for p in deals_of_day|slice:"8:16" %}
-                        <div class="col-lg-3 col-md-4 col-6" data-aos="fade-up">
-                            <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
-                                <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
-                                    <div class="ribbon-deal">DEAL</div>
-                                    <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:240px; object-fit:cover;">
-                                    <div class="card-body text-center p-3">
-                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:6 }}</h6>
-                                        <del class="text-muted small">₹{{ p.regular_price }}</del>
-                                        <p class="text-danger fs-4 fw-bold">₹{{ p.offer_price }}</p>
-                                        <button class="btn btn-success btn-sm w-100 rounded-pill">Grab Now</button>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#dealsCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
-            <button class="carousel-control-next" type="button" data-bs-target="#dealsCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-danger fw-bold fs-2 mb-0">DEALS OF THE DAY</h2>
+            <a href="{% url 'deals' %}" class="btn btn-outline-danger rounded-pill px-4">View All</a>
         </div>
-        <div class="text-center mt-5">
-            <a href="{% url 'deals' %}" class="btn btn-danger btn-lg px-5 py-3 rounded-pill">View All Deals</a>
+
+        <div class="swiper mySwiper deals-swiper">
+            <div class="swiper-wrapper justify-content-center">
+                {% for p in deals_of_day|slice:":20" %}
+                <div class="swiper-slide">
+                   <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
+                    <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
+                         <div class="position-absolute top-0 end-0 p-2">
+                            <span class="badge bg-warning text-white px-3 py-2 rounded-pill shadow-lg fw-bold">DEAL</span>
+                        </div>
+                        <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:230px;object-fit:cover;">
+                               <div class="card-body text-center p-3">
+                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:10 }}</h6>
+                                         <small class="text-dark mb-2">{{ p.short_desc }}</small><br>
+                                               {% if p.get_striked_price %}
+                        <del class=" fs-6 fw-bold text-danger">₹{{ p.regular_price }}</del>
+                        {% endif %}
+                         <span class="badge bg-danger">{{ p.discount_percent }}% OFF</span>
+                                        <p class="text-success fs-4 fw-bold">₹{{ p.offer_price }}</p>
+                                        <small class="text-muted d-block">{{ p.store.name }} • {{ p.store.city }}</small>
+                                        
+                                        <!-- <button class="btn btn-success btn-sm w-100 mt-2 rounded-pill">Enquire Now</button> -->
+                                    </div>
+                    </div>
+                </a>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="swiper-button-next text-danger"></div>
+            <div class="swiper-button-prev text-danger"></div>
         </div>
     </div>
 </section>
 {% endif %}
 
-<!-- CATEGORIES -->
- <section class="py-5 bg-white" data-aos="fade-up">
+
+
+<!-- 2. BEST SELLERS -->
+{% if has_best_sellers %}
+<section class="py-4" style="background: #F9FAFB;">
     <div class="container">
-        <div id="categoryCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000" data-bs-wrap="true">
-            <div class="carousel-inner">
-
-                <!-- Slide 1: First 8 Categories -->
-                <div class="carousel-item active">
-                    <div class="row g-4 justify-content-center">
-                        {% for cat in categories_all|slice:":10" %}
-                        <div class="col-4 col-sm-3 col-md-2 col-lg-1 text-center category-item" data-aos="zoom-in" data-aos-delay="100">
-                            <a href="{% url 'all_products' %}?category={{ cat.slug }}" class="text-decoration-none d-block">
-                                <div class="position-relative mb-3">
-                                    <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 90px; height: 70px; background: linear-gradient(180deg, #fce7f3 0%, transparent 100%); border-radius: 90px 90px 0 0; z-index: 1;"></div>
-                                    {% if cat.image %}
-                                    <img src="{{ cat.image.url }}" class="rounded-circle shadow-lg border border-5 border-white" style="width: 90px; height: 90px; object-fit: cover; z-index: 2; position: relative;" alt="{{ cat.name }}">
-                                    {% else %}
-                                    <div class="d-flex align-items-center justify-content-center rounded-circle shadow-lg border border-5 border-white" style="width: 90px; height: 90px; background: linear-gradient(135deg, #ec4899, #f43f5e);">
-                                        <i class="fas fa-chair text-white fs-3"></i>
-                                    </div>
-                                    {% endif %}
-                                </div>
-                                <h6 class="fw-bold text-dark mt-2">{{ cat.name }}</h6>
-                            </a>
+        <h2 class="text-center mb-5 text-warning fw-bold fs-1" data-aos="zoom-in">
+            BEST SELLERS
+        </h2>
+        <div class="row g-4 justify-content-center">
+            {% for p in best_sellers|slice:":10" %}
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2-4" data-aos="fade-up">
+                <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
+                    <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
+                        <div class="position-absolute top-0 start-0 p-2">
+                            <span class="badge bg-warning text-dark px-4 py-2 rounded-pill shadow-lg fw-bold">BEST SELLER</span>
                         </div>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <!-- Slide 2: Next 8 Categories -->
-                {% if categories_all|length > 8 %}
-                <div class="carousel-item">
-                    <div class="row g-4 justify-content-center">
-                        {% for cat in categories_all|slice:"8:16" %}
-                        <div class="col-4 col-sm-3 col-md-2 col-lg-1 text-center category-item" data-aos="zoom-in" data-aos-delay="100">
-                            <a href="{% url 'all_products' %}?category={{ cat.slug }}" class="text-decoration-none d-block">
-                                <div class="position-relative mb-3">
-                                    <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 90px; height: 70px; background: linear-gradient(180deg, #fce7f3 0%, transparent 100%); border-radius: 90px 90px 0 0; z-index: 1;"></div>
-                                    {% if cat.image %}
-                                    <img src="{{ cat.image.url }}" class="rounded-circle shadow-lg border border-5 border-white" style="width: 90px; height: 90px; object-fit: cover; z-index: 2; position: relative;" alt="{{ cat.name }}">
-                                    {% else %}
-                                    <div class="d-flex align-items-center justify-content-center rounded-circle shadow-lg border border-5 border-white" style="width: 90px; height: 90px; background: linear-gradient(135deg, #ec4899, #f43f5e);">
-                                        <i class="fas fa-chair text-white fs-3"></i>
+                        <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:230px;object-fit:cover;">
+                               <div class="card-body text-center p-3">
+                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:10 }}</h6>
+                                         <small class="text-dark mb-2">{{ p.short_desc }}</small><br>
+                                               {% if p.get_striked_price %}
+                        <del class=" fs-6 fw-bold text-danger">₹{{ p.regular_price }}</del>
+                        {% endif %}
+                         <span class="badge bg-danger">{{ p.discount_percent }}% OFF</span>
+                                        <p class="text-success fs-4 fw-bold">₹{{ p.offer_price }}</p>
+                                        <small class="text-muted d-block">{{ p.store.name }} • {{ p.store.city }}</small>
+                                        
+                                        <!-- <button class="btn btn-success btn-sm w-100 mt-2 rounded-pill">Enquire Now</button> -->
                                     </div>
-                                    {% endif %}
-                                </div>
-                                <h6 class="fw-bold text-dark mt-2">{{ cat.name }}</h6>
-                            </a>
                         </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
-
+                </a>
             </div>
-
-            <button class="carousel-control-prev" type="button" data-bs-target="#categoryCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon"></span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#categoryCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon"></span>
-            </button>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-5">
+            <a href="{% url 'all_products' %}?filter=bestselling" class="btn btn-warning btn-lg px-5 py-3 rounded-pill shadow-lg">
+                View All Best Sellers
+            </a>
         </div>
     </div>
 </section>
+{% endif %}
 
-
-<!-- FEATURED PRODUCTS - AUTO SLIDING (8 PER SLIDE) -->
-<section class="py-5 bg-light">
+<!-- ================================================== -->
+<!-- 3. LIMITED DEAL — FLIPKART RED STYLE -->
+<!-- ================================================== -->
+{% if has_limited_deals %}
+<section class="py-3" style="background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);">
     <div class="container">
-        <h2 class="text-center mb-5 text-success fw-bold fs-1" data-aos="zoom-in">Featured Products</h2>
-        <div id="featuredCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4500">
-            <div class="carousel-inner">
-                <!-- First 8 -->
-                <div class="carousel-item active">
-                    <div class="row g-4 justify-content-center">
-                        {% for p in featured_products|slice:":8" %}
-                        <div class="col-lg-3 col-md-4 col-6" data-aos="fade-up">
-                            <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-danger fw-bold fs-2 mb-0">LIMITED DEAL — ENDS SOON!</h2>
+            <a href="{% url 'all_products' %}?filter=limited" class="btn btn-outline-danger rounded-pill px-4">View All</a>
+        </div>
+
+        <div class="swiper mySwiper limited-swiper">
+            <div class="swiper-wrapper justify-content-center">
+                {% for p in limited_deals|slice:":20" %}
+                <div class="swiper-slide">
+                    <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none text-white">
+                    <div class="card h-100 shadow hover-card border-0 bg-white text-dark">
+                        <div class="position-absolute top-0 start-0 p-2">
+                            <span class="badge bg-danger text-white px-4 py-2 rounded-pill shadow-lg fw-bold">LIMITED DEAL</span>
+                        </div>
+                        <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:230px;object-fit:cover;">
+                             <div class="card-body text-center p-3">
+                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:10 }}</h6>
+                                         <small class="text-dark mb-2">{{ p.short_desc }}</small><br>
+                                               {% if p.get_striked_price %}
+                        <del class=" fs-6 fw-bold text-danger">₹{{ p.regular_price }}</del>
+                        {% endif %}
+                         <span class="badge bg-danger">{{ p.discount_percent }}% OFF</span>
+                                        <p class="text-success fs-4 fw-bold">₹{{ p.offer_price }}</p>
+                                        <small class="text-muted d-block">{{ p.store.name }} • {{ p.store.city }}</small>
+                                        
+                                        <!-- <button class="btn btn-success btn-sm w-100 mt-2 rounded-pill">Enquire Now</button> -->
+                                    </div>
+                                  </div>
+                </a>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="swiper-button-next text-danger"></div>
+            <div class="swiper-button-prev text-danger"></div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+
+<!-- 4. SPECIAL OFFERS -->
+{% if has_special_offers %}
+<section class="py-3" bg-light text-dark>
+    <div class="container">
+        <h2 class="text-center mb-5  fw-bold fs-1" data-aos="zoom-in">
+            SPECIAL OFFERS
+        </h2>
+        <div class="row g-4 justify-content-center">
+            {% for p in special_offers|slice:":10" %}
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2-4" data-aos="fade-up">
+                <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
+                    <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
+                        <div class="position-absolute top-0 start-0 p-2 z-10">
+                            <span class="badge text-white px-4 py-2 rounded-pill shadow-lg fw-bold" style="background: linear-gradient(45deg, #9C27B0, #E91E63);">SPECIAL OFFER</span>
+                        </div> 
+                        <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" 
+                         class="card-img-top" style="height: 230px; object-fit: cover;">
+                               <div class="card-body text-center p-3">
+                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:10 }}</h6>
+                                         <small class="text-dark mb-2">{{ p.short_desc }}</small><br>
+                                               {% if p.get_striked_price %}
+                        <del class=" fs-6 fw-bold text-danger">₹{{ p.regular_price }}</del>
+                        {% endif %}
+                         <span class="badge bg-danger">{{ p.discount_percent }}% OFF</span>
+                                        <p class="text-success fs-4 fw-bold">₹{{ p.offer_price }}</p>
+                                        <small class="text-muted d-block">{{ p.store.name }} • {{ p.store.city }}</small>
+                                        
+                                        <!-- <button class="btn btn-success btn-sm w-100 mt-2 rounded-pill">Enquire Now</button> -->
+                                    </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-5">
+            <a href="{% url 'all_products' %}?filter=special" class="btn btn-lg px-5 py-3 rounded-pill shadow-lg fw-bold">
+                View All Special Offers
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+
+<!-- 5. NEW ARRIVALS — NO CAROUSEL, GRID ONLY -->
+{% if has_new_arrivals %}
+<section class="py-3 bg-success text-white">
+    <div class="container">
+        <h2 class="text-center mb-5 fw-bold fs-1" data-aos="zoom-in">
+            NEW ARRIVALS
+        </h2>
+        <div class="row g-4 justify-content-center">
+            {% for p in new_arrivals|slice:":10" %}
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2-4" data-aos="fade-up">
+                <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none text-white">
+                    <div class="card h-100 shadow hover-card border-0 bg-white text-dark">
+                        <div class="position-absolute top-0 end-0 p-2">
+                            <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow-lg fw-bold">NEW</span>
+                        </div>
+                        <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:230px;object-fit:cover;">
+                              <div class="card-body text-center p-3">
+                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:10 }}</h6>
+                                         <small class="text-dark mb-2">{{ p.short_desc }}</small><br>
+                                               {% if p.get_striked_price %}
+                        <del class=" fs-6 fw-bold text-danger">₹{{ p.regular_price }}</del>
+                        {% endif %}
+                         <span class="badge bg-danger">{{ p.discount_percent }}% OFF</span>
+                                        <p class="text-success fs-4 fw-bold">₹{{ p.offer_price }}</p>
+                                        <small class="text-muted d-block">{{ p.store.name }} • {{ p.store.city }}</small>
+                                        
+                                        <!-- <button class="btn btn-success btn-sm w-100 mt-2 rounded-pill">Enquire Now</button> -->
+                                    </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-5">
+            <a href="{% url 'all_products' %}?filter=new" class="btn btn-light btn-lg px-5 py-3 rounded-pill shadow-lg text-success fw-bold">
+                View All New Arrivals
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+
+<!-- ================================================== -->
+<!-- 6. FEATURED PRODUCTS — FLIPKART STYLE CAROUSEL -->
+<!-- ================================================== -->
+{% if featured_products %}
+<section class="py-5 bg-white">
+    <div class="container py-2">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-success fw-bold fs-2 mb-0">FEATURED PRODUCTS</h2>
+            <a href="{% url 'featured' %}" class="btn btn-outline-success rounded-pill px-4">View All</a>
+        </div>
+
+        <div class="swiper mySwiper featured-swiper">
+            <div class="swiper-wrapper">
+                {% for p in featured_products|slice:":20" %}
+                <div class="swiper-slide">
+                   <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
                                 <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
                                     <!-- <div class="ribbon-featured">FEATURED</div> -->
                                     {% if p.discount_percent > 0 %}
-                                    <div class="position-absolute bg-warning text-dark px-3 py-1" style="top:50px;left:-10px;z-index:10;">-{{ p.discount_percent }}%</div>
+                                    <div class="position-absolute bg-warning text-dark fw-bold px-3 py-1" style="top:20px;left:-10px;z-index:10;">-{{ p.discount_percent }}%</div>
                                     {% endif %}
-                                    <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:240px;object-fit:cover;">
-                                    <div class="card-body text-center p-3">
-                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:6 }}</h6>
-                                        <p class="text-success fs-4 fw-bold">{{ p.get_price_display }}</p>
-                                        <small class="text-muted">{{ p.store.city }}</small>
-                                        <button class="btn btn-success btn-sm w-100 mt-2 rounded-pill">Enquire Now</button>
+                                    <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:230px;object-fit:cover;">
+                                          <div class="card-body text-center p-3">
+                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:10 }}</h6>
+                                         <small class="text-dark mb-2">{{ p.short_desc }}</small><br>
+                                               {% if p.get_striked_price %}
+                        <del class=" fs-6 fw-bold text-danger">₹{{ p.regular_price }}</del>
+                        {% endif %}
+                         <span class="badge bg-danger">{{ p.discount_percent }}% OFF</span>
+                                        <p class="text-success fs-4 fw-bold">₹{{ p.offer_price }}</p>
+                                        <small class="text-muted d-block">{{ p.store.name }} • {{ p.store.city }}</small>
+                                        
+                                        <!-- <button class="btn btn-success btn-sm w-100 mt-2 rounded-pill">Enquire Now</button> -->
                                     </div>
                                 </div>
                             </a>
-                        </div>
-                        {% endfor %}
-                    </div>
+
                 </div>
-                <!-- Next 8 -->
-                {% if featured_products|length > 8 %}
-                <div class="carousel-item">
-                    <div class="row g-4 justify-content-center">
-                        {% for p in featured_products|slice:"8:16" %}
-                        <div class="col-lg-3 col-md-4 col-6" data-aos="fade-up">
-                            <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
-                                <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
-                                    <div class="ribbon-featured">FEATURED</div>
-                                    {% if p.discount_percent > 0 %}
-                                    <div class="position-absolute bg-warning text-dark px-3 py-1" style="top:50px;left:-10px;z-index:10;">-{{ p.discount_percent }}%</div>
-                                    {% endif %}
-                                    <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:240px;object-fit:cover;">
-                                    <div class="card-body text-center p-3">
-                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:6 }}</h6>
-                                        <p class="text-success fs-4 fw-bold">{{ p.get_price_display }}</p>
-                                        <small class="text-muted">{{ p.store.city }}</small>
-                                        <button class="btn btn-success btn-sm w-100 mt-2 rounded-pill">Enquire Now</button>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
+                {% endfor %}
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
-            <button class="carousel-control-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+            <div class="swiper-button-next text-success"></div>
+            <div class="swiper-button-prev text-success"></div>
         </div>
-        <div class="text-center mt-5">
-            <a href="{% url 'featured' %}" class="btn btn-success btn-lg px-5 py-3 rounded-pill">View All Featured</a>
+    </div>
+</section>
+{% endif %}
+
+
+<style>
+    .hover-card {
+        transition: all 0.35s ease;
+        border-radius: 16px !important;
+        overflow: hidden;
+    }
+    .hover-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+    }
+
+    /* SWIPER STYLING — FLIPKART LOOK */
+    .swiper-button-next,
+    .swiper-button-prev {
+        width: 44px !important; height: 44px !important;
+        background: white; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        color: #333 !important;
+    }
+    .swiper-button-next:hover,
+    .swiper-button-prev:hover {
+        background: #25D366; color: white !important;
+    }
+    .swiper-button-next:after,
+    .swiper-button-prev:after {
+        font-size: 18px !important; font-weight: bold;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize all swipers
+        new Swiper('.featured-swiper', { slidesPerView: 2, spaceBetween: 20, loop: true, autoplay: { delay: 4000 }, navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }, breakpoints: { 576: { slidesPerView: 2 }, 768: { slidesPerView: 3 }, 992: { slidesPerView: 4 }, 1200: { slidesPerView: 5 } } });
+        new Swiper('.limited-swiper', { slidesPerView: 2, spaceBetween: 20, loop: true, autoplay: { delay: 3500 }, navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }, breakpoints: { 576: { slidesPerView: 2 }, 768: { slidesPerView: 3 }, 992: { slidesPerView: 4 }, 1200: { slidesPerView: 5 } } });
+        new Swiper('.deals-swiper', { slidesPerView: 2, spaceBetween: 20, loop: true, autoplay: { delay: 3000 }, navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }, breakpoints: { 576: { slidesPerView: 2 }, 768: { slidesPerView: 3 }, 992: { slidesPerView: 4 }, 1200: { slidesPerView: 5 } } });
+    });
+</script>
+
+<!-- CATEGORIES — FLIPKART STYLE HORIZONTAL SCROLL (8 PER ROW) -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-primary fw-bold fs-2 mb-0">Shop by Category</h2>
+             <a href="{% url 'categories_page' %}" class="btn btn-outline-primary rounded-pill px-4">View All</a>
+        </div>
+
+        <!-- SWIPER HORIZONTAL SCROLL -->
+        <div class="swiper mySwiper category-swiper">
+            <div class="swiper-wrapper">
+                {% for cat in categories_all %}
+                <div class="swiper-slide">
+                    <a href="{% url 'all_products' %}?category={{ cat.slug }}" class="d-block text-center">
+                        <div class="category-card position-relative mb-3 mx-auto" style="width: 110px;">
+                            <!-- Pink glow background -->
+                            <div style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%); 
+                                        width: 100px; height: 80px;
+                                        border-radius: 100px 100px 0 0; z-index: 1;"></div>
+
+                            <!-- Category Image / Icon -->
+                            {% if cat.image %}
+                                <img src="{{ cat.image.url }}" 
+                                     class="rounded-circle shadow-lg border border-5 border-white" 
+                                     style="width: 100px; height: 100px; object-fit: cover; z-index: 2; position: relative;"
+                                     alt="{{ cat.name }}">
+                            {% else %}
+                                <div class="d-flex align-items-center justify-content-center rounded-circle shadow-lg border border-5 border-white" 
+                                     style="width: 100px; height: 100px; background: linear-gradient(135deg, #ec4899, #f43f5e); z-index: 2; position: relative;">
+                                    <i class="fas fa-chair text-white fs-2"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <h6 class="fw-bold text-dark mt-3 mb-0">{{ cat.name }}</h6>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Navigation Arrows -->
+            <div class="swiper-button-next text-primary"></div>
+            <div class="swiper-button-prev text-primary"></div>
         </div>
     </div>
 </section>
 
+<style>
+    .category-card {
+        transition: all 0.3s ease;
+    }
+    .category-card:hover {
+        transform: translateY(-8px) scale(1.08);
+    }
+    .category-card:hover h6 {
+        color: #e91e63 !important;
+    }
+
+    /* SWIPER FOR CATEGORIES — 8 PER ROW ON DESKTOP */
+    .category-swiper {
+        padding: 20px 0;
+        overflow: hidden;
+    }
+    .swiper-button-next,
+    .swiper-button-prev {
+        width: 50px !important;
+        height: 50px !important;
+        background: white;
+        border-radius: 50%;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        color: #333 !important;
+        transition: all 0.3s;
+    }
+    .swiper-button-next:hover,
+    .swiper-button-prev:hover {
+        background: #e91e63 !important;
+        color: white !important;
+        transform: scale(1.1);
+    }
+    .swiper-button-next:after,
+    .swiper-button-prev:after {
+        font-size: 22px !important;
+        font-weight: bold;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        new Swiper('.category-swiper', {
+            slidesPerView: 3,
+            spaceBetween: 20,
+            loop: true,
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            breakpoints: {
+                576: { slidesPerView: 4 },
+                768: { slidesPerView: 5 },
+                992: { slidesPerView: 6 },
+                1200: { slidesPerView: 8 }   // 8 CATEGORIES PER ROW ON LARGE SCREEN
+            }
+        });
+    });
+</script>
+
+
 <!-- OUR STORES -->
-<section class="py-5">
+<section class="py-5 bg-light">
     <div class="container">
         <h2 class="text-center mb-5 text-primary fw-bold fs-1" data-aos="zoom-in">Our Stores</h2>
         <div class="row g-4 justify-content-center">
@@ -290,16 +602,24 @@
             </div>
             {% endfor %}
         </div>
-        <div class="text-center mt-5">
-            <a href="/stores/" class="btn btn-primary btn-lg px-5 py-3 rounded-pill">View All Stores</a>
+        <div class="text-center mt-4">
+            <a href="/stores/" class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-lg">View All Stores</a>
         </div>
     </div>
 </section>
+  
+<style>
+    @media (min-width: 1200px) {
+        .col-lg-2-4 { flex: 0 0 20%; max-width: 20%; }
+    }
+</style>
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    AOS.init({ duration: 900, once: false, mirror: true });
+    if (window.innerWidth > 768) {
+        AOS.init({ duration: 800, once: false });
+    }
 </script>
 {% endblock %}

@@ -49,20 +49,26 @@
 <!-- DEALS GRID - 32 PER PAGE -->
 <section class="py-5 bg-light">
     <div class="container">
-        <div class="row g-4 justify-content-center">
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-4">
             {% for p in products %}
-            <div class="col-lg-3 col-md-4 col-6" data-aos="fade-up">
+            <div class="col">
                 <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
                     <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
                         <div class="ribbon-deal">DEAL</div>
                         <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" 
-                             class="card-img-top" style="height:240px; object-fit:cover;">
+                             class="card-img-top" style="height:220px; object-fit:cover;">
                         <div class="card-body text-center p-3">
-                            <h6 class="fw-bold text-dark">{{ p.name|truncatewords:6 }}</h6>
-                            <del class="text-muted small">₹{{ p.regular_price }}</del>
-                            <p class="text-danger fs-4 fw-bold">₹{{ p.offer_price }}</p>
-                            <button class="btn btn-success btn-sm w-100 rounded-pill">Grab Now</button>
-                        </div>
+                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:6 }}</h6>
+                        <small class="text-muted d-block">{{ p.store.name }} • {{ p.store.city }}</small>
+                        {% if p.get_striked_price %}
+                        <del class="text-muted small">₹{{ p.regular_price }}</del>
+                        <span class="badge bg-danger">{{ p.discount_percent }}% OFF</span>
+                        {% endif %}
+                        <p class="text-success fs-4 fw-bold mb-2">{{ p.get_price_display }}</p>
+                        
+                        <button class="btn btn-success btn-sm w-100 mt-2 rounded-pill">View Details</button>
+                    </div>
+
                     </div>
                 </a>
             </div>

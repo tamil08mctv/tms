@@ -15,51 +15,40 @@ class EnquiryForm(forms.Form):
         max_length=100, required=False,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your City'})
     )
-    message = forms.CharField(
-        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Your Message (Optional)'}), 
-        required=False
-    )
+
+
+# tms/forms.py → FINAL CLEAN VERSION (NO ERROR!)
 
 class ProductForm(forms.ModelForm):
-    # FINAL FIX: REMOVE 'multiple=True' FROM WIDGET → IT'S NOT ALLOWED!
-    # Instead, we just use normal FileInput + handle multiple files in view with getlist()
     extra_images = forms.FileField(
         required=False,
-        label="Upload Additional Images (Hold Ctrl/Cmd to select multiple)",
-        widget=forms.FileInput(attrs={
-            'accept': 'image/*',
-            'class': 'form-control'
-            # DO NOT ADD 'multiple': True HERE → CAUSES CRASH!
-        })
+        label="Upload Additional Images",
+        widget=forms.FileInput(attrs={'accept': 'image/*', 'class': 'form-control'})
     )
 
     video = forms.FileField(
         required=False,
-        label="Upload Product Video (MP4 recommended)",
-        widget=forms.FileInput(attrs={
-            'accept': 'video/*',
-            'class': 'form-control'
-        })
+        label="Product Video",
+        widget=forms.FileInput(attrs={'accept': 'video/*', 'class': 'form-control'})
     )
 
     class Meta:
         model = Product
         fields = [
             'category', 'name', 'short_desc', 'description',
-            'price_style', 'regular_price', 'offer_price', 'deal_end_date',
-            'video', 'is_featured', 'is_new', 'in_stock'
+            'regular_price', 'offer_price', 'deal_end_date',  
+            'video', 'in_stock', 'is_featured',
+            
         ]
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Premium Leather Sofa'}),
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
             'category': forms.Select(attrs={'class': 'form-select form-select-lg'}),
             'short_desc': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'description': forms.Textarea(attrs={'rows': 7, 'class': 'form-control'}),
-            'price_style': forms.Select(attrs={'class': 'form-select'}),
             'regular_price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '25000'}),
             'offer_price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '19999'}),
             'deal_end_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         }
-
 
 class CategoryForm(forms.ModelForm):
     class Meta:

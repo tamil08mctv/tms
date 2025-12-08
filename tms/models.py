@@ -66,14 +66,9 @@ class Category(models.Model):
         return f"{self.store.name} - {self.name}"
 
 
-class Product(models.Model):
-    PRICE_STYLE_CHOICES = [
-        ('fixed', 'Fixed Price'),
-        ('offer', 'Discounted Offer'),
-        ('deal', 'Deal of the Day'),
-        ('call', 'Call for Best Price'),
-    ]
+# tms/models.py → FINAL CLEAN VERSION (NO CONFUSION!)
 
+class Product(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='products')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=300)
@@ -81,16 +76,21 @@ class Product(models.Model):
     short_desc = models.TextField(max_length=500)
     description = models.TextField(blank=True)
 
-    price_style = models.CharField(max_length=20, choices=PRICE_STYLE_CHOICES, default='offer')
-    regular_price = models.DecimalField(max_digits=12, decimal_places=0)           # ← NO default!
-    offer_price = models.DecimalField(max_digits=12, decimal_places=0, null=True, blank=True)
-    discount_percent = models.PositiveIntegerField(null=True, blank=True)
-    deal_end_date = models.DateField(null=True, blank=True)
+    # PRICE FIELDS — KEEP ONLY THESE
+    regular_price = models.DecimalField(max_digits=12, decimal_places=0, help_text="Original MRP")
+    offer_price = models.DecimalField(max_digits=12, decimal_places=0, null=True, blank=True, help_text="Discounted Price")
+    discount_percent = models.PositiveIntegerField(null=True, blank=True, help_text="Auto calculated")
+    deal_end_date = models.DateField(null=True, blank=True, help_text="Set date → Becomes Deal of the Day")
 
     video = models.FileField(upload_to='products/videos/', blank=True, null=True)
-    is_featured = models.BooleanField(default=False)
-    is_new = models.BooleanField(default=False)
-    in_stock = models.BooleanField(default=True)
+    in_stock = models.BooleanField(default=True, help_text="Hide if out of stock")
+
+    # ONLY THESE 4 BADGES — SUPER CLEAN!
+    is_best_seller = models.BooleanField(default=False, help_text="Gold Badge - Highest Priority")
+    is_limited_deal = models.BooleanField(default=False, help_text="Red LIMITED DEAL Badge")
+    is_special_offer = models.BooleanField(default=False, help_text="Purple SPECIAL OFFER Badge")
+    is_featured = models.BooleanField(default=False, help_text="Orange FEATURED Ribbon")
+
     views_count = models.PositiveIntegerField(default=0)
     enquiry_count = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -105,28 +105,34 @@ class Product(models.Model):
                 i += 1
             self.slug = slug
 
+        # AUTO CALCULATE DISCOUNT
         if self.regular_price and self.offer_price and self.offer_price < self.regular_price:
             discount = ((self.regular_price - self.offer_price) / self.regular_price) * 100
             self.discount_percent = int(discount)
+        else:
+            self.discount_percent = None
 
         super().save(*args, **kwargs)
 
+    # DEAL OF THE DAY — AUTO!
+    def is_deal_active(self):
+        return self.deal_end_date and self.deal_end_date >= date.today()
+
+    # PRICE DISPLAY
     def get_price_display(self):
-        if self.price_style in ['fixed', 'offer', 'deal'] and self.offer_price:
+        if self.offer_price:
             prefix = "Deal Price: " if self.is_deal_active() else ""
             return f"{prefix}₹{self.offer_price:,.0f}"
         return "Call for Best Price"
 
     def get_striked_price(self):
-        if self.regular_price and self.offer_price and self.offer_price < self.regular_price:
+        if self.discount_percent:
             return f"₹{self.regular_price:,.0f}"
         return None
 
-    def is_deal_active(self):
-        return self.price_style == 'deal' and self.deal_end_date and self.deal_end_date >= date.today()
-
     def __str__(self):
         return f"{self.name} - {self.store.name}"
+
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
