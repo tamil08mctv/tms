@@ -1,31 +1,33 @@
 {% extends 'TMS/base.html' %}
 {% load static %}
 
-{% block title %}All Products - TMS Groups{% endblock %}
+{% block title %}
+    {% if filter_type == 'deals' %}Deals of the Day
+    {% elif filter_type == 'bestselling' %}Best Sellers
+    {% elif filter_type == 'limited' %}Limited Deals
+    {% elif filter_type == 'special' %}Special Offers
+    {% elif filter_type == 'new' %}New Arrivals
+    {% elif filter_type == 'featured' %}Featured Products
+    {% else %}All Products{% endif %} - TMS Furniture
+{% endblock %}
 
 {% block extra_head %}
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <style>
-    .hover-card {
+   
+  .hover-card {
         transition: all 0.4s ease;
         cursor: pointer;
+        border-radius: 16px !important;
     }
     .hover-card:hover {
-        transform: translateY(-15px);
+        transform: translateY(-12px);
         box-shadow: 0 25px 50px rgba(0,0,0,0.22) !important;
     }
-    .ribbon-deal {
-        position: absolute; top: 15px; left: -10px; background: #e91e63; color: white;
-        padding: 6px 20px; font-weight: bold; font-size: 0.9rem; z-index: 10;
-    }
-    .ribbon-deal::after {
-        content: ''; position: absolute; left: 0; bottom: -10px;
-        border-left: 10px solid transparent; border-top:10px solid #c2185b;
-    }
 
-    /* FILTER BAR — FLIPKART STYLE */
-    .filter-bar {
+    /* PREMIUM FILTER BAR — LOOKS INSANE */
+     .filter-bar {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         border-radius: 24px;
         padding: 30px 25px;
@@ -33,55 +35,104 @@
         box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
         position: relative;
         overflow: hidden;
-    }
-    .filter-bar::before {
-        content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 24px; z-index: 1;
-    }
-    .filter-bar > .row { position: relative; z-index: 2; }
-
-    .filter-title { color: white; font-weight: 800; font-size: 2rem; text-shadow: 0 3px 10px rgba(0,0,0,0.4); }
-
-    .filter-input, .filter-select {
-        border-radius: 50px !important; padding: 16px 28px !important; font-size: 1.1rem !important;
+    }  
+  
+    /* .filter-input, .filter-select {
+        border-radius: 50px !important; padding: 14px 24px !important; font-size: 1rem !important;
         background: white; border: none; box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    }
-    .filter-input:focus, .filter-select:focus {
-        transform: translateY(-4px);
+        height: 52px;
+    } */
+    /* .filter-input:focus, .filter-select:focus {
         box-shadow: 0 15px 40px rgba(37,211,102,0.4) !important;
-    }
+        border-color: #28a745;
+    } */
 
-    .clear-btn {
-        background: rgba(255,255,255,0.25); color: white; border: 2px solid white;
-        border-radius: 50px; padding: 14px 35px; font-weight: bold; backdrop-filter: blur(10px);
+    /* .dropdown-toggle {
+        background: white !important;
+        color: #333 !important;
+        border: none !important;
+    } */
+
+    /* .clear-btn {
+        background: linear-gradient(45deg, #ff416c, #ff4757);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 16px 40px;
+        font-weight: bold;
+        backdrop-filter: blur(10px);
+        height: 58px;
+        box-shadow: 0 10px 30px rgba(255,65,108,0.4);
+        transition: all 0.4s ease;
     }
-    .clear-btn:hover { background: white; color: #667eea; transform: translateY(-3px); }
+    .clear-btn:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 20px 50px rgba(255,65,108,0.6);
+    } */
+     
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;900&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
+<div class="container py-4">
 
-    <!-- FILTER BAR -->
-    <div class="filter-bar">
-        <div class="text-center mb-4">
-            <h2 class="filter-title">Explore All Products</h2>
+    <!-- ULTRA PREMIUM FILTER BAR -->
+    <div class="filter-bar" >
+        <div class="text-center mb-3 fw-bold">
+            <h2 class="filter-title">
+                {% if filter_type == 'deals' %}DEALS OF THE DAY
+                {% elif filter_type == 'bestselling' %}BEST SELLERS
+                {% elif filter_type == 'limited' %}LIMITED DEALS
+                {% elif filter_type == 'special' %}SPECIAL OFFERS
+                {% elif filter_type == 'new' %}NEW ARRIVALS
+                {% elif filter_type == 'featured' %}FEATURED PRODUCTS
+                {% else %}EXPLORE ALL PRODUCTS{% endif %}
+            </h2>
         </div>
-        <div class="row g-3 g-lg-4 align-items-center">
-            <div class="col-12 col-lg-4">
-                <input type="text" id="searchInput" class="form-control filter-input" placeholder="Search by name..." autocomplete="off">
+
+        <div class="row g-4 align-items-center justify-content-center">
+            <!-- Search -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <input type="text" id="searchInput" class="form-control filter-input" placeholder="Search products..." autocomplete="off">
             </div>
-            <div class="col-6 col-lg-2">
-                <select id="typeFilter" class="form-select filter-select">
-                    <option value="">All Types</option>
-                    <option value="bestselling">Best Seller</option>
-                    <option value="limited">Limited Deal</option>
-                    <option value="special">Special Offer</option>
-                    <option value="deals">Deals Only</option>
-                    <option value="new">New Arrivals</option>
-                </select>
+
+            <!-- Type Filter + Clear X -->
+            <div class="col-12 col-md-6 col-lg-2 position-relative">
+                <div class="dropdown d-block">
+                    <button class="btn dropdown-toggle w-100 fw-bold filter-select" 
+                            type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-filter me-3 text-primary"></i>
+                        <span id="typeFilterText">
+                            {% if filter_type == 'bestselling' %}Best Sellers
+                            {% elif filter_type == 'deals' %}Deals
+                            {% elif filter_type == 'new' %}New Arrivals
+                            {% elif filter_type == 'limited' %}Limited
+                            {% elif filter_type == 'special' %}Special Offers
+                            {% elif filter_type == 'featured' %}Featured
+                            {% else %}All{% endif %}
+                        </span>
+                    </button>
+                   <ul class="dropdown-menu w-100 shadow-lg border-0 rounded-4">
+            <li><a class="dropdown-item text-center fw-bold" href="{% url 'all_products' %}">All </a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="?filter=bestselling">Best Sellers</a></li>
+            <li><a class="dropdown-item" href="?filter=deals">Deals</a></li>
+            <li><a class="dropdown-item" href="?filter=new">New Arrivals</a></li>
+            <li><a class="dropdown-item" href="?filter=limited">Limited</a></li>
+            <li><a class="dropdown-item" href="?filter=special">Special Offers</a></li>
+        </ul>
+                </div>
+                {% if filter_type %}
+               <a href="{% url 'all_products' %}" class="position-absolute top-50 end-0 translate-middle-y me-2 text-danger" 
+       style="z-index: 10; text-decoration: none; font-size: 2.5rem;" title="Clear this filter">
+        ×
+    </a>
+                {% endif %}
             </div>
-            <div class="col-6 col-lg-2">
+
+            <!-- Category -->
+            <div class="col-12 col-md-6 col-lg-2">
                 <select id="categoryFilter" class="form-select filter-select">
                     <option value="">All Categories</option>
                     {% for cat in categories_all %}
@@ -89,8 +140,10 @@
                     {% endfor %}
                 </select>
             </div>
+
+            <!-- Store -->
             {% if stores_all.count > 1 %}
-            <div class="col-6 col-lg-2">
+            <div class="col-12 col-md-6 col-lg-2">
                 <select id="storeFilter" class="form-select filter-select">
                     <option value="">All Stores</option>
                     {% for store in stores_all %}
@@ -99,39 +152,54 @@
                 </select>
             </div>
             {% endif %}
-            <div class="col-6 col-lg-2 text-end">
-                <button id="clearFilters" class="btn clear-btn shadow-lg">Clear Filters</button>
+
+            <!-- Sort By -->
+            <div class="col-12 col-md-6 col-lg-2">
+                <select id="sortFilter" class="form-select filter-select">
+                    <option value="">Sort By</option>
+                    <option value="price_low">Price: Low to High</option>
+                    <option value="price_high">Price: High to Low</option>
+                    <option value="newest">Newest First</option>
+                </select>
+            </div>
+
+            <!-- Clear All -->
+            <div class="col-12 col-lg-1 text-center">
+                <button id="clearFilters" class="btn clear-btn w-100 fw-bold">
+                    Clear
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- TITLE + COUNT -->
-    <div class="text-center mb-5">
-        <!-- <h1 class="display-5 fw-bold text-primary">All Products</h1> -->
-        <p class="fs-5 text-success mt-4">
-            <span id="productCount">{{ products.paginator.count }}</span> products
+      <!-- Count -->
+    <div class="text-center py-3">
+        <p class="fs-4 text-success">
+            <span id="productCount">{{ products.paginator.count }}</span> products found
         </p>
     </div>
 
-    <!-- NO PRODUCTS -->
-    <div id="noProducts" class="text-center py-3 d-none">
+    <!-- No Products -->
+    <div id="noProducts" class="text-center py-5 d-none">
         <h3 class="text-muted fw-bold">No products found</h3>
-        <p class="text-muted fs-5">Try changing your filters</p>
+        <p class="text-muted">Try changing your filters</p>
     </div>
 
-    <!-- PRODUCTS GRID -->
+    <!-- Products Grid -->
+    
     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-4 justify-content-center" id="productsGrid">
         {% for p in products %}
         <div class="col product-item"
              data-name="{{ p.name|lower }}"
              data-category="{{ p.category.slug|default:'' }}"
              data-store="{{ p.store.slug }}"
-             data-type="{% if p.is_best_seller %}bestselling{% elif p.is_limited_deal %}limited{% elif p.is_special_offer %}special{% elif p.is_deal_active %}deals{% elif p.created_at > seven_days_ago %}new{% else %}regular{% endif %}">
+             data-price="{{ p.offer_price|default:p.regular_price }}"
+             data-date="{{ p.created_at|date:'U' }}"
+             data-type="{% if p.is_best_seller %}bestselling{% elif p.is_limited_deal %}limited{% elif p.is_special_offer %}special{% elif p.deal_end_date and p.deal_end_date >= today %}deals{% elif p.created_at > seven_days_ago %}new{% else %}regular{% endif %}">
 
             <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
-                <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
-
-                    <!-- SMART BADGE SYSTEM — ONLY ONE SHOWS! (100% FIXED) -->
+                <div class="card h-100 shadow hover-card border-0 position-relative overflow-hidden">
+                     <!-- SMART BADGE SYSTEM — ONLY ONE SHOWS! (100% FIXED) -->
                     {% if p.is_best_seller %}
                         <div class="position-absolute top-0 start-0 p-2 z-10">
                             <span class="badge bg-warning text-dark px-4 py-2 rounded-pill shadow-lg fw-bold">BEST SELLER</span>
@@ -159,112 +227,147 @@
                         </div> -->
                     {% endif %}
 
+
                     <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" 
-                         class="card-img-top" style="height: 230px; object-fit: cover;">
+                         class="card-img-top" style="height:230px; object-fit:cover;">
                     
-                    <div class="card-body text-center p-3">
-                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:10 }}</h6>
-                                         <small class="text-dark mb-2">{{ p.short_desc }}</small><br>
-                                               {% if p.get_striked_price %}
-                        <del class=" fs-6 fw-bold text-danger">₹{{ p.regular_price }}</del>
+                    
+
+                   <div class="card-body text-center p-3 flex flex-column">
+                                     <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">
+                        {{ p.name }}
+                    </h6>
+                    <!-- Short Description — Optional 1 line -->
+                    {% if p.short_desc %}
+                    <p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>
+                    {% endif %}
+                                          
+                       <!-- Price Section — PERFECTLY CENTERED & CLEAN -->
+                    <div class="mt-auto text-center">
+                        {% if p.offer_price and p.offer_price < p.regular_price %}
+                            <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                                <span class="text-success fs-5 fw-bold">₹{{ p.offer_price }}</span>
+                               <del class="text-muted fw-bold fs-6 opacity-75" style="text-decoration-thickness: 2.5px; opacity: 0.9;">₹{{ p.regular_price }}</del>
+                                <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
+                            </div>
+                        {% else %}
+                            <span class="text-success fs-5 fw-bold">₹{{ p.regular_price }}</span>
                         {% endif %}
-                         <span class="badge bg-danger">{{ p.discount_percent }}% OFF</span>
-                                        <p class="text-success fs-4 fw-bold">₹{{ p.offer_price }}</p>
-                                        <small class="text-muted d-block">{{ p.store.name }} • {{ p.store.city }}</small>
-                                        
-                                        <!-- <button class="btn btn-success btn-sm w-100 mt-2 rounded-pill">Enquire Now</button> -->
-                                    </div>
-                       
+                    </div>
+
+                       <div class="mt-auto text-center pt-2">
+                        <small class="text-muted d-block fw-medium">
+                            {{ p.store.name }} • {{ p.store.city }}
+                        </small>
+                    </div>                       
+                                      
+                </div> 
+              </div>
                 </div>
             </a>
         </div>
         {% endfor %}
     </div>
 
-    <!-- PAGINATION — KEEPS FILTERS -->
+    <!-- Pagination -->
     {% if products.has_other_pages %}
     <nav class="mt-5">
         <ul class="pagination justify-content-center">
             {% if products.has_previous %}
-            <li class="page-item">
-                <a class="page-link rounded-pill" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode|cut:'page='|cut:'&page=' }}&{% endif %}page={{ products.previous_page_number }}">Previous</a>
-            </li>
+            <li class="page-item"><a class="page-link rounded-pill px-5 py-3 shadow" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode|cut:'&page='|cut:'page=' }}&{% endif %}page={{ products.previous_page_number }}">Previous</a></li>
             {% endif %}
-            <li class="page-item active">
-                <span class="page-link rounded-pill bg-primary border-0">{{ products.number }}</span>
-            </li>
+            <li class="page-item active"><span class="page-link rounded-pill bg-primary border-0 px-4 py-3">{{ products.number }}</span></li>
             {% if products.has_next %}
-            <li class="page-item">
-                <a class="page-link rounded-pill" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode|cut:'page='|cut:'&page=' }}&{% endif %}page={{ products.next_page_number }}">Next</a>
-            </li>
+            <li class="page-item"><a class="page-link rounded-pill px-5 py-3 shadow" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode|cut:'&page='|cut:'page=' }}&{% endif %}page={{ products.next_page_number }}">Next</a></li>
             {% endif %}
         </ul>
     </nav>
     {% endif %}
 </div>
 
-<!-- REALTIME FILTER SCRIPT — FLAWLESS -->
+<!-- FINAL JS — SORT BY, CLEAR ALL, TYPE FILTER — ALL WORK 100% -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
-    const typeFilter = document.getElementById('typeFilter');
     const categoryFilter = document.getElementById('categoryFilter');
     const storeFilter = document.getElementById('storeFilter');
+    const sortFilter = document.getElementById('sortFilter');
     const clearBtn = document.getElementById('clearFilters');
+    const typeFilterText = document.getElementById('typeFilterText');
     const items = document.querySelectorAll('.product-item');
     const count = document.getElementById('productCount');
     const noMsg = document.getElementById('noProducts');
     const grid = document.getElementById('productsGrid');
 
-    function filter() {
+    function applyFilters() {
         const q = searchInput.value.toLowerCase().trim();
-        const type = typeFilter?.value || '';
-        const cat = categoryFilter?.value || '';
-        const store = storeFilter?.value || '';
-        let visible = 0;
+        const cat = categoryFilter.value;
+        const store = storeFilter ? storeFilter.value : '';
+        const sort = sortFilter.value;
 
-        items.forEach(item => {
-            const name = item.dataset.name || '';
+        // Get current URL type filter
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlType = urlParams.get('filter') || '';
+
+        let filtered = Array.from(items).filter(item => {
+            const name = (item.dataset.name || '').toLowerCase();
             const c = item.dataset.category || '';
             const s = item.dataset.store || '';
-            const t = item.dataset.type || '';
+            const type = item.dataset.type || '';
 
-            const show = name.includes(q) &&
-                        (type === '' || t === type) &&
-                        (cat === '' || c === cat) &&
-                        (store === '' || s === store);
-
-            item.style.display = show ? '' : 'none';
-            if (show) visible++;
+            return name.includes(q) &&
+                   (!urlType || type === urlType) &&
+                   (!cat || c === cat) &&
+                   (!store || s === store);
         });
 
-        count.textContent = visible;
-        noMsg.classList.toggle('d-none', visible > 0);
-        grid.style.display = visible > 0 ? 'flex' : 'none';
+        // Sorting
+        if (sort === 'price_low') filtered.sort((a, b) => parseFloat(a.dataset.price) - parseFloat(b.dataset.price));
+        if (sort === 'price_high') filtered.sort((a, b) => parseFloat(b.dataset.price) - parseFloat(a.dataset.price));
+        if (sort === 'newest') filtered.sort((a, b) => parseFloat(b.dataset.date) - parseFloat(a.dataset.date));
+
+        // Update grid
+        grid.innerHTML = '';
+        filtered.forEach(item => grid.appendChild(item));
+
+        count.textContent = filtered.length;
+        noMsg.classList.toggle('d-none', filtered.length > 0);
     }
 
-    searchInput.addEventListener('input', filter);
-    typeFilter?.addEventListener('change', filter);
-    categoryFilter?.addEventListener('change', filter);
-    storeFilter?.addEventListener('change', filter);
+    function updateTypeFilterText() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const filter = urlParams.get('filter') || '';
+        const texts = {
+            'bestselling': 'Best Sellers',
+            'deals': 'Deals',
+            'new': 'New Arrivals',
+            'limited': 'Limited',
+            'special': 'Special Offers',
+            'featured': 'Featured'
+        };
+        typeFilterText.textContent = texts[filter] || 'All Types';
+    }
 
-    clearBtn?.addEventListener('click', () => {
+    searchInput.addEventListener('input', applyFilters);
+    categoryFilter.addEventListener('change', applyFilters);
+    if (storeFilter) storeFilter.addEventListener('change', applyFilters);
+    sortFilter.addEventListener('change', applyFilters);
+
+    clearBtn.addEventListener('click', () => {
         searchInput.value = '';
-        typeFilter && (typeFilter.value = '');
-        categoryFilter && (categoryFilter.value = '');
-        storeFilter && (storeFilter.value = '');
-        filter();
+        categoryFilter.value = '';
+        if (storeFilter) storeFilter.value = '';
+        sortFilter.value = '';
+        applyFilters();
     });
 
-    filter();
-});
-</script>
-{% endblock %}
+    window.addEventListener('popstate', () => {
+        updateTypeFilterText();
+        applyFilters();
+    });
 
-{% block extra_js %}
-<script>
-    if (window.innerWidth > 768) {
-        AOS.init({ duration: 800, once: false });
-    }
+    updateTypeFilterText();
+    applyFilters();
+});
 </script>
 {% endblock %}

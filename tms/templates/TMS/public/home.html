@@ -40,10 +40,29 @@
     {% if all_store_banners %}
     <div class="swiper hero-swiper position-relative" style=" max-height: 400px;">
         <div class="swiper-wrapper">
-            {% for banner in all_store_banners %}
+          {% for banner in all_store_banners %}
             <div class="swiper-slide">
-                <img src="{% if banner.image %}{{ banner.image.url }}{% else %}{{ banner.banner.url }}{% endif %}" 
-                     class="w-100 h-100" style="object-fit: cover;" alt="TMS Furniture">
+                {% if banner.link %}
+                <a href="{{ banner.link }}" class="d-block w-100 h-100">
+                {% endif %}
+                    
+                    <!-- DESKTOP BANNER -->
+                    <img src="{{ banner.image_desktop.url }}" 
+                         class="d-none d-lg-block w-100 h-100" style="object-fit: cover;" alt="{{ banner.caption }}">
+
+                    <!-- TABLET BANNER -->
+                    {% if banner.image_tablet %}
+                    <img src="{{ banner.image_tablet.url }}" 
+                         class="d-none d-md-block d-lg-none w-100 h-100" style="object-fit: cover;" alt="{{ banner.caption }}">
+                    {% endif %}
+
+                    <!-- MOBILE BANNER -->
+                    <img src="{{ banner.image_mobile.url }}" 
+                         class="d-block d-md-none w-100 h-100" style="object-fit: cover;" alt="{{ banner.caption }}">
+
+                {% if banner.link %}
+                </a>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
@@ -173,7 +192,7 @@
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="text-danger fw-bold fs-2 mb-0">DEALS OF THE DAY</h2>
-            <a href="{% url 'deals' %}" class="btn btn-outline-danger rounded-pill px-4">View All</a>
+            <a href="{% url 'all_products' %}?filter=deals" class="btn btn-outline-danger rounded-pill px-4">View All</a>
         </div>
 
         <div class="swiper mySwiper deals-swiper">
@@ -186,18 +205,35 @@
                             <span class="badge bg-warning text-white px-3 py-2 rounded-pill shadow-lg fw-bold">DEAL</span>
                         </div>
                         <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:230px;object-fit:cover;">
-                               <div class="card-body text-center p-3">
-                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:10 }}</h6>
-                                         <small class="text-dark mb-2">{{ p.short_desc }}</small><br>
-                                               {% if p.get_striked_price %}
-                        <del class=" fs-6 fw-bold text-danger">₹{{ p.regular_price }}</del>
+                               <div class="card-body text-center p-3 flex flex-column">
+                                     <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">
+                        {{ p.name }}
+                    </h6>
+                    <!-- Short Description — Optional 1 line -->
+                    {% if p.short_desc %}
+                    <p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>
+                    {% endif %}
+                                          
+                       <!-- Price Section — PERFECTLY CENTERED & CLEAN -->
+                    <div class="mt-auto text-center">
+                        {% if p.offer_price and p.offer_price < p.regular_price %}
+                            <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                                <span class="text-success fs-5 fw-bold">₹{{ p.offer_price }}</span>
+                               <del class="text-muted fw-bold fs-6 opacity-75" style="text-decoration-thickness: 2.5px; opacity: 0.9;">₹{{ p.regular_price }}</del>
+                                <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
+                            </div>
+                        {% else %}
+                            <span class="text-success fs-5 fw-bold">₹{{ p.regular_price }}</span>
                         {% endif %}
-                         <span class="badge bg-danger">{{ p.discount_percent }}% OFF</span>
-                                        <p class="text-success fs-4 fw-bold">₹{{ p.offer_price }}</p>
-                                        <small class="text-muted d-block">{{ p.store.name }} • {{ p.store.city }}</small>
-                                        
-                                        <!-- <button class="btn btn-success btn-sm w-100 mt-2 rounded-pill">Enquire Now</button> -->
-                                    </div>
+                    </div>
+
+                       <div class="mt-auto text-center pt-2">
+                        <small class="text-muted d-block fw-medium">
+                            {{ p.store.name }} • {{ p.store.city }}
+                        </small>
+                    </div>                       
+                                      
+                </div> 
                     </div>
                 </a>
                 </div>
@@ -228,18 +264,35 @@
                             <span class="badge bg-warning text-dark px-4 py-2 rounded-pill shadow-lg fw-bold">BEST SELLER</span>
                         </div>
                         <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:230px;object-fit:cover;">
-                               <div class="card-body text-center p-3">
-                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:10 }}</h6>
-                                         <small class="text-dark mb-2">{{ p.short_desc }}</small><br>
-                                               {% if p.get_striked_price %}
-                        <del class=" fs-6 fw-bold text-danger">₹{{ p.regular_price }}</del>
+                                <div class="card-body text-center p-3 flex flex-column">
+                                     <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">
+                        {{ p.name }}
+                    </h6>
+                    <!-- Short Description — Optional 1 line -->
+                    {% if p.short_desc %}
+                    <p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>
+                    {% endif %}
+                                          
+                       <!-- Price Section — PERFECTLY CENTERED & CLEAN -->
+                    <div class="mt-auto text-center">
+                        {% if p.offer_price and p.offer_price < p.regular_price %}
+                            <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                                <span class="text-success fs-5 fw-bold">₹{{ p.offer_price }}</span>
+                               <del class="text-muted fw-bold fs-6 opacity-75" style="text-decoration-thickness: 2.5px; opacity: 0.9;">₹{{ p.regular_price }}</del>
+                                <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
+                            </div>
+                        {% else %}
+                            <span class="text-success fs-5 fw-bold">₹{{ p.regular_price }}</span>
                         {% endif %}
-                         <span class="badge bg-danger">{{ p.discount_percent }}% OFF</span>
-                                        <p class="text-success fs-4 fw-bold">₹{{ p.offer_price }}</p>
-                                        <small class="text-muted d-block">{{ p.store.name }} • {{ p.store.city }}</small>
-                                        
-                                        <!-- <button class="btn btn-success btn-sm w-100 mt-2 rounded-pill">Enquire Now</button> -->
-                                    </div>
+                    </div>
+
+                       <div class="mt-auto text-center pt-2">
+                        <small class="text-muted d-block fw-medium">
+                            {{ p.store.name }} • {{ p.store.city }}
+                        </small>
+                    </div>                       
+                                      
+                </div> 
                         </div>
                 </a>
             </div>
@@ -247,8 +300,8 @@
         </div>
         <div class="text-center mt-5">
             <a href="{% url 'all_products' %}?filter=bestselling" class="btn btn-warning btn-lg px-5 py-3 rounded-pill shadow-lg">
-                View All Best Sellers
-            </a>
+    View All Best Sellers
+</a>
         </div>
     </div>
 </section>
@@ -258,12 +311,11 @@
 <!-- 3. LIMITED DEAL — FLIPKART RED STYLE -->
 <!-- ================================================== -->
 {% if has_limited_deals %}
-<section class="py-3" style="background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);">
+<section class="py-3" style="background:#eef2f7;">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="text-danger fw-bold fs-2 mb-0">LIMITED DEAL — ENDS SOON!</h2>
-            <a href="{% url 'all_products' %}?filter=limited" class="btn btn-outline-danger rounded-pill px-4">View All</a>
-        </div>
+           <a href="{% url 'all_products' %}?filter=limited" class="btn btn-outline-danger rounded-pill px-4">View All</a>      </div>
 
         <div class="swiper mySwiper limited-swiper">
             <div class="swiper-wrapper justify-content-center">
@@ -275,19 +327,37 @@
                             <span class="badge bg-danger text-white px-4 py-2 rounded-pill shadow-lg fw-bold">LIMITED DEAL</span>
                         </div>
                         <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:230px;object-fit:cover;">
-                             <div class="card-body text-center p-3">
-                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:10 }}</h6>
-                                         <small class="text-dark mb-2">{{ p.short_desc }}</small><br>
-                                               {% if p.get_striked_price %}
-                        <del class=" fs-6 fw-bold text-danger">₹{{ p.regular_price }}</del>
+                            
+                        
+                   <div class="card-body text-center p-3 flex flex-column">
+                                     <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">
+                        {{ p.name }}
+                    </h6>
+                    <!-- Short Description — Optional 1 line -->
+                    {% if p.short_desc %}
+                    <p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>
+                    {% endif %}
+                                          
+                       <!-- Price Section — PERFECTLY CENTERED & CLEAN -->
+                    <div class="mt-auto text-center">
+                        {% if p.offer_price and p.offer_price < p.regular_price %}
+                            <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                                <span class="text-success fs-5 fw-bold">₹{{ p.offer_price }}</span>
+                               <del class="text-muted fw-bold fs-6 opacity-75" style="text-decoration-thickness: 2.5px; opacity: 0.9;">₹{{ p.regular_price }}</del>
+                                <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
+                            </div>
+                        {% else %}
+                            <span class="text-success fs-5 fw-bold">₹{{ p.regular_price }}</span>
                         {% endif %}
-                         <span class="badge bg-danger">{{ p.discount_percent }}% OFF</span>
-                                        <p class="text-success fs-4 fw-bold">₹{{ p.offer_price }}</p>
-                                        <small class="text-muted d-block">{{ p.store.name }} • {{ p.store.city }}</small>
-                                        
-                                        <!-- <button class="btn btn-success btn-sm w-100 mt-2 rounded-pill">Enquire Now</button> -->
-                                    </div>
-                                  </div>
+                    </div>
+
+                       <div class="mt-auto text-center pt-2">
+                        <small class="text-muted d-block fw-medium">
+                            {{ p.store.name }} • {{ p.store.city }}
+                        </small>
+                    </div>                       
+                                      
+                </div> 
                 </a>
                 </div>
                 {% endfor %}
@@ -317,27 +387,44 @@
                         </div> 
                         <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" 
                          class="card-img-top" style="height: 230px; object-fit: cover;">
-                               <div class="card-body text-center p-3">
-                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:10 }}</h6>
-                                         <small class="text-dark mb-2">{{ p.short_desc }}</small><br>
-                                               {% if p.get_striked_price %}
-                        <del class=" fs-6 fw-bold text-danger">₹{{ p.regular_price }}</del>
+                               <div class="card-body text-center p-3 flex flex-column">
+                                     <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">
+                        {{ p.name }}
+                    </h6>
+                    <!-- Short Description — Optional 1 line -->
+                    {% if p.short_desc %}
+                    <p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>
+                    {% endif %}
+                                          
+                       <!-- Price Section — PERFECTLY CENTERED & CLEAN -->
+                    <div class="mt-auto text-center">
+                        {% if p.offer_price and p.offer_price < p.regular_price %}
+                            <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                                <span class="text-success fs-5 fw-bold">₹{{ p.offer_price }}</span>
+                               <del class="text-muted fw-bold fs-6 opacity-75" style="text-decoration-thickness: 2.5px; opacity: 0.9;">₹{{ p.regular_price }}</del>
+                                <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
+                            </div>
+                        {% else %}
+                            <span class="text-success fs-5 fw-bold">₹{{ p.regular_price }}</span>
                         {% endif %}
-                         <span class="badge bg-danger">{{ p.discount_percent }}% OFF</span>
-                                        <p class="text-success fs-4 fw-bold">₹{{ p.offer_price }}</p>
-                                        <small class="text-muted d-block">{{ p.store.name }} • {{ p.store.city }}</small>
-                                        
-                                        <!-- <button class="btn btn-success btn-sm w-100 mt-2 rounded-pill">Enquire Now</button> -->
-                                    </div>
+                    </div>
+
+                       <div class="mt-auto text-center pt-2">
+                        <small class="text-muted d-block fw-medium">
+                            {{ p.store.name }} • {{ p.store.city }}
+                        </small>
+                    </div>                       
+                                      
+                </div> 
                     </div>
                 </a>
             </div>
             {% endfor %}
         </div>
         <div class="text-center mt-5">
-            <a href="{% url 'all_products' %}?filter=special" class="btn btn-lg px-5 py-3 rounded-pill shadow-lg fw-bold">
-                View All Special Offers
-            </a>
+          <a href="{% url 'all_products' %}?filter=special" class="btn btn-lg px-5 py-3 rounded-pill shadow-lg fw-bold">
+    View All Special Offers
+</a>
         </div>
     </div>
 </section>
@@ -360,27 +447,45 @@
                             <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow-lg fw-bold">NEW</span>
                         </div>
                         <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:230px;object-fit:cover;">
-                              <div class="card-body text-center p-3">
-                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:10 }}</h6>
-                                         <small class="text-dark mb-2">{{ p.short_desc }}</small><br>
-                                               {% if p.get_striked_price %}
-                        <del class=" fs-6 fw-bold text-danger">₹{{ p.regular_price }}</del>
+                             
+                      <div class="card-body text-center p-3 flex flex-column">
+                                     <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">
+                        {{ p.name }}
+                    </h6>
+                    <!-- Short Description — Optional 1 line -->
+                    {% if p.short_desc %}
+                    <p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>
+                    {% endif %}
+                                          
+                       <!-- Price Section — PERFECTLY CENTERED & CLEAN -->
+                    <div class="mt-auto text-center">
+                        {% if p.offer_price and p.offer_price < p.regular_price %}
+                            <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                                <span class="text-success fs-5 fw-bold">₹{{ p.offer_price }}</span>
+                               <del class="text-muted fw-bold fs-6 opacity-75" style="text-decoration-thickness: 2.5px; opacity: 0.9;">₹{{ p.regular_price }}</del>
+                                <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
+                            </div>
+                        {% else %}
+                            <span class="text-success fs-5 fw-bold">₹{{ p.regular_price }}</span>
                         {% endif %}
-                         <span class="badge bg-danger">{{ p.discount_percent }}% OFF</span>
-                                        <p class="text-success fs-4 fw-bold">₹{{ p.offer_price }}</p>
-                                        <small class="text-muted d-block">{{ p.store.name }} • {{ p.store.city }}</small>
-                                        
-                                        <!-- <button class="btn btn-success btn-sm w-100 mt-2 rounded-pill">Enquire Now</button> -->
-                                    </div>
                     </div>
+
+                       <div class="mt-auto text-center pt-2">
+                        <small class="text-muted d-block fw-medium">
+                            {{ p.store.name }} • {{ p.store.city }}
+                        </small>
+                    </div>                       
+                                      
+                </div> 
+            </div>
                 </a>
             </div>
             {% endfor %}
         </div>
         <div class="text-center mt-5">
-            <a href="{% url 'all_products' %}?filter=new" class="btn btn-light btn-lg px-5 py-3 rounded-pill shadow-lg text-success fw-bold">
-                View All New Arrivals
-            </a>
+         <a href="{% url 'all_products' %}?filter=new" class="btn btn-light btn-lg px-5 py-3 rounded-pill shadow-lg text-success fw-bold">
+    View All New Arrivals
+</a>
         </div>
     </div>
 </section>
@@ -395,8 +500,8 @@
     <div class="container py-2">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="text-success fw-bold fs-2 mb-0">FEATURED PRODUCTS</h2>
-            <a href="{% url 'featured' %}" class="btn btn-outline-success rounded-pill px-4">View All</a>
-        </div>
+           <a href="{% url 'all_products' %}?filter=featured" class="btn btn-outline-success rounded-pill px-4">View All</a>
+         </div>
 
         <div class="swiper mySwiper featured-swiper">
             <div class="swiper-wrapper">
@@ -409,18 +514,35 @@
                                     <div class="position-absolute bg-warning text-dark fw-bold px-3 py-1" style="top:20px;left:-10px;z-index:10;">-{{ p.discount_percent }}%</div>
                                     {% endif %}
                                     <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:230px;object-fit:cover;">
-                                          <div class="card-body text-center p-3">
-                                        <h6 class="fw-bold text-dark">{{ p.name|truncatewords:10 }}</h6>
-                                         <small class="text-dark mb-2">{{ p.short_desc }}</small><br>
-                                               {% if p.get_striked_price %}
-                        <del class=" fs-6 fw-bold text-danger">₹{{ p.regular_price }}</del>
+                                           <div class="card-body text-center p-3 flex flex-column">
+                                     <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">
+                        {{ p.name }}
+                    </h6>
+                    <!-- Short Description — Optional 1 line -->
+                    {% if p.short_desc %}
+                    <p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>
+                    {% endif %}
+                                          
+                       <!-- Price Section — PERFECTLY CENTERED & CLEAN -->
+                    <div class="mt-auto text-center">
+                        {% if p.offer_price and p.offer_price < p.regular_price %}
+                            <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                                <span class="text-success fs-5 fw-bold">₹{{ p.offer_price }}</span>
+                               <del class="text-muted fw-bold fs-6 opacity-75" style="text-decoration-thickness: 2.5px; opacity: 0.9;">₹{{ p.regular_price }}</del>
+                                <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
+                            </div>
+                        {% else %}
+                            <span class="text-success fs-5 fw-bold">₹{{ p.regular_price }}</span>
                         {% endif %}
-                         <span class="badge bg-danger">{{ p.discount_percent }}% OFF</span>
-                                        <p class="text-success fs-4 fw-bold">₹{{ p.offer_price }}</p>
-                                        <small class="text-muted d-block">{{ p.store.name }} • {{ p.store.city }}</small>
-                                        
-                                        <!-- <button class="btn btn-success btn-sm w-100 mt-2 rounded-pill">Enquire Now</button> -->
-                                    </div>
+                    </div>
+
+                       <div class="mt-auto text-center pt-2">
+                        <small class="text-muted  d-block fw-medium">
+                            {{ p.store.name }} • {{ p.store.city }}
+                        </small>
+                    </div>                       
+                                      
+                </div> 
                                 </div>
                             </a>
 

@@ -1,4 +1,3 @@
-# tms/admin.py → FINAL FIXED VERSION
 
 from django.contrib import admin
 from django.utils.text import slugify
@@ -16,9 +15,9 @@ class StoreAdminInline(admin.TabularInline):
 class StoreBannerInline(admin.TabularInline):
     model = StoreBanner
     extra = 1
-    fields = ('image', 'caption', 'is_active')
-    verbose_name = "Extra Banner"
-    verbose_name_plural = "Extra Banners (for Home Page)"
+    fields = ('image_desktop', 'image_mobile', 'link', 'caption', 'is_active', 'order')
+    verbose_name = "Homepage Banner"
+    verbose_name_plural = "Homepage Banners"
 
 
 @admin.register(Store)
@@ -64,11 +63,29 @@ class ProductAdmin(admin.ModelAdmin):
     is_deal_active.boolean = True
 
 
+
 @admin.register(StoreBanner)
 class StoreBannerAdmin(admin.ModelAdmin):
-    list_display = ['store', 'is_active', 'created_at']
-    list_filter = ['is_active', 'store']
-    search_fields = ['store__name']
+    list_display = ['store', 'caption', 'is_active', 'order', 'created_at']
+    list_filter = ['store', 'is_active']
+    search_fields = ['store__name', 'caption']
+    readonly_fields = ['store']  # Show store but don't allow edit
+
+    def save_model(self, request, obj, form, change):
+        if not change and not obj.store_id:
+            # Get store from URL (superadmin adding banner for a store)
+            store_id = request.GET.get('store')
+            if store_id:
+                obj.store_id = store_id
+            else:
+                obj.store = Store.objects.first()
+        super().save_model(request, obj, form, change)
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'store' in form.base_fields:
+            form.base_fields['store'].queryset = Store.objects.all()
+        return form
 
 
 @admin.register(Lead)

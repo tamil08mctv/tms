@@ -62,10 +62,13 @@ def home(request):
     ).select_related('store', 'category').prefetch_related('images')[:20]
 
     # BANNERS
-    banners = StoreBanner.objects.filter(is_active=True).order_by('-created_at')
-    if not banners.exists():
-        banners = Store.objects.filter(is_active=True, banner__isnull=False)
-
+    all_store_banners = StoreBanner.objects.filter(
+        is_active=True,
+        store__is_active=True
+    ).order_by('order', '-created_at')
+    
+    
+    
     context.update({
         'stores': Store.objects.filter(is_active=True)[:8],
         'deals_of_day': deals,
@@ -75,7 +78,7 @@ def home(request):
         'special_offers': special_offers,
         'new_arrivals': new_arrivals,
         'categories_all': Category.objects.all()[:12],
-        'all_store_banners': banners,
+        'all_store_banners': all_store_banners,
 
         # FOR CONDITIONAL DISPLAY IN TEMPLATE
         'has_deals': deals.exists(),
@@ -109,49 +112,43 @@ def all_products(request):
     # FILTERS
     category_slug = request.GET.get('category')
     store_slug = request.GET.get('store')
-    filter_type = request.GET.get('filter')
+    filter_type = request.GET.get('filter', '').lower()  # ← THIS IS CRITICAL
 
     if category_slug:
         products = products.filter(category__slug=category_slug)
     if store_slug:
         products = products.filter(store__slug=store_slug)
 
-    # TYPE FILTER
-    if filter_type == 'bestselling':
+    # MAIN FILTER LOGIC — FROM HOME PAGE LINKS
+    if filter_type == 'deals':
+        products = products.filter(deal_end_date__gte=today)
+    elif filter_type == 'bestselling':
         products = products.filter(is_best_seller=True)
     elif filter_type == 'limited':
         products = products.filter(is_limited_deal=True)
     elif filter_type == 'special':
         products = products.filter(is_special_offer=True)
-    elif filter_type == 'deals':
-        products = products.filter(deal_end_date__gte=today)
     elif filter_type == 'new':
-        seven_days_ago = timezone.now() - timedelta(days=7)
         products = products.filter(created_at__gte=seven_days_ago)
+    elif filter_type == 'featured':
+        products = products.filter(is_featured=True)
 
-    # SORTING
-    sort = request.GET.get('sort', '')
-    if sort == 'price_low':
-        products = products.order_by('offer_price', '-created_at')
-    elif sort == 'price_high':
-        products = products.order_by('-offer_price', '-created_at')
-    elif sort == 'new':
-        products = products.order_by('-created_at')
-    else:
-        products = products.order_by('-created_at')
+  
 
-    # PAGINATION — THIS LINE WAS WRONG!
-    paginator = Paginator(products, 25)
+    # Default Sort
+    products = products.order_by('name')
+
+    # Pagination
+    paginator = Paginator(products, 60)
     page = request.GET.get('page')
-    products_page = paginator.get_page(page)   # CORRECT LINE!
+    products_page = paginator.get_page(page)
 
-    current_category = Category.objects.filter(slug=category_slug).first() if category_slug else None
-    current_store = Store.objects.filter(slug=store_slug).first() if store_slug else None
-
+    # SEND FILTER TYPE TO TEMPLATE
     context.update({
         'products': products_page,
-        'current_category': current_category,
-        'current_store': current_store,
+        'filter_type': filter_type,  # ← THIS MAKES TITLE & BUTTONS WORK!
+        'current_category': Category.objects.filter(slug=category_slug).first() if category_slug else None,
+        'current_store': Store.objects.filter(slug=store_slug).first() if store_slug else None,
         'categories_all': Category.objects.all(),
         'stores_all': Store.objects.filter(is_active=True),
         'seven_days_ago': seven_days_ago,

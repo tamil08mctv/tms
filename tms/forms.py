@@ -58,14 +58,6 @@ class CategoryForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Ex: Sofas, Beds, Dining Tables'}),
         }
 
-
-class StoreBannerForm(forms.ModelForm):
-    class Meta:
-        model = StoreBanner
-        fields = ['image', 'caption', 'is_active']
-        widgets = {
-            'caption': forms.TextInput(attrs={'placeholder': 'Optional caption'}),
-        }
 class StoreForm(forms.ModelForm):
     admin_username = forms.CharField(max_length=150)
     admin_password = forms.CharField(widget=forms.PasswordInput())
@@ -86,10 +78,20 @@ class StoreUpdateForm(forms.ModelForm):
             'address': forms.Textarea(attrs={'rows': 3}),
         }
 
+
+# tms/forms.py → ONLY THIS ONE StoreBannerForm
 class StoreBannerForm(forms.ModelForm):
     class Meta:
         model = StoreBanner
-        fields = ['image', 'caption', 'is_active']
+        fields = [
+            'image_desktop', 'image_tablet', 'image_mobile',
+            'link', 'caption', 'is_active', 'order'
+        ]
         widgets = {
-            'caption': forms.TextInput(attrs={'placeholder': 'Optional caption'}),
+            'image_desktop': forms.FileInput(attrs={'class': 'form-control'}),
+            'image_tablet': forms.FileInput(attrs={'class': 'form-control'}),
+            'image_mobile': forms.FileInput(attrs={'class': 'form-control'}),
+            'link': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https:// or /products/?filter=deals'}),
+            'caption': forms.TextInput(attrs={'class': 'form-control'}),
+            'order': forms.NumberInput(attrs={'class': 'form-control', 'min': '0', 'value': '0'}),
         }

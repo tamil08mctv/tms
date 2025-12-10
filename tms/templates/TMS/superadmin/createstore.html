@@ -1,185 +1,177 @@
 {% extends 'TMS/superadmin/base_superadmin.html' %}
 {% load crispy_forms_tags %}
-{% block title %}{% if store %}Edit Store - {{ store.name }}{% else %}Create New Store{% endif %}{% endblock %}
 
-{% block content %}
-<div class="container-fluid py-5">
-
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-5">
-        <div>
-            <h1 class="display-5 fw-bold text-primary mb-2">
-                {% if store %}
-                    Edit Store
-                {% else %}
-                    Create New Showroom
-                {% endif %}
-            </h1>
-            {% if store %}
-                <p class="text-muted fs-5">
-                    <i class="fas fa-store text-primary"></i> 
-                    <strong>{{ store.name }}</strong> • {{ store.city }}
-                </p>
-            {% else %}
-                <p class="text-muted lead">Launch a new TMS showroom + admin account in 2 minutes</p>
-            {% endif %}
-        </div>
-        <a href="{% url 'store_list_super' %}" class="btn btn-outline-primary btn-lg rounded-pill px-5 shadow-sm">
-            All Stores
-        </a>
-    </div>
-
-    <!-- Main Form Card -->
-    <div class="card-modern border-0">
-        <div class="card-header text-white text-center py-5 rounded-top" 
-             style="background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);">
-            <h2 class="mb-0 fw-bold">
-                {% if store %}Update Store Details{% else %}Setup New Showroom + Admin{% endif %}
-            </h2>
-        </div>
-
-        <div class="card-body p-5 bg-white">
-            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
-                {% csrf_token %}
-
-                <!-- BASIC STORE INFO -->
-                <div class="row g-4 mb-5">
-                    <div class="col-lg-6">
-                        {{ form.name|as_crispy_field }}
-                    </div>
-                    <div class="col-lg-6">
-                        {{ form.city|as_crispy_field }}
-                    </div>
-                    <div class="col-12">
-                        {{ form.address|as_crispy_field }}
-                    </div>
-
-                    <div class="col-md-4">
-                        {{ form.phone|as_crispy_field }}
-                    </div>
-                    <div class="col-md-4">
-                        {{ form.whatsapp|as_crispy_field }}
-                    </div>
-                    <div class="col-md-4">
-                        {{ form.email|as_crispy_field }}
-                    </div>
-
-                    <div class="col-md-8">
-                        {{ form.working_hours|as_crispy_field }}
-                    </div>
-                    <div class="col-md-4 d-flex align-items-end">
-                        <div class="form-check form-switch">
-                            {{ form.is_active }}
-                            <label class="form-check-label fw-bold ms-3 text-primary">Store Active</label>
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="my-5 border-secondary opacity-25">
-
-                <!-- SOCIAL & MAP -->
-                <h4 class="fw-bold text-primary mb-4">Social Media & Location</h4>
-                <div class="row g-4 mb-5">
-                    <div class="col-md-6">{{ form.facebook|as_crispy_field }}</div>
-                    <div class="col-md-6">{{ form.instagram|as_crispy_field }}</div>
-                    <div class="col-md-6">{{ form.youtube|as_crispy_field }}</div>
-                    <div class="col-md-6">{{ form.map_link|as_crispy_field }}</div>
-                </div>
-
-                <hr class="my-5 border-secondary opacity-25">
-
-                <!-- IMAGES -->
-                <h4 class="fw-bold text-primary mb-4">Store Images</h4>
-                <div class="row g-4 mb-5">
-                    <div class="col-md-6">
-                        {{ form.logo|as_crispy_field }}
-                        {% if store.logo %}
-                        <div class="mt-3 text-center">
-                            <img src="{{ store.logo.url }}" class="img-thumbnail rounded-4 shadow-sm" style="max-height: 120px;">
-                            <p class="small text-success mt-2">Current Logo</p>
-                        </div>
-                        {% endif %}
-                    </div>
-                    <div class="col-md-6">
-                        {{ form.banner|as_crispy_field }}
-                        {% if store.banner %}
-                        <div class="mt-3 text-center">
-                            <img src="{{ store.banner.url }}" class="img-thumbnail rounded-4 shadow-sm" style="max-height: 120px;">
-                            <p class="small text-success mt-2">Current Banner</p>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <!-- ADMIN CREDENTIALS (ONLY WHEN CREATING) -->
-                {% if not store %}
-                <hr class="my-5 border-danger opacity-50">
-                <div class="bg-light rounded-4 p-4 border border-danger border-2">
-                    <h4 class="fw-bold text-danger mb-4">
-                        Create Store Admin Account
-                    </h4>
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            {{ form.admin_username|as_crispy_field }}
-                        </div>
-                        <div class="col-md-6">
-                            {{ form.admin_password|as_crispy_field }}
-                        </div>
-                    </div>
-                    <small class="text-muted d-block mt-3">
-                        This admin will have full access to this store's dashboard
-                    </small>
-                </div>
-                {% endif %}
-
-                <!-- CURRENT ADMIN (ON EDIT) -->
-                {% if store %}
-                <hr class="my-5 border-info opacity-50">
-                <div class="bg-info bg-opacity-10 rounded-4 p-4 border border-info">
-                    <h5 class="fw-bold text-primary mb-3">Current Store Admin(s)</h5>
-                    {% for admin in store.store_admins.all %}
-                        <span class="badge bg-primary fs-6 me-2 mb-2">{{ admin.user.username }}</span>
-                    {% empty %}
-                        <p class="text-muted">No admin assigned</p>
-                    {% endfor %}
-                    <small class="text-muted d-block mt-3">
-                        To change admin: Disable store → Create new one with new admin
-                    </small>
-                </div>
-                {% endif %}
-
-                <!-- SUBMIT BUTTON -->
-                <div class="text-center mt-5">
-                    <button type="submit" class="btn btn-success btn-lg px-5 py-3 rounded-pill shadow-lg fw-bold fs-5">
-                        {% if store %}
-                            Update Store
-                        {% else %}
-                            Create Store & Admin
-                        {% endif %}
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-</div>
+{% block title %}
+    {% if store %}Edit Store - {{ store.name }}{% else %}Create New Store{% endif %}
 {% endblock %}
 
-{% block extra_css %}
+{% block content %}
+<div class="container py-2">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10 col-xl-8">
+
+            <!-- Header -->
+            <div class="text-center mb-3">
+                <h1 class="display-5 fw-bold text-primary mb-3">
+                    {% if store %}Edit Store{% else %}Create New Showroom{% endif %}
+                </h1>
+                {% if store %}
+                <p class="text-muted fs-5">
+                    <i class="fas fa-store"></i> {{ store.name }} • {{ store.city }}
+                </p>
+                {% else %}
+                <p class="text-muted lead">Launch a new showroom + admin in 2 minutes</p>
+                {% endif %}
+            </div>
+
+            <!-- Clean & Compact Card -->
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h3 class="mb-0 fw-bold">
+                        {% if store %}Update Store Details{% else %}Setup New Store + Admin{% endif %}
+                    </h3>
+                </div>
+
+                <div class="card-body p-3">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- Store Info -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                {{ form.name|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.city|as_crispy_field }}
+                            </div>
+                            <div class="col-12">
+                                {{ form.address|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-4">
+                                {{ form.phone|as_crispy_field }}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.whatsapp|as_crispy_field }}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.email|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-8">
+                                {{ form.working_hours|as_crispy_field }}
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <div class="form-check form-switch">
+                                    {{ form.is_active }}
+                                    <label class="form-check-label fw-bold ms-3 text-success">Store Active</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Social Links -->
+                        <h5 class="fw-bold text-primary mb-3">Social Media & Map</h5>
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">{{ form.facebook|as_crispy_field }}</div>
+                            <div class="col-md-6">{{ form.instagram|as_crispy_field }}</div>
+                            <div class="col-md-6">{{ form.youtube|as_crispy_field }}</div>
+                            <div class="col-md-6">{{ form.map_link|as_crispy_field }}</div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Logo Upload -->
+                        <h5 class="fw-bold text-primary mb-3">Store Logo</h5>
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                {{ form.logo|as_crispy_field }}
+                                {% if store.logo %}
+                                <div class="mt-3 text-center">
+                                    <img src="{{ store.logo.url }}" class="img-thumbnail rounded-4" style="max-height: 100px;">
+                                    <p class="small text-success mt-2">Current Logo</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Admin Credentials (Only on Create) -->
+                        {% if not store %}
+                        <hr class="my-4 border-danger">
+                        <div class="bg-danger bg-opacity-10 rounded-4 p-4 border border-danger">
+                            <h5 class="fw-bold text-danger mb-3">Create Store Admin Account</h5>
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    {{ form.admin_username|as_crispy_field }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.admin_password|as_crispy_field }}
+                                </div>
+                            </div>
+                            <small class="text-muted d-block mt-3">
+                                This user will have full access to this store's dashboard
+                            </small>
+                        </div>
+                        {% endif %}
+
+                        <!-- Current Admins (On Edit) -->
+                        {% if store %}
+                        <hr class="my-4">
+                        <div class="bg-info bg-opacity-10 rounded-4 p-4 border border-info">
+                            <h5 class="fw-bold text-primary mb-3">Current Admin(s)</h5>
+                            {% for admin in store.store_admins.all %}
+                                <span class="badge bg-primary fs-6 me-2 mb-2">{{ admin.user.username }}</span>
+                            {% empty %}
+                                <p class="text-muted mb-0">No admin assigned</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Submit Button -->
+                        <div class="text-center mt-3">
+                            <button type="submit" class="btn btn-success btn-lg px-5 py-3 rounded-pill shadow-lg fw-bold">
+                                {% if store %}Update Store{% else %}Create Store & Admin{% endif %}
+                            </button>
+                            <a href="{% url 'store_list_super' %}" class="btn btn-outline-secondary btn-lg px-5 py-3 rounded-pill ms-3">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Clean Styling -->
 <style>
-    .form-control, .form-check-input {
-        border-radius: 12px !important;
+    .card {
+        border-radius: 20px !important;
+    }
+    .form-control, .form-select {
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e0e0e0;
     }
     .form-control:focus {
-        border-color: #1e40af;
-        box-shadow: 0 0 0 0.25rem rgba(30, 64, 175, 0.25);
-    }
-    .crispy-forms .form-group {
-        margin-bottom: 1.5rem;
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
     }
     .form-check-input:checked {
-        background-color: #111212;
-        border-color: #1e40af;
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    .btn {
+        border-radius: 12px !important;
+    }
+    @media (max-width: 768px) {
+        .display-5 { font-size: 2rem; }
+        .btn-lg { padding: 0.75rem 1.5rem; font-size: 1rem; }
     }
 </style>
 {% endblock %}

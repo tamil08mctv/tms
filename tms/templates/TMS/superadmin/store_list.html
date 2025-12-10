@@ -14,8 +14,8 @@
         {% for store in stores %}
         <div class="col-lg-3 col-md-4 col-sm-6 justify-content-center">
             <div class="card-modern h-100">
-                {% if store.banner %}
-                <img src="{{ store.banner.url }}" class="card-img-top" style="height:180px; object-fit:cover;">
+                {% if store.logo %}
+                <img src="{{ store.logo.url }}" class="card-img-top" style="height:180px; object-fit:cover;">
                 {% endif %}
                 <div class="card-body text-center">
                     <h5 class="fw-bold">{{ store.name }}</h5>

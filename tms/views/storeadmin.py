@@ -152,38 +152,66 @@ def delete_product(request, pk):
         messages.success(request, "Product deleted!")
     return redirect('store_products')
 
-
+# tms/views/storeadmin.py → FINAL 100% WORKING SINGLE PAGE
 @login_required
 def store_banners(request):
     if not hasattr(request.user, 'storeadmin'):
         return redirect('login')
     
     store = request.user.storeadmin.store
-    banners = StoreBanner.objects.filter(store=store).order_by('-created_at')
+    banners = StoreBanner.objects.filter(store=store).order_by('order', '-created_at')
 
-    if request.method == 'POST':
+    # ADD NEW BANNER
+    if request.method == 'POST' and 'add_banner' in request.POST:
         form = StoreBannerForm(request.POST, request.FILES)
         if form.is_valid():
             banner = form.save(commit=False)
             banner.store = store
             banner.save()
-            messages.success(request, "Banner added!")
+            messages.success(request, "Banner added successfully!")
             return redirect('store_banners')
     else:
         form = StoreBannerForm()
 
-    return render(request, 'TMS/storeadmin/banners.html', {
-        'store': store, 'banners': banners, 'form': form
-    })
+    # EDIT BANNER
+    edit_form = None
+    edit_id = request.GET.get('edit')
+    if edit_id:
+        banner = get_object_or_404(StoreBanner, pk=edit_id, store=store)
+        if request.method == 'POST' and 'update_banner' in request.POST:
+            edit_form = StoreBannerForm(request.POST, request.FILES, instance=banner)
+            if edit_form.is_valid():
+                edit_form.save()
+                messages.success(request, "Banner updated!")
+                return redirect('store_banners')
+        else:
+            edit_form = StoreBannerForm(instance=banner)
 
+    # TOGGLE
+    if request.GET.get('toggle'):
+        banner = get_object_or_404(StoreBanner, pk=request.GET['toggle'], store=store)
+        banner.is_active = not banner.is_active
+        banner.save()
+        messages.success(request, "Status changed!")
+        return redirect('store_banners')
 
-@login_required
-def delete_banner(request, pk):
-    banner = get_object_or_404(StoreBanner, pk=pk, store=request.user.storeadmin.store)
-    if request.method == 'POST':
+    # DELETE
+    if request.method == 'POST' and 'delete_banner' in request.POST:
+        banner = get_object_or_404(StoreBanner, pk=request.POST['delete_banner'], store=store)
         banner.delete()
         messages.success(request, "Banner deleted!")
-    return redirect('store_banners')
+        return redirect('store_banners')
+
+    context = {
+        'store': store,
+        'banners': banners,
+        'form': form,
+        'edit_form': edit_form,
+        'edit_id': edit_id,
+    }
+    return render(request, 'TMS/storeadmin/banners.html', context)
+
+
 
 @login_required
 def store_leads(request):
