@@ -112,14 +112,14 @@ def all_products(request):
     # FILTERS
     category_slug = request.GET.get('category')
     store_slug = request.GET.get('store')
-    filter_type = request.GET.get('filter', '').lower()  # ← THIS IS CRITICAL
+    filter_type = request.GET.get('filter', '').lower()
 
     if category_slug:
         products = products.filter(category__slug=category_slug)
     if store_slug:
         products = products.filter(store__slug=store_slug)
 
-    # MAIN FILTER LOGIC — FROM HOME PAGE LINKS
+    # MAIN FILTER LOGIC
     if filter_type == 'deals':
         products = products.filter(deal_end_date__gte=today)
     elif filter_type == 'bestselling':
@@ -133,20 +133,27 @@ def all_products(request):
     elif filter_type == 'featured':
         products = products.filter(is_featured=True)
 
-  
-
-    # Default Sort
-    products = products.order_by('name')
+    # SORT
+    from django.db.models.functions import Coalesce
+    products = products.annotate(effective_price=Coalesce('offer_price', 'regular_price'))
+    sort = request.GET.get('sort')
+    if sort == 'price_low':
+        products = products.order_by('effective_price')
+    elif sort == 'price_high':
+        products = products.order_by('-effective_price')
+    elif sort == 'newest':
+        products = products.order_by('-created_at')
+    else:
+        products = products.order_by('name')
 
     # Pagination
     paginator = Paginator(products, 60)
     page = request.GET.get('page')
     products_page = paginator.get_page(page)
 
-    # SEND FILTER TYPE TO TEMPLATE
     context.update({
         'products': products_page,
-        'filter_type': filter_type,  # ← THIS MAKES TITLE & BUTTONS WORK!
+        'filter_type': filter_type,
         'current_category': Category.objects.filter(slug=category_slug).first() if category_slug else None,
         'current_store': Store.objects.filter(slug=store_slug).first() if store_slug else None,
         'categories_all': Category.objects.all(),
@@ -158,67 +165,68 @@ def all_products(request):
 # def all_products(request):
 #     context = get_common_context()
 #     today = date.today()
+#     seven_days_ago = timezone.now() - timedelta(days=7)
 
-#     products = Product.objects.filter(store__is_active=True).select_related('store', 'category').prefetch_related('images').order_by('name')
+#     products = Product.objects.filter(store__is_active=True)\
+#         .select_related('store', 'category')\
+#         .prefetch_related('images')
 
-#     # GET PARAMETERS
+#     # SEARCH
 #     q = request.GET.get('q', '').strip()
-#     category_slug = request.GET.get('category')
-#     sort = request.GET.get('sort')  # new, price_low, price_high
+#     if q:
+#         products = products.filter(
+#             Q(name__icontains=q) |
+#             Q(short_desc__icontains=q) |
+#             Q(store__name__icontains=q)
+#         )
 
 #     # FILTERS
-#     if q:
-#         products = products.filter(Q(name__icontains=q) | Q(short_desc__icontains=q) | Q(store__name__icontains=q))
+#     category_slug = request.GET.get('category')
+#     store_slug = request.GET.get('store')
+#     filter_type = request.GET.get('filter', '').lower()  # ← THIS IS CRITICAL
+
 #     if category_slug:
 #         products = products.filter(category__slug=category_slug)
+#     if store_slug:
+#         products = products.filter(store__slug=store_slug)
 
-#     # SORTING — FIXED!
-#     if sort == 'price_low':
-#         products = products.order_by('offer_price', '-created_at')
-#     elif sort == 'price_high':
-#         products = products.order_by('-offer_price', '-created_at')
-#     elif sort == 'new':
-#         products = products.order_by('-created_at')
-#     else:
-#         products = products.order_by('-created_at')  # default
+#     # MAIN FILTER LOGIC — FROM HOME PAGE LINKS
+#     if filter_type == 'deals':
+#         products = products.filter(deal_end_date__gte=today)
+#     elif filter_type == 'bestselling':
+#         products = products.filter(is_best_seller=True)
+#     elif filter_type == 'limited':
+#         products = products.filter(is_limited_deal=True)
+#     elif filter_type == 'special':
+#         products = products.filter(is_special_offer=True)
+#     elif filter_type == 'new':
+#         products = products.filter(created_at__gte=seven_days_ago)
+#     elif filter_type == 'featured':
+#         products = products.filter(is_featured=True)
 
-#     # PAGINATION
-#     paginator = Paginator(products, 24)
+  
+
+#     # Default Sort
+#     products = products.order_by('name')
+
+#     # Pagination
+#     paginator = Paginator(products, 60)
 #     page = request.GET.get('page')
 #     products_page = paginator.get_page(page)
 
-#     # Current category object for title
-#     current_category = None
-#     if category_slug:
-#         try:
-#             current_category = Category.objects.get(slug=category_slug)
-#         except:
-#             pass
-
+#     # SEND FILTER TYPE TO TEMPLATE
 #     context.update({
 #         'products': products_page,
-#         'categories': Category.objects.all(),
-#         'current_category': current_category,
-#         'categories_all': Category.objects.all()[:20],
+#         'filter_type': filter_type,  # ← THIS MAKES TITLE & BUTTONS WORK!
+#         'current_category': Category.objects.filter(slug=category_slug).first() if category_slug else None,
+#         'current_store': Store.objects.filter(slug=store_slug).first() if store_slug else None,
+#         'categories_all': Category.objects.all(),
+#         'stores_all': Store.objects.filter(is_active=True),
+#         'seven_days_ago': seven_days_ago,
 #     })
 #     return render(request, 'TMS/public/allproducts.html', context)
 
 
-# def home(request):
-#     context = get_common_context()
-#     today = date.today()
-#     deals = Product.objects.filter(
-#         price_style='deal',
-#         deal_end_date__gte=today,
-#         store__is_active=True
-#     )[:20]
-
-#     context.update({
-#         'stores': Store.objects.filter(is_active=True)[:8],
-#         'deals_of_day': deals,
-#         'featured_products': Product.objects.filter(is_featured=True)[:20],
-#     })
-#     return render(request, 'TMS/public/home.html', context)
 
 def store_list(request):
     context = get_common_context()
@@ -243,18 +251,42 @@ def store_detail(request, slug):
     context = get_common_context()
     store = get_object_or_404(Store, slug=slug, is_active=True)
     
-    # PRE-FETCH DEALS & FEATURED FOR THIS STORE ONLY
-    store_deals = store.products.filter(
-        deal_end_date__gte=date.today(),
-    )
-    featured_store = store.products.filter(is_featured=True)
+    today = date.today()
+    seven_days_ago = timezone.now() - timedelta(days=7)
+
+    # ALL PRODUCTS FROM THIS STORE
+    store_products = store.products.filter(store__is_active=True)\
+        .select_related('category')\
+        .prefetch_related('images')
+
+    # PRE-COMPUTE ALL SECTIONS (THIS FIXES THE ERROR!)
+    store_deals = store_products.filter(deal_end_date__gte=today)[:20]
+    store_best_sellers = store_products.filter(is_best_seller=True)[:20]
+    store_new_arrivals = store_products.filter(created_at__gte=seven_days_ago)[:20]
+    store_limited_deals = store_products.filter(is_limited_deal=True)[:20]
+    store_special_offers = store_products.filter(is_special_offer=True)[:20]
+    store_featured = store_products.filter(is_featured=True)[:20]
 
     context.update({
         'store': store,
+        
+        # Pass the actual querysets (already filtered & sliced)
         'store_deals': store_deals,
-        'featured_store': featured_store,
-        'products': store.products.all(),  # fallback
+        'store_best_sellers': store_best_sellers,
+        'store_new_arrivals': store_new_arrivals,
+        'store_limited_deals': store_limited_deals,
+        'store_special_offers': store_special_offers,
+        'store_featured': store_featured,
+
+        # For conditional display — use .exists() safely
+        'has_store_deals': store_deals.exists(),
+        'has_store_best_sellers': store_best_sellers.exists(),
+        'has_store_new_arrivals': store_new_arrivals.exists(),
+        'has_store_limited_deals': store_limited_deals.exists(),
+        'has_store_special_offers': store_special_offers.exists(),
+        'has_store_featured': store_featured.exists(),
     })
+    
     return render(request, 'TMS/public/storedetail.html', context)
 
 def product_list(request, store_slug):
@@ -268,8 +300,6 @@ def product_list(request, store_slug):
         'categories': store.categories.all()
     })
     return render(request, 'TMS/public/productlist.html', context)
-
-
 
 from django.http import JsonResponse
 from django.utils import timezone
@@ -337,45 +367,6 @@ def product_detail(request, store_slug, product_slug):
     })
     return render(request, 'TMS/public/productdetail.html', context)
 
-
-
-from django.core.paginator import Paginator
-
-def deals_view(request):
-    today = date.today()
-    deals = Product.objects.filter(
-        deal_end_date__gte=today,
-        store__is_active=True
-    ).select_related('store').prefetch_related('images').order_by('-created_at')
-
-    paginator = Paginator(deals, 40)  # 40 per page
-    page = request.GET.get('page')
-    products = paginator.get_page(page)
-
-    context = get_common_context()
-    context.update({
-        'products': products,
-        'page_title': 'Deals of the Day',
-    })
-    return render(request, 'TMS/public/deals.html', context)
-
-
-def featured_view(request):
-    featured = Product.objects.filter(
-        is_featured=True,
-        store__is_active=True
-    ).select_related('store').prefetch_related('images').order_by('-created_at')
-
-    paginator = Paginator(featured, 40)
-    page = request.GET.get('page')
-    products = paginator.get_page(page)
-
-    context = get_common_context()
-    context.update({
-        'products': products,
-        'page_title': 'Featured Products',
-    })
-    return render(request, 'TMS/public/featured.html', context)
 
 def categories_page(request):
     categories_list = Category.objects.annotate(

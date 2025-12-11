@@ -5,8 +5,8 @@ from django.contrib.auth import views as auth_views
 # Import all views properly
 from .views.public import (
     home, all_products, store_list, store_detail, 
-    product_list, product_detail, deals_view, 
-    featured_view, categories_page
+    product_list, product_detail,
+    categories_page
 )
 from .views.storeadmin import (
     store_dashboard, store_products, edit_product, delete_product,
@@ -27,8 +27,6 @@ urlpatterns = [
     path('store/<slug:slug>/', store_detail, name='store_detail'),
     path('store/<slug:store_slug>/products/', product_list, name='product_list'),
     path('store/<slug:store_slug>/product/<slug:product_slug>/', product_detail, name='product_detail'),
-    path('deals/', deals_view, name='deals'),
-    path('featured/', featured_view, name='featured'),
     path('categories/', categories_page, name='categories_page'),
 
     # ==================== STORE ADMIN PANEL ====================
