@@ -3,291 +3,713 @@
 {% block title %}{{ product.name }} - {{ product.store.name }}{% endblock %}
 
 {% block content %}
-<div class="container py-3">
-    <div class="row g-2">
 
-        <!-- LEFT: IMAGE GALLERY — 420×420 PX + CENTERED -->
-        <div class="col-lg-6">
-            <div class="sticky-top" style="top: 20px;">
-                <!-- Main Image — EXACTLY 420×420 PX + CENTERED -->
-                <div class="d-flex justify-content-center mb-4">
-                    <div class="position-relative rounded-4 overflow-hidden shadow-lg bg-white" id="zoomContainer">
-                        <img id="mainImage" 
-                             src="{{ product.images.first.image.url|default:'https://via.placeholder.com/600' }}"
-                             class="img-fluid rounded-4" 
-                             style="width: 560px; height: 440px; object-fit: cover; cursor: zoom-in; transition: transform 0.5s ease;"
-                             alt="{{ product.name }}">
-
-                        <!-- Badges -->
-                        <div class="position-absolute top-0 start-0 p-3">
-                            {% if product.is_deal_active %}
-                            <span class="badge bg-danger fs-5 px-4 py-2 rounded-pill shadow-lg fw-bold">DEAL OF THE DAY</span>
-                            {% elif product.discount_percent > 0 %}
-                            <span class="badge bg-success fs-5 px-4 py-2 rounded-pill shadow-lg fw-bold">{{ product.discount_percent }}% OFF</span>
+<div class="container-fluid px-3 px-md-3 py-4">
+    <div class="row g-4">
+        
+        <!-- LEFT: IMAGE GALLERY - Desktop: 6 cols, Mobile: 12 cols -->
+        <div class="col-12 col-lg-6">
+            <div class="sticky-top" style="top: 10px;">
+                <div class="row g-2">
+                    <!-- VERTICAL THUMBNAILS (Desktop only) -->
+                    <div class="col-auto d-none d-lg-block pe-2">
+                        <div class="d-flex flex-column gap-2" id="thumbnailStrip" style="height: 400px; overflow-y: auto;">
+                            {% for img in product.images.all %}
+                            <img src="{{ img.image.url }}" 
+                                 class="rounded-2 border border-2 flex-shrink-0 {% if forloop.first %}border-success{% else %}border-light{% endif %}"
+                                 style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                                 onclick="changeMainImage('{{ img.image.url }}', this)"
+                                 onmouseover="previewImage('{{ img.image.url }}')"
+                                 alt="Thumbnail">
+                            {% endfor %}
+                            
+                            {% if product.video %}
+                            <div class="position-relative rounded-2 border border-2 border-light flex-shrink-0" 
+                                 style="width: 60px; height: 60px; cursor: pointer;"
+                                 onclick="playVideo()"
+                                 onmouseover="previewVideo()">
+                                <div class="w-100 h-100 bg-dark rounded-2 d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-play-circle text-white fs-4"></i>
+                                </div>
+                                <div class="position-absolute bottom-0 start-0 w-100 bg-dark bg-opacity-75 text-white text-center py-1">
+                                    <small>VIDEO</small>
+                                </div>
+                            </div>
                             {% endif %}
                         </div>
                     </div>
-                </div>
-
-             
-               <!-- THUMBNAILS — HORIZONTAL SCROLL (SHOW 4-5, REST SCROLLABLE) -->
-        <div class="mt-3">
-            <div class="d-flex justify-content-center">
-                <div class="overflow-x-auto pb-2" style="max-width: 100%;">
-                    <div class="d-flex gap-4" style="min-width: max-content;">
-                        {% for img in product.images.all %}
-                        <img src="{{ img.image.url }}" 
-                             class="rounded-3 border border-3 shadow-sm flex-shrink-0 {% if forloop.first %}border-success shadow{% endif %}"
-                             style="width: 90px; height: 90px; object-fit: cover; cursor: pointer; transition: all 0.3s;"
-                             onclick="document.getElementById('mainImage').src=this.src; 
-                                      document.querySelectorAll('img.border-success').forEach(i=>i.classList.remove('border-success','shadow')); 
-                                      this.classList.add('border-success','shadow')">
-                        {% empty %}
-                        <p class="text-muted small m-3">No extra images</p>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-                {% if product.video %}
-                <div class="d-flex justify-content-center mt-4">
-                    <div class="ratio ratio-16x9 rounded-4 overflow-hidden shadow" style="max-width: 560px;">
-                        <video controls class="rounded-4 w-100">
-                            <source src="{{ product.video.url }}" type="video/mp4">
-                        </video>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- RIGHT: INFO + ENQUIRY (UNCHANGED) -->
-        <div class="col-lg-6">
-            <h1 class="display-6 fw-bold mb-3">{{ product.name }}</h1>
-
-            <div class="d-flex align-items-center gap-3 mb-3">
-                {% if product.get_striked_price %}
-                <span class="text-muted text-decoration-line-through fs-4">₹{{ product.regular_price|floatformat:0 }}</span>
-                <span class="text-success fs-1 fw-bold">₹{{ product.offer_price|floatformat:0 }}</span>
-                <span class="badge bg-danger fs-5 px-4 py-2 rounded-pill">{{ product.discount_percent }}% OFF</span>
-                {% else %}
-                <span class="text-success fs-1 fw-bold">₹{{ product.offer_price|floatformat:0|default:"Call for Price" }}</span>
-                {% endif %}
-
-                <button id="shareBtn" class="btn btn-outline-dark btn-lg rounded-pill px-4 shadow-sm">
-                    <i class="bi bi-share-fill me-2"></i> Share
-                </button>
-            </div>
-
-            <p class="lead text-dark mb-4">{{ product.short_desc }}</p>
-
-            <div class="bg-light rounded-4 p-4 border-start border-success border-5 shadow-sm mb-4">
-                <p class="fw-bold fs-5 mb-2">{{ product.store.name }}</p>
-                <p class="mb-1">{{ product.store.city }}</p>
-            </div>
-
-            <!-- NEAT ENQUIRY FORM (UNCHANGED) -->
-            <div id="enquiry-section" class="mt-4">
-                {% if already_enquired %}
-                <div class="text-center py-5">
-                    <div class="bg-success text-white rounded-4 shadow-lg p-5">
-                        <h3 class="fw-bold mb-3">Thank You!</h3>
-                        <p class="fs-5 mb-4">Your enquiry was sent successfully!</p>
-                        <p class="fs-4 fw-bold">Message sent on WhatsApp</p>
-                        <a href="{{ whatsapp_url }}" target="_blank" class="btn btn-light btn-lg px-5 py-3 mt-3 shadow">
-                            Open WhatsApp Again
-                        </a>
-                    </div>
-                </div>
-                {% else %}
-                <div class="card border-0 shadow-lg rounded-4 overflow-hidden" style="max-width: 460px; margin: 0 auto;">
-                    <div class="bg-success text-white text-center py-4 rounded-top-4">
-                        <h4 class="mb-1 fw-bold">Get Best Price in 10 Seconds</h4>
-                        <small class="opacity-90">100% Auto Message • Instant Reply</small>
-                    </div>
-                    <div class="card-body p-4">
-                        <form id="enquiry-form">
-                            {% csrf_token %}
-                            <input type="text" name="customer_name" class="form-control form-control-lg rounded-pill text-center mb-3 shadow-sm" placeholder="Your Name" required>
-                            <input type="text" name="phone" class="form-control form-control-lg rounded-pill text-center mb-3 shadow-sm" placeholder="Your Phone Number" required>
-                            <input type="text" name="city" class="form-control form-control-lg rounded-pill text-center mb-4 shadow-sm" placeholder="Your City" required>
-                            <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill shadow-lg fw-bold py-3 fs-5">
-                                Send on WhatsApp Now
-                            </button>
-                        </form>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-
-            <!-- Specifications & Description (UNCHANGED) -->
-            {% if product.specs %}
-            <div class="mt-5">
-                <h4>Specifications</h4>
-                <table class="table table-bordered">
-                    {% for key, value in product.specs.items %}
-                    <tr>
-                        <td class="bg-light"><strong>{{ key|title }}</strong></td>
-                        <td>{{ value }}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
-            </div>
-            {% endif %}
-
-            {% if product.description %}
-            <div class="mt-5">
-                <h4>Description</h4>
-                <div class="border rounded p-4 bg-light">
-                    {{ product.description|linebreaks }}
-                </div>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-
-    <!-- SIMILAR PRODUCTS (UNCHANGED) -->
-    {% if similar %}
-    <section class="mt-5 pt-5 border-top">
-        <h2 class="text-center display-5 fw-bold text-primary mb-5">Similar Products</h2>
-        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-4">
-            {% for p in similar %}
-            <div class="col">
-                <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
-                    <div class="card h-100 border-0 shadow hover-lift rounded-4 overflow-hidden position-relative">
-                        <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" 
-                             class="card-img-top" style="height: 220px; object-fit: cover;">
-                        {% if p.discount_percent > 0 %}
-                        <div class="position-absolute top-0 start-0 p-2">
-                            <span class="badge bg-success fs-6 px-3 py-2 rounded-pill shadow-sm fw-bold">
-                                {{ p.discount_percent }}% OFF
-                            </span>
-                        </div>
-                        {% endif %}
-                        {% if p.is_deal_active %}
-                        <div class="position-absolute top-0 end-0 p-2">
-                            <span class="badge bg-danger fs-6 px-3 py-2 rounded-pill shadow-sm fw-bold">
-                                DEAL
-                            </span>
-                        </div>
-                        {% endif %}
-                        <div class="card-body text-center p-3">
-                            <h6 class="fw-bold text-dark mb-2">{{ p.name|truncatewords:6 }}</h6>
-                            <small class="text-dark mb-2">{{ p.short_desc }}</small>
-                            <div class="d-flex align-items-center justify-content-center gap-2">
-                                {% if p.get_striked_price %}
-                                <small class="text-muted text-decoration-line-through">₹{{ p.regular_price }}</small>
-                                <span class="text-danger fs-5 fw-bold">₹{{ p.offer_price }}</span>
-                                {% else %}
-                                <span class="text-success fs-5 fw-bold">{{ p.get_price_display }}</span>
+                    
+                    <!-- MAIN IMAGE WITH ZOOM -->
+                    <div class="col">
+                        <div class="position-relative overflow-hidden bg-white shadow" id="mainImageContainer" style="height: 400px;">
+                            <!-- Zoom Area -->
+                            <div id="zoomArea" style="width: 100%; height: 100%; overflow: hidden; position: relative;">
+                                <img id="mainImage" 
+                                     src="{{ product.images.first.image.url|default:'https://via.placeholder.com/600' }}"
+                                     class="img-fluid"
+                                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; cursor: crosshair;"
+                                     alt="{{ product.name }}"
+                                     onmousemove="handleZoom(event)"
+                                     onmouseleave="resetZoom()">
+                            </div>
+                            
+                            {% if product.video %}
+                            <div id="videoPlayer" class="w-100 h-100 d-none position-absolute top-0 start-0 bg-black">
+                                <video controls class="w-100 h-100" id="productVideo" style="object-fit: contain;">
+                                    <source src="{{ product.video.url }}" type="video/mp4">
+                                </video>
+                                <button onclick="closeVideo()" class="btn btn-dark btn-sm position-absolute top-0 end-0 m-2">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Badges -->
+                            <div class="position-absolute top-0 start-0 p-3">
+                                {% if product.is_deal_active %}
+                                <span class="badge bg-danger fs-6 px-3 py-2 rounded-pill shadow">DEAL OF THE DAY</span>
+                                {% elif product.discount_percent > 0 %}
+                                <span class="badge bg-success fs-6 px-3 py-2 rounded-pill shadow">{{ product.discount_percent }}% OFF</span>
                                 {% endif %}
                             </div>
-                            <small class="text-muted d-block mb-2">{{ p.store.name }}  • {{ p.store.city }}</small>
-                            <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="btn btn-success btn-sm w-100">Enquire</a>
+                            
+                            <!-- Zoom Lens -->
+                            <div id="zoomLens" class="d-none position-absolute border border-2 border-success" 
+                                 style="width: 100px; height: 100px; background: rgba(255,255,255,0.3); pointer-events: none; z-index: 10;"></div>
                         </div>
                     </div>
-                </a>
+                </div>
+                
+                <!-- ENQUIRY BUTTON BELOW IMAGE (Desktop only) - Centered -->
+                <div class="d-none d-lg-block mt-2">
+                    <div class="bg-white p-4 rounded-3 shadow-sm border text-center">
+                     
+                        <button type="button" class="btn btn-success w-50 py-3  mb-2" data-bs-toggle="modal" data-bs-target="#enquiryModal">
+                            <i class="fab fa-whatsapp me-2"></i> ENQUIRE NOW
+                        </button>
+                       
+                    </div>
+                </div>
+                
+                <!-- HORIZONTAL THUMBNAILS FOR MOBILE (Below Image) -->
+                <div class="d-lg-none mt-3">
+                    <div class="d-flex gap-3 overflow-x-auto pb-2" style="min-height: 85px;">
+                        {% for img in product.images.all %}
+                        <img src="{{ img.image.url }}" 
+                             class="rounded-3 border border-2 flex-shrink-0 {% if forloop.first %}border-success{% else %}border-light{% endif %}"
+                             style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
+                             onclick="changeMainImage('{{ img.image.url }}', this)"
+                             alt="Thumbnail">
+                        {% endfor %}
+                        
+                        {% if product.video %}
+                        <div class="position-relative rounded-3 border border-2 border-light flex-shrink-0" 
+                             style="width: 80px; height: 80px; cursor: pointer;"
+                             onclick="playVideo()">
+                            <div class="w-100 h-100 bg-dark rounded-3 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-play-circle text-white fs-4"></i>
+                            </div>
+                            <div class="position-absolute bottom-0 start-0 w-100 bg-dark bg-opacity-75 text-white text-center py-1">
+                                <small>VIDEO</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
             </div>
-            {% endfor %}
         </div>
-    </section>
-    {% endif %}
+        
+        <!-- RIGHT: PRODUCT DETAILS - Desktop: 6 cols, Mobile: 12 cols -->
+        <div class="col-12 col-lg-6">
+            <div class="sticky-top" style="top: 15px;">
+                <!-- Product Name -->
+                <h1 class="h4 fw-bold text-dark mb-2">{{ product.name }}</h1>
+                   <!-- Short Description -->
+                <p class="text-muted mb-2">{{ product.short_desc }}</p>
+                
+                
+                <!-- Price Section -->
+                <div class="mb-2">
+                    <div class="d-flex align-items-center gap-3 mb-1">
+                        <div>
+                            {% if product.offer_price and product.offer_price < product.regular_price %}
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-muted text-decoration-line-through h6 mb-0">₹{{ product.regular_price|floatformat:0 }}</span>
+                                    <span class="text-success fs-2 fw-bold">₹{{ product.offer_price|floatformat:0 }}</span>
+                                </div>
+                            {% else %}
+                                <span class="text-success fs-2 fw-bold">₹{{ product.regular_price|floatformat:0 }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Share Button - FIXED -->
+                      <button id="shareBtn"
+        class="btn rounded-circle d-flex align-items justify-content-center shadow-sm"
+        style="width:44px;height:44px;background:#f1f3f6;border:1px solid #dcdcdc;">
+    <i class="bi bi-share-fill text-dark fs-5"></i>
+</button>
+
+                    </div>
+
+                    
+                    
+                <!-- Store Info -->
+                <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="fas fa-store text-primary"></i>
+
+                        <a href="/store/{{ product.store.slug }}/" class="text-decoration-none">
+                            <span class="fw-bold text-primary">{{ product.store.name }}</span>
+                            <span class="text-muted ms-2">• {{ product.store.city }}</span>
+                        </a>
+                            <!-- Delivery Info -->
+                    <div class="alert alert-success border-0 py-2 px-3 rounded-pill d-inline-flex align-items-center gap-2 mt-2">
+                        <i class="fas fa-shield-alt"></i>
+                        <span class="small fw-bold">Assured</span>
+                    </div>
+                        
+                    </div>
+                    
+               
+                
+                <!-- Specifications -->
+                {% if product.specs %}
+                <div class="mb-4">
+                    <h6 class="fw-bold text-primary mb-3">Key Specifications</h6>
+                    <ul class="list-unstyled small">
+                        {% for key, value in product.specs.items|slice:":5" %}
+                        <li class="d-flex mb-2 pb-2 border-bottom">
+                            <i class="fas fa-circle text-success me-3 mt-1" style="font-size: 8px;"></i>
+                            <div>
+                                <span class="fw-bold">{{ key|title }}:</span>
+                                <span class="ms-2">{{ value }}</span>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                
+                <!-- Description as Unordered List Points -->
+                {% if product.description %}
+                <div>
+                    <h6 class="fw-bold text-primary mb-3">Description</h6>
+                    <div class="bg-light rounded-3 p-3 border-start border-4 border-success">
+                        <ul class="list-unstyled mb-0" id="descriptionList">
+                            <!-- Will be populated by JavaScript -->
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- STYLES — ZOOM + NO SCROLLBAR -->
+<!-- ENQUIRY MODAL -->
+<div class="modal fade" id="enquiryModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4">
+            <div class="modal-header bg-success text-white text-center d-block border-0 py-4">
+                <p class="mb-0">Instant Enquiry </p>
+            </div>
+            <div class="modal-body p-4">
+                {% if already_enquired %}
+                <div class="text-center py-4">
+                    <i class="fas fa-check-circle text-success fs-1 mb-3"></i>
+                    <h5 class="text-success fw-bold">Enquiry Sent! Our Team will contact you</h5>
+                    <a href="{{ whatsapp_url }}" target="_blank" class="btn btn-success rounded-pill px-5 mt-3">
+                        Open WhatsApp
+                    </a>
+                </div>
+                {% else %}
+                <form id="enquiryForm">
+                    {% csrf_token %}
+                    <input type="text" name="customer_name" class="form-control form-control-lg rounded-pill mb-3" placeholder="Your Name" required>
+                    <input type="tel" name="phone" class="form-control form-control-lg rounded-pill mb-3" placeholder="Phone Number" required>
+                    <input type="text" name="city" class="form-control form-control-lg rounded-pill mb-4" placeholder="Your City" required>
+                    <button type="submit" class="btn btn-success w-100 rounded-pill py-3 fw-bold">
+                        Shop /Enquire now
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SIMILAR PRODUCTS -->
+{% if similar %}
+<section class="container-fluid px-3 px-md-4 mt-5 pt-4 border-top">
+    <h2 class="text-center h4 fw-bold text-primary mb-4">Similar Products</h2>
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
+        {% for p in similar %}
+        <div class="col">
+            <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" 
+                         class="card-img-top" style="height: 220px; object-fit: cover;">
+                    {% if p.discount_percent > 0 %}
+                    <div class="position-absolute top-0 start-0 p-2">
+                        <span class="badge bg-success px-2 py-1 rounded-pill">{{ p.discount_percent }}% OFF</span>
+                    </div>
+                    {% endif %}
+                      <div class="card-body text-center p-3">
+                        <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ p.name }}</h6>
+                        {% if p.short_desc %}<p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>{% endif %}
+
+                        <div class="mt-2">
+                            {% if p.offer_price and p.offer_price < p.regular_price %}
+                                <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                                    <span class="text-success fs-5 fw-bold">₹{{ p.offer_price }}</span>
+                                     <del class="fw-medium" style="font-size: 1rem; text-decoration: line-through; color: #585757; opacity: 0.9; text-decoration-thickness: 0.9px;">₹ {{ p.regular_price }} </del>
+                                </div>
+                            {% else %}
+                                <span class="text-success fs-5 fw-bold">₹{{ p.regular_price }}</span>
+                            {% endif %}
+                        </div>
+
+                        <small class="text-muted d-block mt-2 fw-medium">
+                            {{ p.store.name }} • {{ p.store.city }}
+                        </small>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- MOBILE FIXED BOTTOM BAR -->
+<div class="d-lg-none fixed-bottom bg-white border-top shadow-lg py-3 px-4" style="z-index: 1000;">
+    <div class="row g-2">
+    
+        <div class="col-12">
+            <button type="button" class="btn btn-success w-100 py-3 fw-bold rounded-pill" data-bs-toggle="modal" data-bs-target="#enquiryModal">
+                <i class="fab fa-whatsapp me-2"></i> BUY NOW
+            </button>
+        </div>
+    </div>
+</div>
+
 <style>
-
-    /* HORIZONTAL SCROLLBAR — SMOOTH & CLEAN */
-.overflow-x-auto::-webkit-scrollbar {
-    height: 8px;
-}
-.overflow-x-auto::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-.overflow-x-auto::-webkit-scrollbar-thumb {
-    background: #25D366;
-    border-radius: 10px;
-}
-.overflow-x-auto::-webkit-scrollbar-thumb:hover {
-    background: #128C7E;
-}
-
-    #zoomContainer { 
-        display: inline-block; 
-        overflow: hidden; 
+    /* Scrollbar */
+    #thumbnailStrip::-webkit-scrollbar { width: 6px; }
+    #thumbnailStrip::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    #thumbnailStrip::-webkit-scrollbar-thumb { background: #25D366; border-radius: 10px; }
+    
+    /* Horizontal scrollbar for mobile */
+    .d-lg-none .overflow-x-auto::-webkit-scrollbar { height: 6px; }
+    .d-lg-none .overflow-x-auto::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    .d-lg-none .overflow-x-auto::-webkit-scrollbar-thumb { background: #25D366; border-radius: 10px; }
+    
+    /* Hover effects */
+    .hover-lift { transition: all 0.2s ease; }
+    .hover-lift:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+    
+    /* Button styles */
+    .btn-success { background: linear-gradient(45deg, #25D366, #128C7E); border: none; }
+    .btn-success:hover { background: linear-gradient(45deg, #128C7E, #075E54); transform: translateY(-2px); }
+    
+    /* Form focus */
+    .form-control:focus { border-color: #25D366; box-shadow: 0 0 0 0.2rem rgba(37,211,102,0.25); }
+    
+    /* Active thumbnail */
+    .border-success { border-color: #25D366 !important; }
+    
+    /* Zoom lens */
+    #zoomLens { 
+        box-shadow: 0 0 10px rgba(0,0,0,0.3); 
+        border: 2px solid #25D366 !important;
+    }
+    
+    /* Full main image */
+    #mainImageContainer { 
+        width: 100%; 
         max-width: 100%;
     }
-    #zoomContainer:hover #mainImage { 
-        transform: scale(2.2); 
+    
+    /* Responsive */
+    @media (max-width: 992px) {
+        .sticky-top { position: static !important; }
+        #mainImageContainer { height: 350px; }
+        .fixed-bottom .row { margin-bottom: 0; }
     }
-    .hover-lift:hover { 
-        transform: translateY(-10px); 
-        box-shadow: 0 20px 40px rgba(0,0,0,0.18)!important; 
+    
+   
+    /* Description list */
+    .fa-check-circle { color: #25D366; }
+    
+    /* Thumbnail hover */
+    #thumbnailStrip img:hover, .d-lg-none .overflow-x-auto img:hover {
+        border-color: #25D366 !important;
+        transform: scale(1.05);
+        transition: all 0.2s ease;
     }
-    .form-control:focus { 
-        border-color: #25D366 !important; 
-        box-shadow: 0 0 0 0.3rem rgba(37,211,102,0.25)!important; 
+    
+    /* Share button styling */
+    #shareBtn {
+        transition: all 0.2s ease;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
     }
-    .btn-success { 
-        background: linear-gradient(45deg, #25D366, #128C7E); 
-        border: none; 
+    #shareBtn:hover {
+        background-color: #f8f9fa;
+        transform: scale(1.1);
     }
-    .btn-success:hover { 
-        background: linear-gradient(45deg, #128C7E, #075E54); 
-        transform: translateY(-3px); 
+    #shareBtn i {
+        font-size: 1.2rem;
+        display: block !important;
     }
-    body, html { overflow-x: hidden; }
+    
+    /* Gap between thumbnails and main image */
+    .pe-3 { 
+        padding-right: 1rem !important; 
+    }
+    
+    /* Mobile layout - full width */
+    @media (max-width: 992px) {
+        .col-12 {
+            width: 100%;
+            max-width: 100%;
+        }
+    }
 </style>
 
-<!-- SHARE + ENQUIRY SCRIPT -->
 <script>
-document.getElementById('shareBtn')?.addEventListener('click', function() {
-    const url = window.location.href;
-    const title = "{{ product.name }} - {{ product.store.name }}";
-    if (navigator.share) {
-        navigator.share({ title, url });
-    } else {
-        const text = encodeURIComponent(title + "\n" + url);
-        const popup = document.createElement('div');
-        popup.innerHTML = `<div class="bg-white rounded-4 shadow-lg p-4 text-center" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;width:90%;max-width:400px;">
-            <p class="fw-bold mb-3">Share via</p>
-            <a href="https://wa.me/?text=${text}" target="_blank" class="btn btn-success btn-sm mx-1">WhatsApp</a>
-            <a href="https://www.facebook.com/sharer/sharer.php?u=${url}" target="_blank" class="btn btn-primary btn-sm mx-1">Facebook</a>
-            <button onclick="navigator.clipboard.writeText('${url}');alert('Copied!')" class="btn btn-outline-secondary btn-sm mx-1">Copy Link</button>
-            <button onclick="this.closest('div').parentElement.remove()" class="btn btn-light btn-sm mt-3">Close</button>
-        </div>`;
-        popup.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9998;';
-        document.body.appendChild(popup);
-    }
-});
+// Zoom functionality with proper hover
+let zoomEnabled = true;
+let isZooming = false;
+const mainImage = document.getElementById('mainImage');
+const zoomLens = document.getElementById('zoomLens');
+const zoomArea = document.getElementById('zoomArea');
 
-document.getElementById('enquiry-form')?.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const fd = new FormData(this);
-    fetch('', { method: 'POST', body: fd, headers: {'X-Requested-With': 'XMLHttpRequest'} })
-    .then(r => r.json())
-    .then(d => {
-        const sec = document.getElementById('enquiry-section');
-        if (d.success) {
-            sec.innerHTML = `<div class="text-center py-5">
-                <div class="bg-success text-white rounded-4 shadow-lg p-5">
-                    <h3 class="fw-bold mb-3">Thank You ${d.name}!</h3>
-                    <p class="fs-5 mb-4">Enquiry sent!</p>
-                    <p class="fs-4 fw-bold">Opening WhatsApp...</p>
-                    <a href="${d.whatsapp_url}" target="_blank" class="btn btn-light btn-lg mt-3 shadow">Open Again</a>
-                </div>
-            </div>`;
-            setTimeout(() => window.open(d.open(d.whatsapp_url, '_blank'), 1200));
-        } else if (d.already) {
-            sec.innerHTML = `<div class="alert alert-warning text-center py-5 rounded-4 shadow-lg">
-                <h3>Already Enquired!</h3>
-                <p>You already sent enquiry in last 24 hours</p>
-                <a href="${d.whatsapp_url}" target="_blank" class="btn btn-success btn-lg mt-3">Open WhatsApp</a>
-            </div>`;
+// Hover preview on thumbnails (Desktop only) - for both images and video
+function previewImage(imgUrl) {
+    if (window.innerWidth >= 992) { // Only on desktop
+        mainImage.src = imgUrl;
+        zoomEnabled = true;
+        
+        // Hide video if playing
+        const videoPlayer = document.getElementById('videoPlayer');
+        if (videoPlayer) videoPlayer.classList.add('d-none');
+        mainImage.style.display = 'block';
+    }
+}
+
+// Preview video on hover
+function previewVideo() {
+    if (window.innerWidth >= 992) { // Only on desktop
+        // Show video thumbnail preview
+        const videoPlayer = document.getElementById('videoPlayer');
+        if (videoPlayer) {
+            // Just preview, don't play yet
+            videoPlayer.classList.remove('d-none');
+            mainImage.style.display = 'none';
+            zoomEnabled = false;
+            resetZoom();
+        }
+    }
+}
+
+// Handle zoom on mouse move
+function handleZoom(event) {
+    if (!zoomEnabled || window.innerWidth < 768) return;
+    
+    isZooming = true;
+    const rect = zoomArea.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    
+    // Show zoom lens
+    zoomLens.classList.remove('d-none');
+    
+    // Calculate lens position
+    const lensSize = 150;
+    const lensX = x - lensSize / 2;
+    const lensY = y - lensSize / 2;
+    
+    // Boundary check
+    let finalX = lensX;
+    let finalY = lensY;
+    
+    if (lensX < 0) finalX = 0;
+    if (lensX + lensSize > rect.width) finalX = rect.width - lensSize;
+    if (lensY < 0) finalY = 0;
+    if (lensY + lensSize > rect.height) finalY = rect.height - lensSize;
+    
+    zoomLens.style.left = finalX + 'px';
+    zoomLens.style.top = finalY + 'px';
+    
+    // Calculate zoom (2.5x zoom)
+    const zoomLevel = 2.5;
+    const xPercent = (x / rect.width) * 100;
+    const yPercent = (y / rect.height) * 100;
+    
+    mainImage.style.transform = `scale(${zoomLevel})`;
+    mainImage.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+}
+
+function resetZoom() {
+    if (!isZooming) return;
+    zoomLens.classList.add('d-none');
+    mainImage.style.transform = 'scale(1)';
+    mainImage.style.transformOrigin = 'center center';
+    isZooming = false;
+}
+
+// Image gallery functions
+function changeMainImage(imgUrl, element) {
+    zoomEnabled = true;
+    mainImage.src = imgUrl;
+    
+    // Reset zoom
+    resetZoom();
+    
+    // Update active thumbnail
+    document.querySelectorAll('#thumbnailStrip img, #thumbnailStrip .position-relative, .d-lg-none .overflow-x-auto img, .d-lg-none .overflow-x-auto .position-relative').forEach(item => {
+        if (item.classList.contains('border-success')) {
+            item.classList.remove('border-success');
+            item.classList.add('border-light');
         }
     });
+    
+    if (element.classList.contains('border-light')) {
+        element.classList.remove('border-light');
+    }
+    element.classList.add('border-success');
+    
+    // Hide video if playing
+    const videoPlayer = document.getElementById('videoPlayer');
+    if (videoPlayer) videoPlayer.classList.add('d-none');
+    mainImage.style.display = 'block';
+}
+
+function playVideo() {
+    zoomEnabled = false;
+    const videoPlayer = document.getElementById('videoPlayer');
+    const video = document.getElementById('productVideo');
+    
+    if (videoPlayer) {
+        videoPlayer.classList.remove('d-none');
+        mainImage.style.display = 'none';
+        zoomLens.classList.add('d-none');
+        video.play();
+    }
+}
+
+function closeVideo() {
+    zoomEnabled = true;
+    const videoPlayer = document.getElementById('videoPlayer');
+    const video = document.getElementById('productVideo');
+    
+    if (videoPlayer) {
+        videoPlayer.classList.add('d-none');
+        mainImage.style.display = 'block';
+        video.pause();
+        video.currentTime = 0;
+    }
+}
+
+// Format description as bullet points
+function formatDescription() {
+    const descriptionList = document.getElementById('descriptionList');
+    if (!descriptionList) return;
+    
+    // Get description from Django template variable
+    const description = `{{ product.description|escapejs }}`;
+    
+    if (!description) return;
+    
+    // Clear existing content
+    descriptionList.innerHTML = '';
+    
+    // Split by common line breaks and bullet points
+    let lines = [];
+    
+    // Handle different line break formats
+    if (description.includes('\\n')) {
+        lines = description.split('\\n');
+    } else if (description.includes('<br>')) {
+        lines = description.split('<br>');
+    } else if (description.includes('•')) {
+        lines = description.split('•');
+    } else if (description.includes('- ')) {
+        lines = description.split('- ');
+    } else if (description.includes('* ')) {
+        lines = description.split('* ');
+    } else {
+        // Try to split by sentence endings
+        lines = description.split(/[\.\?\!]\s+/).filter(line => line.trim().length > 0);
+    }
+    
+    // Add each line as a bullet point
+    lines.forEach(line => {
+        const trimmedLine = line.trim();
+        if (trimmedLine) {
+            const li = document.createElement('li');
+            li.className = 'd-flex mb-2 align-items-start';
+            li.innerHTML = `
+                <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                <span>${trimmedLine}</span>
+            `;
+            descriptionList.appendChild(li);
+        }
+    });
+    
+    // If no lines were added, add the whole description as one bullet
+    if (descriptionList.children.length === 0 && description.trim()) {
+        const li = document.createElement('li');
+        li.className = 'd-flex mb-2 align-items-start';
+        li.innerHTML = `
+            <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+            <span>${description}</span>
+        `;
+        descriptionList.appendChild(li);
+    }
+}
+
+// Share functionality - FIXED
+document.getElementById('shareBtn').addEventListener('click', function() {
+    const url = window.location.href;
+    const title = "{{ product.name }}";
+    const text = encodeURIComponent(title + "\n\n" + url);
+    
+    // Remove any existing share modal
+    const existingModal = document.querySelector('.share-modal-overlay');
+    if (existingModal) existingModal.remove();
+    
+    // Create Flipkart-style share modal
+    const modalHTML = `
+        <div class="share-modal-overlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:flex-end;justify-content:center;">
+            <div class="bg-white rounded-top-4 w-100" style="max-width:500px;">
+                <div class="p-4 text-center border-bottom">
+                    <h5 class="fw-bold mb-0">Share</h5>
+                    <button onclick="this.closest('.share-modal-overlay').remove()" class="btn btn-link position-absolute end-0 top-0 p-3 text-dark">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-4">
+                    <div class="row g-3 text-center">
+                        <div class="col-4">
+                            <a href="https://wa.me/?text=${text}" target="_blank" class="text-decoration-none text-dark">
+                                <div class="p-3 rounded-3 bg-light">
+                                    <i class="fab fa-whatsapp fs-3 text-success mb-2"></i>
+                                    <div class="small">WhatsApp</div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-4">
+                            <a href="https://www.facebook.com/sharer/sharer.php?u=${url}" target="_blank" class="text-decoration-none text-dark">
+                                <div class="p-3 rounded-3 bg-light">
+                                    <i class="fab fa-facebook fs-3 text-primary mb-2"></i>
+                                    <div class="small">Facebook</div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-4">
+                            <button onclick="copyLink('${url}')" class="border-0 bg-transparent w-100 text-decoration-none text-dark">
+                                <div class="p-3 rounded-3 bg-light">
+                                    <i class="fas fa-link fs-3 text-secondary mb-2"></i>
+                                    <div class="small">Copy Link</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-3 border-top text-center">
+                    <button onclick="this.closest('.share-modal-overlay').remove()" class="btn btn-light w-100">Cancel</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+});
+
+function copyLink(url) {
+    navigator.clipboard.writeText(url).then(() => {
+        alert('Link copied to clipboard!');
+        document.querySelector('.share-modal-overlay')?.remove();
+    });
+}
+
+// Enquiry form submission
+document.getElementById('enquiryForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
+    submitBtn.disabled = true;
+    
+    fetch('', {
+        method: 'POST',
+        body: formData,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('enquiryModal'));
+            if (modal) modal.hide();
+            
+            setTimeout(() => {
+                if (data.whatsapp_url) {
+                    window.open(data.whatsapp_url, '_blank');
+                }
+                window.location.reload();
+            }, 500);
+        } else if (data.already) {
+            alert('You have already sent an enquiry. Check WhatsApp for response.');
+            window.location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error sending enquiry. Please try again.');
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+});
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', function() {
+    // Set first thumbnail as active
+    const firstThumbDesktop = document.querySelector('#thumbnailStrip img');
+    if (firstThumbDesktop) {
+        firstThumbDesktop.classList.add('border-success');
+        firstThumbDesktop.classList.remove('border-light');
+    }
+    
+    const firstThumbMobile = document.querySelector('.d-lg-none .overflow-x-auto img');
+    if (firstThumbMobile) {
+        firstThumbMobile.classList.add('border-success');
+        firstThumbMobile.classList.remove('border-light');
+    }
+    
+    // Format description as bullet points
+    formatDescription();
+    
+    // Add click handlers for mobile thumbnails
+    document.querySelectorAll('.d-lg-none .overflow-x-auto img').forEach(img => {
+        img.addEventListener('click', function() {
+            const imgUrl = this.src;
+            changeMainImage(imgUrl, this);
+        });
+    });
+    
+    // Add click handlers for mobile video thumbnail
+    const mobileVideoThumb = document.querySelector('.d-lg-none .overflow-x-auto .position-relative');
+    if (mobileVideoThumb) {
+        mobileVideoThumb.addEventListener('click', function() {
+            playVideo();
+        });
+    }
 });
 </script>
 {% endblock %}

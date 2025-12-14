@@ -255,11 +255,11 @@ def store_detail(request, slug):
     seven_days_ago = timezone.now() - timedelta(days=7)
 
     # ALL PRODUCTS FROM THIS STORE
-    store_products = store.products.filter(store__is_active=True)\
+    store_products = Product.objects.filter(store=store, store__is_active=True)\
         .select_related('category')\
         .prefetch_related('images')
 
-    # PRE-COMPUTE ALL SECTIONS (THIS FIXES THE ERROR!)
+    # PRE-COMPUTE ALL SECTIONS
     store_deals = store_products.filter(deal_end_date__gte=today)[:20]
     store_best_sellers = store_products.filter(is_best_seller=True)[:20]
     store_new_arrivals = store_products.filter(created_at__gte=seven_days_ago)[:20]
@@ -267,10 +267,15 @@ def store_detail(request, slug):
     store_special_offers = store_products.filter(is_special_offer=True)[:20]
     store_featured = store_products.filter(is_featured=True)[:20]
 
+    # GET CATEGORIES THAT HAVE PRODUCTS IN THIS STORE
+    store_categories = Category.objects.filter(
+        product__store=store
+    ).distinct()
+
     context.update({
         'store': store,
         
-        # Pass the actual querysets (already filtered & sliced)
+        # Correct names
         'store_deals': store_deals,
         'store_best_sellers': store_best_sellers,
         'store_new_arrivals': store_new_arrivals,
@@ -278,16 +283,20 @@ def store_detail(request, slug):
         'store_special_offers': store_special_offers,
         'store_featured': store_featured,
 
-        # For conditional display — use .exists() safely
+        # Correct has_ variables
         'has_store_deals': store_deals.exists(),
         'has_store_best_sellers': store_best_sellers.exists(),
         'has_store_new_arrivals': store_new_arrivals.exists(),
         'has_store_limited_deals': store_limited_deals.exists(),
         'has_store_special_offers': store_special_offers.exists(),
-        'has_store_featured': store_featured.exists(),
+        'has_store_featured': store_featured.exists(),  # ← THIS WAS WRONG BEFORE!
+
+        # Only categories with products in this store
+        'store_categories': store_categories,
     })
     
     return render(request, 'TMS/public/storedetail.html', context)
+
 
 def product_list(request, store_slug):
     context = get_common_context()
@@ -369,17 +378,38 @@ def product_detail(request, store_slug, product_slug):
 
 
 def categories_page(request):
-    categories_list = Category.objects.annotate(
-        product_count=Count('product')  # 'product' is default reverse name
-    ).order_by('name')
+    # If we came from a specific store (via ?store=slug), show only its categories
+    store_slug = request.GET.get('store')
+    
+    if store_slug:
+        store = get_object_or_404(Store, slug=store_slug, is_active=True)
+        categories_list = Category.objects.filter(
+            product__store=store
+        ).annotate(
+            product_count=Count('product')
+        ).distinct().order_by('name')
+        
+        context = {
+            'categories': categories_list,
+            'store': store,
+            'page_obj': None,
+            'is_paginated': False,
+        }
+        return render(request, 'TMS/public/categories.html', context)
+    
+    else:
+        # Normal behavior - show ALL categories
+        categories_list = Category.objects.annotate(
+            product_count=Count('product')
+        ).order_by('name')
 
-    paginator = Paginator(categories_list, 36)  # 24 per page
-    page_number = request.GET.get('page')
-    categories = paginator.get_page(page_number)
+        paginator = Paginator(categories_list, 36)
+        page_number = request.GET.get('page')
+        categories = paginator.get_page(page_number)
 
-    return render(request, 'TMS/public/categories.html', {
-        'categories': categories,
-        'page_obj': categories,
-        'paginator': paginator,
-        'is_paginated': categories.has_other_pages(),
-    })
+        return render(request, 'TMS/public/categories.html', {
+            'categories': categories,
+            'page_obj': categories,
+            'paginator': paginator,
+            'is_paginated': categories.has_other_pages(),
+        })

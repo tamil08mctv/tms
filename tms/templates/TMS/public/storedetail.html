@@ -65,42 +65,107 @@
     </div>
     {% endif %}
 
-    <!-- STORE INFO OVERLAY -->
-    <div class="row justify-content-center position-relative" style="margin-top: 0px; z-index: 10;">
-        <div class="col">
-            <div class="text-center py-4 px-5 shadow-2xl bg-white">
-                <h1 class="display-6 fw-bold text-primary mb-2">{{ store.name }}</h1>
-               
-               
-                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
-                     <p class="fs-6 text-muted mb-2">
-                    <i class="fas fa-clock"></i> {{ store.working_hours }}
-                </p>
-                    {% if store.whatsapp %}
-                    <p class="fs-6 text-muted mb-2">
-                    <i class="fas fa-map-marker-alt"></i> {{ store.city }}
-                </p>
-                    {% endif %}
-                 </div>
-                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
-                    <a href="tel:{{ store.phone }}" class="btn btn-success btn-lg rounded-pill px-5 shadow-lg">
-                        <i class="fas fa-phone"></i> Call 
-                    </a>
-                    {% if store.whatsapp %}
-                    <a href="https://wa.me/91{{ store.whatsapp }}" class="btn btn-success btn-lg rounded-pill px-5 shadow-lg" target="_blank">
-                        <i class="fab fa-whatsapp"></i> WhatsApp
-                    </a>
-                    {% endif %}
-                    {% if store.map_link %}
-                    <a href="{{ store.map_link }}" class="btn btn-danger btn-lg rounded-pill px-5 shadow-lg" target="_blank">
-                        <i class="fas fa-directions"></i> Directions
-                    </a>
-                    {% endif %}
+    </section>
+
+
+<!-- FINAL PERFECT STORE HEADER — EXACTLY AS YOU WANTED -->
+<section class="py-2 bg-white shadow-sm" style="margin-top: 0px; position: relative; z-index: 10;">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- LEFT: LOGO + NAME + CITY -->
+            <div class="col-lg-6">
+                <div class="d-flex align-items-center gap-5">
+                    <div class="flex-shrink-0">
+                        {% if store.logo %}
+                        <img src="{{ store.logo.url }}" 
+                             class="shadow-sm" 
+                             style="width: 100px; height: 100px; object-fit: contain; border: 4px solid #fff;"
+                             alt="{{ store.name }}">
+                        {% else %}
+                        <div class="bg-primary text-white rounded-3 shadow-sm d-flex align-items-center justify-content-center"
+                             style="width: 85px; height: 85px;">
+                            <i class="fas fa-store fs-3"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <h1 class="h5 fw-bold text-primary mb-1">{{ store.name }}</h1>
+                        <p class="mb-1 text-dark small">
+                            <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                            {{ store.city }}, Tamil Nadu
+                        </p>
+                        <small class="text-muted">
+                            <i class="fas fa-clock me-1"></i>{{ store.working_hours }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: BUTTONS + SOCIAL ICONS (PERFECT VERTICAL ALIGNMENT) -->
+            <div class="col-lg-6">
+                <div class="d-flex  justify-content-center">
+                    <div class="text-center text-lg-center">
+
+                        <!-- CALL, WHATSAPP, DIRECTIONS — ONE ROW -->
+                        <div class="d-flex gap-3 mb-3 flex-wrap justify-content-center">
+                            <a href="tel:{{ store.phone }}" 
+                               class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2 min-w-150">
+                                <i class="fas fa-phone"></i>
+                                <span class="d-none d-sm-inline">Call Now</span>
+                                <span class="d-inline d-sm-none">Call</span>
+                            </a>
+
+                            {% if store.whatsapp %}
+                            <a href="https://wa.me/91{{ store.whatsapp }}" target="_blank"
+                               class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2 min-w-150">
+                                <i class="fab fa-whatsapp"></i>
+                                <span class="d-none d-sm-inline">WhatsApp</span>
+                                <span class="d-inline d-sm-none">Chat</span>
+                            </a>
+                            {% endif %}
+
+                            {% if store.map_link %}
+                            <a href="{{ store.map_link }}" target="_blank"
+                               class="btn btn-outline-danger rounded-pill px-4 py-2 fw-bold border-2 d-flex align-items-center gap-2 min-w-150">
+                                <i class="fas fa-directions"></i>
+                                <span class="d-none d-sm-inline">Directions</span>
+                                <span class="d-inline d-sm-none">Map</span>
+                            </a>
+                            {% endif %}
+                        </div>
+
+                        <!-- SOCIAL ICONS — DIRECTLY BELOW BUTTONS, SAME WIDTH & CENTERED -->
+                        <div class="d-flex gap-4 justify-content-center">
+                            {% if store.facebook %}
+                            <a href="{{ store.facebook }}" target="_blank" 
+                               class="btn btn-outline-primary rounded-circle p-3 shadow-sm hover-lift">
+                                <i class="fab fa-facebook-f fs-4"></i>
+                            </a>
+                            {% endif %}
+                            {% if store.instagram %}
+                            <a href="{{ store.instagram }}" target="_blank" 
+                               class="btn btn-outline-danger rounded-circle p-3 shadow-sm hover-lift">
+                                <i class="fab fa-instagram fs-4"></i>
+                            </a>
+                            {% endif %}
+                            {% if store.youtube %}
+                            <a href="{{ store.youtube }}" target="_blank" 
+                               class="btn btn-outline-danger rounded-circle p-3 shadow-sm hover-lift">
+                                <i class="fab fa-youtube fs-4"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+
+
 
 <!-- SWIPER STYLES & SCRIPT -->
 <style>
@@ -130,11 +195,11 @@
 
 
 {% if has_store_deals %}
-<section class="py-4" style="background: #def8f3;">
-    <div class="container-fluid px-3">
+<section class="py-3" style="background-color:rgb(21, 47, 70)">
+    <div class="container-fluid px-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="text-danger fw-bold fs-2 mb-0">DEALS OF THE DAY</h2>
-            <a href="{% url 'all_products' %}?store={{ store.slug }}&filter=deals" class="btn btn-outline-danger rounded-pill px-4 fw-bold">View All</a>
+            <a href="{% url 'all_products' %}?store={{ store.slug }}&filter=deals" class="btn btn-outline-danger rounded-pill px-4">View All</a>
         </div>
 
         <div class="swiper mySwiper deals-swiper">
@@ -156,12 +221,12 @@
                     <p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>
                     {% endif %}
                                           
-                       <!-- Price Section — PERFECTLY CENTERED & CLEAN -->
+                         <!-- Price Section — PERFECTLY CENTERED & CLEAN -->
                     <div class="mt-auto text-center">
                         {% if p.offer_price and p.offer_price < p.regular_price %}
                             <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
                                 <span class="text-success fs-5 fw-bold">₹{{ p.offer_price }}</span>
-                               <del class="text-muted fw-bold fs-6 opacity-75" style="text-decoration-thickness: 2.5px; opacity: 0.9;">₹{{ p.regular_price }}</del>
+                               <del class="fw-medium" style="font-size: 1rem; text-decoration: line-through; color: #585757; opacity: 0.9; text-decoration-thickness: 0.9px;">₹ {{ p.regular_price }} </del>
                                 <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
                             </div>
                         {% else %}
@@ -173,9 +238,8 @@
                         <small class="text-muted d-block fw-medium">
                             {{ p.store.name }} • {{ p.store.city }}
                         </small>
-                    </div>                       
-                                      
-                </div> 
+                    </div> 
+                    
                     </div>
                 </a>
                 </div>
@@ -189,24 +253,23 @@
 {% endif %}
 
 
-
 <!-- 2. BEST SELLERS -->
 {% if has_store_best_sellers %}
-<section class="py-4" style="background: #F9FAFB;">
-    <div class="containerfluid px-3">
-        <h2 class="text-center mb-5 text-warning fw-bold fs-1" data-aos="zoom-in">
+<section class="py-3" style="background: rgb(255, 255, 255)">
+    <div class="container-fluid px-4">
+        <h2 class="text-center mb-3 text-dark fw-bold fs-1" data-aos="zoom-in">
             BEST SELLERS
         </h2>
-        <div class="row g-4 justify-content-center">
+        <div class="row g-3 justify-content-center">
             {% for p in store_best_sellers|slice:":10" %}
             <div class="col-6 col-sm-4 col-md-3 col-lg-2-4" data-aos="fade-up">
                 <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
-                    <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
+                    <div class="card h-100 shadow hover-card  border-0 position-relative>33px                                                                shadow justifystiAFE-panel...">
                         <div class="position-absolute top-0 start-0 p-2">
                             <span class="badge bg-warning text-dark px-4 py-2 rounded-pill shadow-lg fw-bold">BEST SELLER</span>
                         </div>
                         <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:230px;object-fit:cover;">
-                                <div class="card-body text-center p-3 flex flex-column">
+                  <div class="card-body text-center p-3 flex flex-column">
                                      <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">
                         {{ p.name }}
                     </h6>
@@ -219,8 +282,8 @@
                     <div class="mt-auto text-center">
                         {% if p.offer_price and p.offer_price < p.regular_price %}
                             <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                                <span class="text-success fs-5 fw-bold">₹{{ p.offer_price }}</span>
-                               <del class="text-muted fw-bold fs-6 opacity-75" style="text-decoration-thickness: 2.5px; opacity: 0.9;">₹{{ p.regular_price }}</del>
+                                <span class="text-success fs-5 fw-bold">₹ {{ p.offer_price }}</span>
+                               <del class="fw-medium" style="font-size: 1rem; text-decoration: line-through; color: #585757; opacity: 0.9; text-decoration-thickness: 0.9px;">₹ {{ p.regular_price }} </del>
                                 <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
                             </div>
                         {% else %}
@@ -241,7 +304,7 @@
             {% endfor %}
         </div>
         <div class="text-center mt-5">
-            <a href="{% url 'all_products' %}?store={{ store.slug }}&filter=bestselling" class="btn btn-warning btn-lg px-5 py-3 rounded-pill shadow-lg">
+         <a href="{% url 'all_products' %}store={{ store.slug }}&?filter=best_sellers" class="btn btn-light btn-lg px-5 py-3 rounded-pill shadow-lg text-dark fw-bold">
     View All Best Sellers
 </a>
         </div>
@@ -253,11 +316,11 @@
 <!-- 3. LIMITED DEAL — FLIPKART RED STYLE -->
 <!-- ================================================== -->
 {% if has_store_limited_deals %}
-<section class="py-3" style="background:#eef2f7;">
-    <div class="containerfluid px-3">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="text-danger fw-bold fs-2 mb-0">LIMITED DEAL — ENDS SOON!</h2>
-           <a href="{% url 'all_products' %}?store={{ store.slug }}&filter=limited" class="btn btn-outline-danger rounded-pill px-4">View All</a>      </div>
+<section class="py-3" style="background: rgb(21, 47, 70)">
+    <div class="container-fluid px-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="text-white fw-bold fs-2 mb-0">LIMITED DEAL — ENDS SOON!</h2>
+           <a href="{% url 'all_products' %}?store={{ store.slug }}&filter=limited" class="btn btn-outline-danger rounded-pill px-4 fw-bold">View All</a>      </div>
 
         <div class="swiper mySwiper limited-swiper">
             <div class="swiper-wrapper justify-content-center">
@@ -271,7 +334,7 @@
                         <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:230px;object-fit:cover;">
                             
                         
-                   <div class="card-body text-center p-3 flex flex-column">
+         <div class="card-body text-center p-3 flex flex-column">
                                      <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">
                         {{ p.name }}
                     </h6>
@@ -284,9 +347,9 @@
                     <div class="mt-auto text-center">
                         {% if p.offer_price and p.offer_price < p.regular_price %}
                             <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                                <span class="text-success fs-5 fw-bold">₹{{ p.offer_price }}</span>
-                               <del class="text-muted fw-bold fs-6 opacity-75" style="text-decoration-thickness: 2.5px; opacity: 0.9;">₹{{ p.regular_price }}</del>
-                                <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
+                                <span class="text-success fs-5 fw-bold">₹ {{ p.offer_price }}</span>
+                              <del class="fw-medium" style="font-size: 1rem; text-decoration: line-through; color: #585757; opacity: 0.9; text-decoration-thickness: 0.9px;">₹ {{ p.regular_price }} </del>
+                                 <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
                             </div>
                         {% else %}
                             <span class="text-success fs-5 fw-bold">₹{{ p.regular_price }}</span>
@@ -297,7 +360,7 @@
                         <small class="text-muted d-block fw-medium">
                             {{ p.store.name }} • {{ p.store.city }}
                         </small>
-                    </div>                       
+                    </div>                      
                                       
                 </div> 
                 </a>
@@ -315,8 +378,8 @@
 <!-- 4. SPECIAL OFFERS -->
 {% if has_store_special_offers %}
 <section class="py-3" bg-light text-dark>
-    <div class="containerfluid px-3">
-        <h2 class="text-center mb-5  fw-bold fs-1" data-aos="zoom-in">
+    <div class="container-fluid px-4">
+        <h2 class="text-center mb-3  fw-bold fs-1" data-aos="zoom-in">
             SPECIAL OFFERS
         </h2>
         <div class="row g-4 justify-content-center">
@@ -329,7 +392,7 @@
                         </div> 
                         <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" 
                          class="card-img-top" style="height: 230px; object-fit: cover;">
-                               <div class="card-body text-center p-3 flex flex-column">
+                                <div class="card-body text-center p-3 flex flex-column">
                                      <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">
                         {{ p.name }}
                     </h6>
@@ -342,9 +405,9 @@
                     <div class="mt-auto text-center">
                         {% if p.offer_price and p.offer_price < p.regular_price %}
                             <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                                <span class="text-success fs-5 fw-bold">₹{{ p.offer_price }}</span>
-                               <del class="text-muted fw-bold fs-6 opacity-75" style="text-decoration-thickness: 2.5px; opacity: 0.9;">₹{{ p.regular_price }}</del>
-                                <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
+                                <span class="text-success fs-5 fw-bold">₹ {{ p.offer_price }}</span>
+                              <del class="fw-medium" style="font-size: 1rem; text-decoration: line-through; color: #585757; opacity: 0.9; text-decoration-thickness: 0.9px;">₹ {{ p.regular_price }} </del>
+                                 <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
                             </div>
                         {% else %}
                             <span class="text-success fs-5 fw-bold">₹{{ p.regular_price }}</span>
@@ -355,7 +418,7 @@
                         <small class="text-muted d-block fw-medium">
                             {{ p.store.name }} • {{ p.store.city }}
                         </small>
-                    </div>                       
+                    </div>                    
                                       
                 </div> 
                     </div>
@@ -363,8 +426,8 @@
             </div>
             {% endfor %}
         </div>
-        <div class="text-center mt-5">
-          <a href="{% url 'all_products' %}?store={{ store.slug }}&filter=special" class="btn btn-lg px-5 py-3 rounded-pill shadow-lg fw-bold">
+        <div class="text-center mt-3">
+         <a href="{% url 'all_products' %}?store={{ store.slug }}&filter=special" class="btn btn-light btn-lg px-5 py-3 rounded-pill shadow-lg text-dark fw-bold">
     View All Special Offers
 </a>
         </div>
@@ -375,12 +438,12 @@
 
 <!-- 5. NEW ARRIVALS — NO CAROUSEL, GRID ONLY -->
 {% if has_store_new_arrivals %}
-<section class="py-3 bg-success text-white">
-    <div class="containerfluid px-3">
-        <h2 class="text-center mb-5 fw-bold fs-1" data-aos="zoom-in">
+<section class="py-3 text-white" style="background-color: rgb(21, 47, 70);">
+    <div class="container-fluid px-4">
+        <h2 class="text-center mb-3 fw-bold fs-1" data-aos="zoom-in">
             NEW ARRIVALS
         </h2>
-        <div class="row g-3 justify-content-center">
+        <div class="row g-4 justify-content-center">
             {% for p in store_new_arrivals|slice:":10" %}
             <div class="col-6 col-sm-4 col-md-3 col-lg-2-4" data-aos="fade-up">
                 <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none text-white">
@@ -390,7 +453,7 @@
                         </div>
                         <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:230px;object-fit:cover;">
                              
-                      <div class="card-body text-center p-3 flex flex-column">
+                       <div class="card-body text-center p-3 flex flex-column">
                                      <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">
                         {{ p.name }}
                     </h6>
@@ -403,9 +466,9 @@
                     <div class="mt-auto text-center">
                         {% if p.offer_price and p.offer_price < p.regular_price %}
                             <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                                <span class="text-success fs-5 fw-bold">₹{{ p.offer_price }}</span>
-                               <del class="text-muted fw-bold fs-6 opacity-75" style="text-decoration-thickness: 2.5px; opacity: 0.9;">₹{{ p.regular_price }}</del>
-                                <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
+                                <span class="text-success fs-5 fw-bold">₹ {{ p.offer_price }}</span>
+                              <del class="fw-medium" style="font-size: 1rem; text-decoration: line-through; color: #585757; opacity: 0.9; text-decoration-thickness: 0.9px;">₹ {{ p.regular_price }} </del>
+                                 <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
                             </div>
                         {% else %}
                             <span class="text-success fs-5 fw-bold">₹{{ p.regular_price }}</span>
@@ -416,7 +479,7 @@
                         <small class="text-muted d-block fw-medium">
                             {{ p.store.name }} • {{ p.store.city }}
                         </small>
-                    </div>                       
+                    </div>                         
                                       
                 </div> 
             </div>
@@ -424,8 +487,8 @@
             </div>
             {% endfor %}
         </div>
-        <div class="text-center mt-5">
-         <a href="{% url 'all_products' %}?store={{ store.slug }}&filter=new" class="btn btn-light btn-lg px-5 py-3 rounded-pill shadow-lg text-success fw-bold">
+        <div class="text-center mt-3">
+         <a href="{% url 'all_products' %}?store={{ store.slug }}&filter=new" class="btn btn-outline-danger rounded-pill px-4 fw-bold">
     View All New Arrivals
 </a>
         </div>
@@ -437,17 +500,17 @@
 <!-- ================================================== -->
 <!-- 6. FEATURED PRODUCTS — FLIPKART STYLE CAROUSEL -->
 <!-- ================================================== -->
-{% if has_store_featured_products %}
-<section class="py-5 bg-white">
-    <div class="containerfluid px-4 py-2">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="text-success fw-bold fs-2 mb-0">FEATURED PRODUCTS</h2>
-           <a href="{% url 'all_products' %}?store={{ store.slug }}&filter=featured" class="btn btn-outline-success rounded-pill px-4">View All</a>
+{% if has_store_featured%}
+<section class="py-3 bg-white">
+    <div class="container-fluid px-4 py-2">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="text-dark fw-bold fs-2 mb-0">FEATURED PRODUCTS</h2>
+           <a href="{% url 'all_products' %}?store={{ store.slug }}&filter=featured" class="btn btn-light btn-lg px-5 py-2 rounded-pill shadow-lg text-dark fw-bold">View All</a>
          </div>
 
         <div class="swiper mySwiper featured-swiper">
             <div class="swiper-wrapper">
-                {% for p in store_featured_products|slice:":20" %}
+                {% for p in store_featured|slice:":20" %}
                 <div class="swiper-slide">
                    <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
                                 <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
@@ -456,7 +519,7 @@
                                     <div class="position-absolute bg-warning text-dark fw-bold px-3 py-1" style="top:20px;left:-10px;z-index:10;">-{{ p.discount_percent }}%</div>
                                     {% endif %}
                                     <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:230px;object-fit:cover;">
-                                           <div class="card-body text-center p-3 flex flex-column">
+                                    <div class="card-body text-center p-3 flex flex-column">
                                      <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">
                         {{ p.name }}
                     </h6>
@@ -469,8 +532,8 @@
                     <div class="mt-auto text-center">
                         {% if p.offer_price and p.offer_price < p.regular_price %}
                             <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                                <span class="text-success fs-5 fw-bold">₹{{ p.offer_price }}</span>
-                               <del class="text-muted fw-bold fs-6 opacity-75" style="text-decoration-thickness: 2.5px; opacity: 0.9;">₹{{ p.regular_price }}</del>
+                                <span class="text-success fs-5 fw-bold">₹ {{ p.offer_price }}</span>
+                               <del class="fw-medium" style="font-size: 1rem; text-decoration: line-through; color: #585757; opacity: 0.9; text-decoration-thickness: 0.9px;">₹ {{ p.regular_price }} </del>
                                 <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
                             </div>
                         {% else %}
@@ -479,11 +542,10 @@
                     </div>
 
                        <div class="mt-auto text-center pt-2">
-                        <small class="text-muted  d-block fw-medium">
+                        <small class="text-muted d-block fw-medium">
                             {{ p.store.name }} • {{ p.store.city }}
                         </small>
-                    </div>                       
-                                      
+                    </div>     
                 </div> 
                                 </div>
                             </a>
@@ -502,7 +564,7 @@
 <style>
     .hover-card {
         transition: all 0.35s ease;
-        border-radius: 16px !important;
+       
         overflow: hidden;
     }
     .hover-card:hover {
@@ -536,20 +598,28 @@
     });
 </script>
 
+<!-- CATEGORIES — FLIPKART STYLE HORIZONTAL SCROLL (8 PER ROW) -->
+<section class="py-3" style="background-color: rgb(21, 47, 70); ">
+    <div class="container-fluid px-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="text-white fw-bold fs-2 mb-0">Shop by Category</h2>
+            <a href="{% url 'categories_page' %}?store={{ store.slug }}" 
+   class="btn btn-outline-light rounded-pill px-4 fw-bold">View All Categories</a>
+</div>
 
-<section class="py-5 bg-white">
-    <div class="container-fluid px-4 py-2">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="text-primary fw-bold fs-2 mb-0">Shop by Category</h2>
-            <a href="{% url 'categories_page' %}" class="btn btn-outline-primary rounded-pill px-4 fw-bold">View All</a>
-        </div>
-
-        <div class="swiper mySwiper category-swiper">
+        <!-- SWIPER HORIZONTAL SCROLL -->
+        <div class="swiper mySwiper category-swiper ">
             <div class="swiper-wrapper">
-                {% for cat in store.categories.all %}
+                {% for cat in store_categories %}
                 <div class="swiper-slide">
-                    <a href="{% url 'all_products' %}?store={{ store.slug }}&category={{ cat.slug }}" class="d-block text-center text-decoration-none">
+                    <a href="{% url 'all_products' %}?store={{ store.slug }}" class="d-block text-center">
                         <div class="category-card position-relative mb-3 mx-auto" style="width: 110px;">
+                            <!-- Pink glow background -->
+                            <div style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%); 
+                                        width: 100px; height: 80px;
+                                        border-radius: 100px 100px 0 0; z-index: 1;"></div>
+
+                            <!-- Category Image / Icon -->
                             {% if cat.image %}
                                 <img src="{{ cat.image.url }}" 
                                      class="rounded-circle shadow-lg border border-5 border-white" 
@@ -557,25 +627,27 @@
                                      alt="{{ cat.name }}">
                             {% else %}
                                 <div class="d-flex align-items-center justify-content-center rounded-circle shadow-lg border border-5 border-white" 
-                                     style="width: 100px; height: 100px; background: linear-gradient(135deg, #ec4899, #f43f5e);">
+                                     style="width: 100px; height: 100px; background: linear-gradient(135deg, #ec4899, #f43f5e); z-index: 2; position: relative;">
                                     <i class="fas fa-chair text-white fs-2"></i>
                                 </div>
                             {% endif %}
                         </div>
-                        <h6 class="fw-bold text-dark mt-3 mb-0">{{ cat.name }}</h6>
-                        <small class="text-muted d-block">{{ cat.product_set.count }} items</small>
+                         <h6 class="fw-bold text-white mt-3 mb-0">{{ cat.name }}</h6>
                     </a>
                 </div>
                 {% endfor %}
             </div>
+
+            <!-- Navigation Arrows -->
             <div class="swiper-button-next text-primary"></div>
             <div class="swiper-button-prev text-primary"></div>
         </div>
     </div>
 </section>
 
+
 <!-- ALL PRODUCTS FROM THIS STORE BUTTON -->
-<section class="py-5 bg-light">
+<section class="py-3 bg-light">
     <div class="container text-center">
         <a href="{% url 'all_products' %}?store={{ store.slug }}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-lg fw-bold">
             View All Products from {{ store.name }} ({{ store.products.count }} items)

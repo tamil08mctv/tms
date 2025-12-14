@@ -67,11 +67,11 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4 px-3 ">
+<div class="container-fluid py-3 px-3 ">
 
     <!-- FILTER BAR -->
     <div class="filter-bar">
-        <div class="text-center mb-4">
+        <div class="text-center mb-4 py-3">
             <h2 class="filter-title">
                 {% if filter_type == 'deals' %}DEALS OF THE DAY
                 {% elif filter_type == 'bestselling' %}BEST SELLERS
@@ -199,8 +199,8 @@
                             {% if p.offer_price and p.offer_price < p.regular_price %}
                                 <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
                                     <span class="text-success fs-5 fw-bold">₹{{ p.offer_price }}</span>
-                                    <del class="text-muted fw-bold fs-6 opacity-75" style="text-decoration-thickness: 2.5px;">₹{{ p.regular_price }}</del>
-                                    <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
+                                     <del class="fw-medium" style="font-size: 1rem; text-decoration: line-through; color: #585757; opacity: 0.9; text-decoration-thickness: 0.9px;">₹ {{ p.regular_price }} </del>
+                              <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
                                 </div>
                             {% else %}
                                 <span class="text-success fs-5 fw-bold">₹{{ p.regular_price }}</span>

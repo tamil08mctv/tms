@@ -28,6 +28,8 @@ urlpatterns = [
     path('store/<slug:store_slug>/products/', product_list, name='product_list'),
     path('store/<slug:store_slug>/product/<slug:product_slug>/', product_detail, name='product_detail'),
     path('categories/', categories_page, name='categories_page'),
+ 
+    path('store/<slug:slug>/categories/', categories_page, name='store_categories'),
 
     # ==================== STORE ADMIN PANEL ====================
     path('store-admin/', store_dashboard, name='store_dashboard'),

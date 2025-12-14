@@ -4,89 +4,303 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}TMS Groups – Premium Furniture Across Tamil Nadu{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="{% static 'TMS/css/styles.css' %}" rel="stylesheet">
-    <!-- ADD THESE IN <head> OF base.html (ONCE ONLY) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <meta name="description" content="TMS Furnitures - Premium Furniture Store in Tamil Nadu. Best Prices, Quality & Design.">
+    <meta name="keywords" content="furniture, sofa, bed, dining table, wardrobe, tms furnitures, tamil nadu furniture">
+    <meta name="author" content="TMS Groups">
+    <meta name="theme-color" content="#e91e63">
     
+    <title>{% block title %}TMS Furnitures – Premium Furniture Store in Tamil Nadu{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Swiper -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    
+    <!-- AOS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="{% static 'TMS/css/styles.css' %}" rel="stylesheet">
+
     <style>
-        body { font-family: 'Poppins', sans-serif; }
-        .navbar-brand { font-weight: 700; letter-spacing: 1px; }
-        .btn-success { background: #25D366 !important; border: none !important; font-weight: 600; }
-        .ribbon-deal { position: absolute; top: 10px; right: -35px; background: #e91e63; color: white; padding: 8px 50px; font-size: 13px; font-weight: bold; transform: rotate(45deg); z-index: 10; }
-        .ribbon-offer { background: #ff5722; }
-        .badge-discount { background: #d32f2f; font-size: 14px; padding: 6px 10px; }
-        .hover-card { transition: all 0.4s ease; border: none; }
-        .hover-card:hover { transform: translateY(-12px); box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important; }
-        .category-card { overflow: hidden; background: white; }
-        .category-card img { transition: 0.4s; }
-        .category-card:hover img { transform: scale(1.1); }
+        :root {
+            --primary: #e91e63;
+            --gold: #FFD700;
+            --dark: #0f0f0f;
+            --success: #25D366;
+        }
+
+        * { scroll-behavior: smooth; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* PREMIUM NAVBAR - WORKS PERFECT ON MOBILE & DESKTOP */
+        .navbar {
+            background: rgba(15, 15, 15, 0.96) !important;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.4s ease;
+           
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 9999;
+        }
+
+        .navbar.scrolled {
+            padding: 0.5rem 0;
+            background: rgba(10, 10, 10, 0.98) !important;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        .navbar-brand {
+            font-weight: 900;
+            font-size: 1.7rem;
+            background: linear-gradient(45deg, var(--gold), #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-link {
+            color: white !important;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 0.5rem 1rem !important;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 215, 0, 0.15);
+            color: var(--gold) !important;
+        }
+
+        /* MOBILE FIXES - PERFECT LIKE OLD CODE */
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                background: rgba(20, 20, 20, 0.98);
+                margin-top: 15px;
+                border-radius: 16px;
+                padding: 20px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            }
+            .navbar-nav {
+                gap: 10px !important;
+            }
+            .nav-link {
+                padding: 12px 20px !important;
+                border-radius: 12px;
+                text-align: center;
+            }
+            .whatsapp-btn {
+                margin: 20px auto 10px;
+                display: block;
+                width: fit-content;
+            }
+        }
+
+        /* CATEGORIES DROPDOWN - SCROLLABLE & BEAUTIFUL */
+        .dropdown-menu {
+            background: rgba(30, 30, 30, 0.98);
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            margin-top: 10px;
+            max-height: 70vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) #333;
+        }
+
+        .dropdown-menu::-webkit-scrollbar {
+            width: 6px;
+        }
+        .dropdown-menu::-webkit-scrollbar-track {
+            background: #222;
+            border-radius: 10px;
+        }
+        .dropdown-menu::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .dropdown-item {
+            color: #eee !important;
+            padding: 12px 24px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: var(--primary);
+            color: white !important;
+            padding-left: 32px;
+        }
+
+        /* WHATSAPP BUTTON */
+        .whatsapp-btn {
+            background: var(--success);
+            color: white !important;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+            transition: all 0.4s ease;
+            white-space: nowrap;
+        }
+
+        .whatsapp-btn:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(37, 211, 102, 0.6);
+        }
+
+          /* FOOTER - PREMIUM */
+        footer {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+            color: #ddd;
+            margin-top: 5px;
+            padding-top: 5px;   
+            position: relative;
+        }
+
+   
+
+        footer h4, footer h6 {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+        }
+
+        footer a {
+            color: #fbfafa;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        footer a:hover {
+            color: #FFD700;
+            padding-left: 8px;
+        }
+
+        .social-icons a {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            transition: all 0.4s ease;
+        }
+
+        .social-icons a:hover {
+            background: #FFD700;
+            color: rgb(13, 235, 91) !important;
+            transform: translateY(-10px) rotate(10deg);
+        }
     </style>
 </head>
 <body>
 
+<!-- PERFECT NAVBAR - WORKS ON MOBILE & DESKTOP -->
 {% if not 'admin' in request.path and not 'login' in request.path %}
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top">
-    <div class="container">
-        <a class="navbar-brand fs-3" href="/">
-            <i class="fas fa-couch text-warning"></i> <strong>TMS FURNITURES</strong>
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNavbar">
+    <div class="container-fluid px-3 px-md-4">
+        <a class="navbar-brand fs-4 fw-bold" href="/">
+            <i class="fas fa-couch text-warning me-2"></i>TMS FURNITURES
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto align-items-center gap-3">
-                <li class="nav-item"><a class="nav-link text-white fw-medium" href="/">Home</a></li>
-                <li class="nav-item"><a class="nav-link text-white fw-medium" href="{% url 'all_products' %}">All Products</a></li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white fw-medium" data-bs-toggle="dropdown">Categories</a>
-                    <ul class="dropdown-menu shadow border-0">
-                        {% for cat in categories_all %}
-                        <li><a class="dropdown-item" href="{% url 'all_products' %}?category={{ cat.slug }}">{{ cat.name }}</a></li>
-                        {% endfor %}
-                    </ul>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white fw-medium" data-bs-toggle="dropdown">Our Stores</a>
-                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                        {% for store in stores_all %}
-                        <li><a class="dropdown-item" href="/store/{{ store.slug }}/">{{ store.name }} – {{ store.city }}</a></li>
-                        {% endfor %}
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-primary fw-bold" href="/stores/">View All Stores →</a></li>
-                    </ul>
+            <ul class="navbar-nav ms-auto align-items-center ">
+                <li class="nav-item">
+                    <a class="nav-link px-3" href="/">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a href="https://wa.me/919629828969" class="btn btn-success px-4 py-2 rounded-pill shadow">
-                        <i class="fab fa-whatsapp"></i> Chat Now
-                    </a>
+                    <a class="nav-link px-3" href="{% url 'all_products' %}">All Products</a>
                 </li>
+                
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle px-3" href="#" role="button" data-bs-toggle="dropdown">
+                        Categories
+                    </a>
+                    <ul class="dropdown-menu">
+                        {% for cat in categories_all|slice:":30" %}
+                        <li><a class="dropdown-item" href="{% url 'all_products' %}?category={{ cat.slug }}">{{ cat.name }}</a></li>
+                        {% endfor %}
+                        {% if categories_all|length > 30 %}
+                        <li><hr class="dropdown-divider">
+                        <li><a class="dropdown-item text-center text-primary fw-bold" href="{% url 'categories_page' %}">View All Categories</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle px-3" href="#" role="button" data-bs-toggle="dropdown">
+                        Our Stores
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        {% for store in stores_all|slice:":15" %}
+                        <li><a class="dropdown-item" href="/store/{{ store.slug }}/">{{ store.name }} – {{ store.city }}</a></li>
+                        {% endfor %}
+                        <li><hr class="dropdown-divider">
+                        <li><a class="dropdown-item text-primary fw-bold" href="/stores/">View All Stores</a></li>
+                    </ul>
+                </li>
+
+                
             </ul>
         </div>
     </div>
 </nav>
 {% endif %}
 
-{% block content %}{% endblock %}
+<!-- MAIN CONTENT -->
+<main class="pt-3 mt-4">
+    {% block content %}{% endblock %}
+</main>
 
-<footer class="bg-dark text-white py-5 mt-auto">
-    <div class="container">
-        <div class="row text-center text-md-start">
-            <div class="col-md-5">
-                <h4 class="text-warning fw-bold">TMS FURNITURES</h4>
-                <p class="text-light">Tamil Nadu's Most Trusted Furniture Store </p>
-                <p class="text-success fs-5"><i class="fab fa-whatsapp"></i> +91 96298 28969</p>
+<!-- PREMIUM FOOTER -->
+<footer>
+    <div class="containerfluid py-3 px-4">
+        <div class="row text-center text-md-start g-5">
+            <div class="col-lg-5">
+                <h4>TMS FURNITURES</h4>
+                <p class="text-light opacity-90">Tamil Nadu's Most Trusted & Premium Brand</p>
+                <p class="text-success fs-6">
+                    <i class="fab fa-whatsapp"></i> +91 96298 28969
+                </p>
             </div>
-            <div class="col-md-3">
-                <h6 class="text-warning">Quick Links</h6>
-                <a href="/" class="text-white d-block mb-1">Home</a>
-                <a href="{% url 'all_products' %}" class="text-white d-block mb-1">All Products</a>
-                <a href="/stores/" class="text-white d-block">Our Stores</a>
+
+            <div class="col-lg-3">
+                <h6>Quick Links</h6>
+                <ul class="list-unstyled">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="{% url 'all_products' %}">All Products</a></li>
+                    <li><a href="/stores/">Our Stores</a></li>
+                    <li><a href="/about/">About Us</a></li>
+                </ul>
             </div>
+
             <div class="col-md-4 text-center">
                 <h6 class="text-warning">Follow Us</h6>
                 <div class="fs-3">
@@ -94,13 +308,44 @@
                     <a href="#" class="text-white mx-3"><i class="fab fa-instagram"></i></a>
                     <a href="#" class="text-white mx-3"><i class="fab fa-youtube"></i></a>
                 </div>
-                <p class="mt-4 small text-light">© 2025 TMS Groups. All Rights Reserved.</p>
+                <p class="mt-4 small text-light">© {% now "Y" %} TMS | All rights reserved</p>
             </div>
+        </div>
+
+        <div class="text-center pt-2 border-top border-secondary opacity-80">
+       
+         
+                <p class="opacity-60">Made with love in Tamil Nadu |
+                    Developed with passion by <strong class="text-warning fw-bold">TAMIL</strong>
+                </p>    
         </div>
     </div>
 </footer>
 
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script src="{% static 'TMS/js/main.js' %}"></script>
+
+<script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+        const navbar = document.getElementById('mainNavbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // AOS
+    AOS.init({
+        duration: 800,
+        easing: 'ease-in-out',
+        once: true,
+        mirror: false
+    });
+</script>
 </body>
 </html>

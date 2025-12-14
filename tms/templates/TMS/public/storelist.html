@@ -1,46 +1,157 @@
 {% extends 'TMS/base.html' %}
-{% block title %}All Stores - TMS Groups{% endblock %}
+{% load static %}
+
+{% block title %}All Stores - TMS Groups | Premium Furniture Tamil Nadu{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <h1 class="text-center mb-5 text-primary">All Our Stores in Tamil Nadu</h1>
-    
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <input type="text" class="form-control" placeholder="Search store or city..." value="{{ query }}">
-        </div>
-        <div class="col-md-4">
-            <select class="form-select">
-                <option>All Cities</option>
-                {% for city in cities %}
-                <option {% if city == selected_city %}selected{% endif %}>{{ city }}</option>
-                {% endfor %}
-            </select>
-        </div>
+<div class="container my-4 pt-3">
+    <div class="text-center mb-3">
+        <h1 class="display-6 fw-bold text-primary mb-3">Our Stores Across Tamil Nadu</h1>
+        <p class="lead text-muted">Find your nearest TMS showroom</p>
     </div>
 
+ <!-- FILTER BAR — NOW FULLY WORKING -->
+    <form method="get" class="mb-5">
+        <div class="row g-3 align-items-end">
+            <div class="col-lg-5 col-md-6">
+                <label class="form-label fw-bold text-dark">Search Store or City</label>
+                <input type="text" name="q" class="form-control form-control-lg rounded-pill shadow-sm" 
+                       placeholder="Enter store name or city..." value="{{ request.GET.q|default:'' }}" autocomplete="off">
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <label class="form-label fw-bold text-dark">Filter by City</label>
+                <select name="city" class="form-select form-select-lg rounded-pill shadow-sm">
+                    <option value="">All Cities</option>
+                    {% for city in cities %}
+                    <option value="{{ city }}" {% if request.GET.city == city %}selected{% endif %}>
+                        {{ city }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-3">
+                <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow-lg fw-bold">
+                    <i class="fas fa-search me-2"></i> Search Stores
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- RESULTS COUNT -->
+    {% if query or selected_city %}
+    <div class="text-center mb-3">
+        <p class="text-muted fs-5">
+            Showing results for 
+            {% if query %}<strong>"{{ query }}"</strong>{% endif %}
+            {% if query and selected_city %} in {% endif %}
+            {% if selected_city %}<strong>{{ selected_city }}</strong>{% endif %}
+            • {{ stores.object_list|length }} store{{ stores.object_list|length|pluralize }} found
+        </p>
+        <a href="{% url 'store_list' %}" class="text-decoration-none small">
+            Clear filters
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- STORES GRID -->
     <div class="row g-4">
         {% for store in stores %}
-        <div class="col-md-4 align-items-center">
-            <div class="card h-100 shadow hover-card">
-                {% if store.logo %}
-                <img src="{{ store.logo.url }}" class="card-img-top p-4" style="height:180px; object-fit:contain;">
-                {% endif %}
-                <div class="card-body text-center">
-                    <h5 class="card-title">{{ store.name }}</h5>
-                    <p class="text-muted"><i class="fas fa-map-marker-alt"></i> {{ store.city }}</p>
-                    <a href="/store/{{ store.slug }}/" class="btn btn-success">Visit Store</a>
+        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0}}">
+            <div class="card h-100 border-0 shadow-lg hover-card overflow-hidden rounded-4">
+                <div class="position-relative">
+                    {% if store.logo %}
+                    <img src="{{ store.logo.url }}" class="card-img-top" 
+                         style="height:200px; object-fit:contain; background:#f8f9fa; padding:20px;" 
+                         alt="{{ store.name }} Logo">
+                    {% else %}
+                    <div class="bg-light d-flex align-items-center justify-content-center" style="height:200px;">
+                        <i class="fas fa-store text-muted fs-1"></i>
+                    </div>
+                    {% endif %}
+                 
+                </div>
+
+                <div class="card-body text-center p-4">
+                    <h5 class="card-title fw-bold text-primary fs-4 mb-3">{{ store.name }}</h5>
+                    
+                    <div class="mb-4">
+                        <p class="text-muted mb-2">
+                            <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                            {{ store.city }}, Tamil Nadu
+                        </p>
+                        {% if store.phone %}
+                        <p class="text-muted mb-2">
+                            <i class="fas fa-phone text-success me-2"></i>
+                            {{ store.phone }}
+                        </p>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex gap-2 justify-content-center flex-wrap">
+                        <a href="/store/{{ store.slug }}/" class="btn btn-primary rounded-pill px-4 py-2 shadow">
+                            <i class="fas fa-arrow-right me-2"></i>Visit Store
+                        </a>
+                        {% if store.whatsapp %}
+                        <a href="https://wa.me/91{{ store.whatsapp }}" target="_blank" 
+                           class="btn btn-success rounded-pill px-4 py-2 shadow">
+                            <i class="fab fa-whatsapp"></i> Chat
+                        </a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
         {% empty %}
         <div class="col-12 text-center py-5">
-            <h3>No stores found</h3>
+            <div class="bg-white rounded-4 shadow p-5">
+                <i class="fas fa-store-slash text-muted fs-1 mb-4"></i>
+                <h3 class="text-muted">No stores found</h3>
+                <p class="text-muted">Try adjusting your search or filters</p>
+                <a href="{% url 'store_list' %}" class="btn btn-primary rounded-pill px-4">Clear Filters</a>
+            </div>
         </div>
         {% endfor %}
     </div>
-    
- 
-</div>
 
+    <!-- PAGINATION -->
+    {% if stores.has_other_pages %}
+    <nav class="mt-5 d-flex justify-content-center">
+        <ul class="pagination pagination-lg">
+            {% if stores.has_previous %}
+            <li class="page-item">
+                <a class="page-link rounded-pill px-4" href="?{% if query %}q={{ query }}&{% endif %}{% if selected_city %}city={{ selected_city }}&{% endif %}page={{ stores.previous_page_number }}">
+                    Previous
+                </a>
+            </li>
+            {% endif %}
+
+            <li class="page-item active">
+                <span class="page-link rounded-pill bg-primary border-0">
+                    {{ stores.number }} of {{ stores.paginator.num_pages }}
+                </span>
+            </li>
+
+            {% if stores.has_next %}
+            <li class="page-item">
+                <a class="page-link rounded-pill px-4" href="?{% if query %}q={{ query }}&{% endif %}{% if selected_city %}city={{ selected_city }}&{% endif %}page={{ stores.next_page_number }}">
+                    Next
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hover-card {
+        transition: all 0.4s ease;
+    }
+    .hover-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.18) !important;
+    }
+</style>
 {% endblock %}
