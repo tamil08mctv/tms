@@ -4,10 +4,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.http import HttpResponse
-from ..models import Lead, Product, Store, StoreBanner, ProductImage, Category
+from ..models import Lead, Product, Store, StoreBanner, ProductImage, Category, ProductSpecification
 from ..forms import ProductForm, StoreBannerForm,CategoryForm
 import csv
 from datetime import datetime, date
+from django.forms import inlineformset_factory
 
 
 @login_required
@@ -51,16 +52,32 @@ def store_products(request):
     page = request.GET.get('page')
     products_page = paginator.get_page(page)
 
-
-   
+    # Inline formset for adding new product
+    ProductSpecFormSet = inlineformset_factory(
+        Product, ProductSpecification,
+        fields=('name', 'value'),
+        extra=3,
+        can_delete=True
+    )
     
 
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
-        if form.is_valid():
+        spec_formset = ProductSpecFormSet(request.POST)
+
+        if form.is_valid()and spec_formset.is_valid():
             product = form.save(commit=False)
             product.store = store
+
+
+            # Handle new boolean fields
+            product.call_for_price = 'call_for_price' in request.POST
+            product.is_limited_stock = 'is_limited_stock' in request.POST
+            product.is_new_arrival = 'is_new_arrival' in request.POST
             product.save()
+
+            spec_formset.instance = product
+            spec_formset.save()
 
             extra_images = request.FILES.getlist('extra_images')
             for img in extra_images:
@@ -70,15 +87,14 @@ def store_products(request):
             return redirect('store_products')
     else:
         form = ProductForm()
+        spec_formset = ProductSpecFormSet()
         
-
-    
-
     return render(request, 'TMS/storeadmin/products.html', {
         'store': store,
         'products': products_page,
         'form': form,
         'categories': categories,  # NOW PASSED!
+        'spec_formset': spec_formset,
     })
 
 
@@ -90,8 +106,17 @@ def edit_product(request, pk):
     store = request.user.storeadmin.store
     product = get_object_or_404(Product, pk=pk, store=store)
 
+    # Inline formset for specifications
+    ProductSpecFormSet = inlineformset_factory(
+        Product, ProductSpecification,
+        fields=('name', 'value'),
+        extra=1,
+        can_delete=True
+    )
+
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance=product)
+        spec_formset = ProductSpecFormSet(request.POST, instance=product)
 
         # HANDLE IMAGE DELETION FIRST
         delete_image_id = request.POST.get('delete_image')
@@ -108,13 +133,17 @@ def edit_product(request, pk):
             ProductImage.objects.filter(id=main_image_id, product=product).update(is_main=True)
             messages.success(request, "Main image updated!")
 
-        product.is_best_seller = 'is_best_seller' in request.POST
-        product.is_limited_deal = 'is_limited_deal' in request.POST
-        product.is_special_offer = 'is_special_offer' in request.POST
-
-        # NOW PROCESS FORM
-        if form.is_valid():
+        if form.is_valid() and spec_formset.is_valid():
+            # Update boolean fields
+            product.call_for_price = 'call_for_price' in request.POST
+            product.is_limited_stock = 'is_limited_stock' in request.POST
+            product.is_new_arrival = 'is_new_arrival' in request.POST
+            product.is_best_seller = 'is_best_seller' in request.POST
+            product.is_limited_deal = 'is_limited_deal' in request.POST
+            product.is_special_offer = 'is_special_offer' in request.POST
+     
             form.save()
+            spec_formset.save()
 
             # ADD NEW IMAGES
             extra_images = request.FILES.getlist('extra_images')
@@ -134,11 +163,13 @@ def edit_product(request, pk):
 
     else:
         form = ProductForm(instance=product)
+        spec_formset = ProductSpecFormSet(instance=product)
 
     return render(request, 'TMS/storeadmin/edit_product.html', {
         'store': store,
         'product': product,
-        'form': form
+        'form': form,
+        'spec_formset': spec_formset,
     })
 
 @login_required
@@ -148,8 +179,9 @@ def delete_product(request, pk):
     
     product = get_object_or_404(Product, pk=pk, store=request.user.storeadmin.store)
     if request.method == 'POST':
+        product_name = product.name
         product.delete()
-        messages.success(request, "Product deleted!")
+        messages.success(request, f"Product '{product_name}' deleted!")
     return redirect('store_products')
 
 # tms/views/storeadmin.py → FINAL 100% WORKING SINGLE PAGE

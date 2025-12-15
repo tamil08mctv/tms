@@ -182,9 +182,13 @@
                         <div class="position-absolute top-0 start-0 m-3 z-10">
                             <span class="badge text-white px-4 py-2 rounded-pill shadow-lg fw-bold" style="background:orangered">DEALS</span>
                         </div>
-                    {% elif p.created_at > seven_days_ago %}
-                        <div class="position-absolute top-0 end-0 m-3 z-10">
-                            <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow-lg fw-bold">NEW</span>
+                    {% elif p.is_featured %}
+                        <div class="position-absolute top-0 start-0 m-3 z-10">
+                            <span class="badge text-white px-4 py-1 rounded-pill shadow-lg fw-bold" style="background:rgb(234, 221, 35)"><i class="fas fa-star text-dark fs-5"></i></span>
+                        </div>
+                    {% elif p.is_new_arrival or p.created_at|date:"U"|add:"0" > seven_days_ago|date:"U"|add:"0" %}
+                        <div class="position-absolute top-0 end-0 p-2 z-10">
+                            <span class="badge bg-success text-white px-4 py-2 rounded-pill shadow-lg fw-bold">NEW</span>
                         </div>
                     {% endif %}
 

@@ -1,6 +1,6 @@
 # tms/forms.py → FINAL FIXED & PROFESSIONAL VERSION (NO ERROR!)
 from django import forms
-from .models import Product, Store, StoreBanner,Category
+from .models import Product, Store, StoreBanner,Category,ProductSpecification
 
 class EnquiryForm(forms.Form):
     customer_name = forms.CharField(
@@ -31,6 +31,7 @@ class ProductForm(forms.ModelForm):
         label="Product Video",
         widget=forms.FileInput(attrs={'accept': 'video/*', 'class': 'form-control'})
     )
+    
 
     class Meta:
         model = Product
@@ -95,3 +96,19 @@ class StoreBannerForm(forms.ModelForm):
             'caption': forms.TextInput(attrs={'class': 'form-control'}),
             'order': forms.NumberInput(attrs={'class': 'form-control', 'min': '0', 'value': '0'}),
         }
+
+
+from django.forms import inlineformset_factory
+
+# ADD THIS AT THE BOTTOM
+ProductSpecFormSet = inlineformset_factory(
+    Product,
+    ProductSpecification,
+    fields=('name', 'value'),
+    extra=5,
+    can_delete=True,
+    widgets={
+        'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Material'}),
+        'value': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Teak Wood'}),
+    }
+)

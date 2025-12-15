@@ -113,10 +113,12 @@ class Product(models.Model):
     deal_end_date = models.DateField(null=True, blank=True, help_text="Set date → Becomes Deal of the Day")
     video = models.FileField(upload_to=product_video_path, blank=True, null=True, help_text="Product video")
     in_stock = models.BooleanField(default=True, help_text="Hide if out of stock")
+    is_new_arrival = models.BooleanField(default=False, help_text="Green badge to show newly arrived")
     is_best_seller = models.BooleanField(default=False, help_text="Gold Badge")
     is_limited_deal = models.BooleanField(default=False, help_text="Red LIMITED DEAL Badge")
     is_special_offer = models.BooleanField(default=False, help_text="Purple SPECIAL OFFER Badge")
     is_featured = models.BooleanField(default=False, help_text="Orange FEATURED Ribbon")
+    call_for_price = models.BooleanField(default=False, help_text="Show 'Call for Best Price' instead of price")
     views_count = models.PositiveIntegerField(default=0)
     enquiry_count = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -149,6 +151,18 @@ class Product(models.Model):
     def __str__(self):
         return f"{self.name} - {self.store.name}"
 
+
+# ADD THIS NEW MODEL FOR SPECIFICATIONS
+class ProductSpecification(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='specifications')
+    name = models.CharField(max_length=200, help_text="e.g. Material, Dimensions, Warranty")
+    value = models.CharField(max_length=500, help_text="e.g. Teak Wood, 6x3 feet, 5 Years")
+
+    def __str__(self):
+        return f"{self.name}: {self.value}"
+
+    class Meta:
+        ordering = ['id']
 
 # ======================= PRODUCT IMAGES =======================
 class ProductImage(models.Model):

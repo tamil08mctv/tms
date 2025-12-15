@@ -444,9 +444,11 @@
             <div class="col-6 col-sm-4 col-md-3 col-lg-2-4" data-aos="fade-up">
                 <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none text-white">
                     <div class="card h-100 shadow hover-card border-0 bg-white text-dark">
-                        <div class="position-absolute top-0 end-0 p-2">
-                            <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow-lg fw-bold">NEW</span>
-                        </div>
+                     {% if p.is_new_arrival %}
+    <div class="position-absolute top-0 end-0 p-2">
+        <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow-lg fw-bold">NEW</span>
+    </div>
+{% endif %}
                         <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:230px;object-fit:cover;">
                              
                        <div class="card-body text-center p-3 flex flex-column">

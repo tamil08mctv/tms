@@ -10,8 +10,8 @@
             <h2 class="mb-1 text-success fw-bold">Manage Products</h2>
             <p class="text-muted mb-0">Total: <strong>{{ products.paginator.count }}</strong> products</p>
         </div>
-        <button type="button" class="btn btn-success btn-lg shadow-sm" data-bs-toggle="modal" data-bs-target="#addProductModal">
-            Add New Product
+        <button type="button" class="btn btn-success btn-lg shadow-sm rounded-pill px-5" data-bs-toggle="modal" data-bs-target="#addProductModal">
+            <i class="fas fa-plus me-2"></i> Add New Product
         </button>
     </div>
 
@@ -35,32 +35,38 @@
         </div>
     </div>
 
-    <!-- PRODUCTS GRID — 5 PER ROW + CENTERED -->
+    <!-- PRODUCTS GRID -->
     <div class="row g-4 justify-content-center" id="productsGrid">
         {% for p in products %}
         <div class="col-6 col-sm-4 col-md-3 col-lg-2-4 product-card" 
              data-name="{{ p.name|lower }}" 
              data-category="{{ p.category.name|default:'uncategorized'|lower }}">
-            <div class="card h-100 border-0 shadow-sm hover-lift transition rounded-4 overflow-hidden">
+            <div class="card h-100 border-0 shadow-sm hover-lift rounded-4 overflow-hidden">
                 {% if p.images.first %}
                     <img src="{{ p.images.first.image.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
                 {% else %}
                     <div class="bg-light d-flex align-items-center justify-content-center" style="height:200px;">
-                        <i class="fas fa-image text-muted" style="font-size:60px;"></i>
+                        <i class="fas fa-image text-muted fs-1"></i>
                     </div>
                 {% endif %}
                 <div class="card-body d-flex flex-column p-3">
                     <h6 class="card-title mb-2 text-dark fw-bold text-center">{{ p.name|truncatechars:45 }}</h6>
-                    <p class="text-success fw-bold fs-5 mb-1 text-center">{{ p.get_price_display }}</p>
+                    <p class="text-success fw-bold fs-5 mb-1 text-center">
+                        {% if p.call_for_price %}
+                            Call for Best Price
+                        {% else %}
+                            {{ p.get_price_display }}
+                        {% endif %}
+                    </p>
                     {% if p.offer_price and p.offer_price < p.regular_price %}
                         <small class="text-muted d-block text-center"><del>₹{{ p.regular_price }}</del> → {{ p.discount_percent }}% OFF</small>
                     {% endif %}
-                    <small class="text-danger fw-bold fs-5  text-center mt-2">{{ p.category.name|default:"No Category" }}</small>
+                    <small class="text-primary fw-bold text-center mt-2">{{ p.category.name|default:"No Category" }}</small>
                     <div class="mt-auto pt-3 d-flex gap-2">
-                        <a href="{% url 'edit_product' p.pk %}" class="btn btn-primary btn-sm flex-fill"> Edit</a>
+                        <a href="{% url 'edit_product' p.pk %}" class="btn btn-primary btn-sm flex-fill rounded-pill">Edit</a>
                         <form method="post" action="{% url 'delete_product' p.pk %}" class="d-inline">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm flex-fill" 
+                            <button type="submit" class="btn btn-danger btn-sm flex-fill rounded-pill"
                                     onclick="return confirm('Delete {{ p.name|escapejs }}?')">Delete</button>
                         </form>
                     </div>
@@ -70,240 +76,207 @@
         {% empty %}
         <div class="col-12 text-center py-5">
             <h3 class="text-muted">No products found</h3>
+            <p>Add your first product using the button above!</p>
         </div>
         {% endfor %}
     </div>
 
-    <!-- PAGINATION — CENTERED -->
+    <!-- PAGINATION -->
     {% if products.has_other_pages %}
     <nav class="mt-5">
         <ul class="pagination justify-content-center pagination-lg">
             {% if products.has_previous %}
                 <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page=1">First</a></li>
                 <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ products.previous_page_number }}">Previous</a></li>
-            {% else %}
-                <li class="page-item disabled"><span class="page-link rounded-pill mx-1">First</span></li>
-                <li class="page-item disabled"><span class="page-link rounded-pill mx-1">Previous</span></li>
             {% endif %}
-
             {% for num in products.paginator.page_range %}
                 {% if products.number == num %}
-                    <li class="page-item active">
-                        <span class="page-link rounded-pill bg-success border-success mx-1">{{ num }}</span>
-                    </li>
+                    <li class="page-item active"><span class="page-link rounded-pill bg-success border-success mx-1">{{ num }}</span></li>
                 {% elif num > products.number|add:'-2' and num < products.number|add:'3' %}
                     <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ num }}">{{ num }}</a></li>
                 {% endif %}
             {% endfor %}
-
             {% if products.has_next %}
                 <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ products.next_page_number }}">Next</a></li>
                 <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ products.paginator.num_pages }}">Last</a></li>
-            {% else %}
-                <li class="page-item disabled"><span class="page-link rounded-pill mx-1">Next</span></li>
-                <li class="page-item disabled"><span class="page-link rounded-pill mx-1">Last</span></li>
             {% endif %}
         </ul>
-        <p class="text-center text-muted mt-3">
-            Page {{ products.number }} of {{ products.paginator.num_pages }} 
-            • Showing {{ products.start_index }}–{{ products.end_index }} of {{ products.paginator.count }}
-        </p>
     </nav>
     {% endif %}
 </div>
 
-<!-- ADD PRODUCT MODAL (UNCHANGED) -->
+<!-- ADD PRODUCT MODAL — LABELS NOW VISIBLE -->
 <div class="modal fade" id="addProductModal" tabindex="-1">
     <div class="modal-dialog modal-xl">
-        <div class="modal-content rounded-4 border-0 shadow-lg">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title fw-bold">Add New Product</h5>
+        <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+            <div class="modal-header bg-success text-white text-center py-4">
+                <h4 class="modal-title w-100 fw-bold">Add New Product</h4>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="modal-body p-4 p-lg-5">
-                    <!-- YOUR FULL FORM HERE (NO CHANGE) -->
-                    <div class="row g-4">
-                        <div class="row justify-content-center">
-        <div class="col-12 col-xl-11">
-            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-               
+            <div class="modal-body p-4 p-lg-5">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
 
-                <div class="card-body p-4 p-lg-5">
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
+                    <!-- PRODUCT INFORMATION -->
+                    <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
+                        <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Product Information</h5>
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Product Name</label>
+                                {{ form.name }}
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-bold">Category</label>
+                                {{ form.category }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Short Description</label>
+                                {{ form.short_desc }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Full Description</label>
+                                {{ form.description }}
+                            </div>
+                        </div>
+                    </div>
 
-                        <!-- PRODUCT INFORMATION -->
-                        <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
-                            <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Product Information</h5>
-                            <div class="row g-4">
-                                <div class="col-12">
-                                    <label class="form-label fw-bold">Product Name</label>
+                    <!-- PRICE & OFFER + STATUS -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-12 col-lg-6">
+                            <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+                                <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Price & Offer</h5>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Regular Price</label>
+                                    {{ form.regular_price }}
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Offer Price</label>
+                                    {{ form.offer_price }}
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Deal End Date</label>
+                                    {{ form.deal_end_date }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-6">
+                            <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+                                <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Status & Badges</h5>
+                                
+                                <div class="form-check form-switch mb-3">
+                                    {{ form.is_featured }}
+                                    <label class="form-check-label ms-3">{{ form.is_featured.label }}</label>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    {{ form.in_stock }}
+                                    <label class="form-check-label ms-3">{{ form.in_stock.label }}</label>
+                                </div>
+
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" name="call_for_price" id="add_call_for_price">
+                                    <label class="form-check-label ms-3 fw-bold text-info" for="add_call_for_price">
+                                        Call for Best Price
+                                    </label>
+                                </div>
+                               
+
+                                <hr class="my-4">
+                                <h6 class="fw-bold text-primary mb-3">Special Badges</h6>
+                                
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" name="is_best_seller" id="add_best_seller">
+                                    <label class="form-check-label ms-3 fw-bold text-warning" for="add_best_seller">
+                                        BEST SELLER
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" name="is_limited_deal" id="add_limited_deal">
+                                    <label class="form-check-label ms-3 fw-bold text-danger" for="add_limited_deal">
+                                        LIMITED DEAL
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" name="is_special_offer" id="add_special_offer">
+                                    <label class="form-check-label ms-3 fw-bold" style="color: purple;" for="add_special_offer">
+                                        SPECIAL OFFER
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SPECIFICATIONS — LABELS VISIBLE -->
+                    <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
+                        <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Specifications</h5>
+                        {{ spec_formset.management_form }}
+                        <div id="spec-forms">
+                            {% for form in spec_formset %}
+                            <div class="row g-3 mb-3 spec-form align-items-end">
+                                {% if form.instance.pk %}
+                                    {{ form.id }}
+                                {% endif %}
+                                <div class="col-md-5">
+                                    <label class="form-label fw-bold">Specification Name</label>
                                     {{ form.name }}
                                 </div>
-                                <div class="col-12 col-md-6">
-                                    <label class="form-label fw-bold">Category</label>
-                                    {{ form.category }}
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Value</label>
+                                    {{ form.value }}
                                 </div>
-                                <div class="col-12">
-                                    <label class="form-label fw-bold">Short Description</label>
-                                    {{ form.short_desc }}
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label fw-bold">Full Description</label>
-                                    {{ form.description }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- PRICE & STATUS -->
-                              <div class="row g-4 mb-4">
-                            <div class="col-12 col-lg-6">
-                                <div class="bg-white rounded-4 shadow-sm p-4 h-100">
-                                    <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Price & Offer</h5>
-                                    <div class="mb-3">{{ form.regular_price }}</div>
-                                    <div class="mb-3">{{ form.offer_price }}</div>
-                                    <div class="mb-3">{{ form.deal_end_date }}</div>
-                                </div>
-                            </div>
-
-                            <!-- STATUS & BADGES -->
-                            <div class="col-12 col-lg-6">
-                                <div class="bg-white rounded-4 shadow-sm p-4 h-100">
-                                    <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Status & Badges</h5>
-                                    
-                                    <div class="form-check form-switch mb-3">
-                                        {{ form.is_featured }}
-                                        <label class="form-check-label ms-3">{{ form.is_featured.label }}</label>
-                                    </div>
-                                    <div class="form-check form-switch mb-3">
-                                        {{ form.is_new }}
-                                        <label class="form-check-label ms-3">{{ form.is_new.label }}</label>
-                                    </div>
-                                    <div class="form-check form-switch mb-3">
-                                        {{ form.in_stock }}
-                                        <label class="form-check-label ms-3">{{ form.in_stock.label }}</label>
-                                    </div>
-
-                                    <!-- NEW BADGES -->
-                                    <hr class="my-4">
-                                    <h6 class="fw-bold text-primary mb-3">Special Badges (Only one will show on site)</h6>
-                                    
-                                    <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input" type="checkbox" name="is_best_seller" id="id_is_best_seller"
-                                               {% if product.is_best_seller %}checked{% endif %}>
-                                        <label class="form-check-label ms-3 fw-bold text-warning" for="id_is_best_seller">
-                                            BEST SELLER (Gold Badge - Highest Priority)
-                                        </label>
-                                    </div>
-
-                                    <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input" type="checkbox" name="is_limited_deal" id="id_is_limited_deal"
-                                               {% if product.is_limited_deal %}checked{% endif %}>
-                                        <label class="form-check-label ms-3 fw-bold text-danger" for="id_is_limited_deal">
-                                            LIMITED DEAL (Red Urgency Badge)
-                                        </label>
-                                    </div>
-
-                                    <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input" type="checkbox" name="is_special_offer" id="id_is_special_offer"
-                                               {% if product.is_special_offer %}checked{% endif %}>
-                                        <label class="form-check-label ms-3 fw-bold" 
-                                                  for="id_is_special_offer" style="color: purple;">
-                                            SPECIAL OFFER (Purple Premium Badge)
-                                        </label>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-danger btn-sm rounded-pill remove-spec w-100 mt-4">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <div class="form-check mt-2">
+                                        {{ form.DELETE }}
+                                        <label class="form-check-label small text-danger" for="{{ form.DELETE.id_for_label }}">Delete</label>
                                     </div>
                                 </div>
                             </div>
+                            {% endfor %}
                         </div>
+                        <button type="button" class="btn btn-outline-success rounded-pill px-4 mt-3" id="add-spec">
+                            <i class="fas fa-plus me-2"></i> Add Specification
+                        </button>
+                    </div>
 
-                        <!-- PRODUCT VIDEO -->
-                        <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
-                            <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Product Video</h5>
-                            {% if product.video %}
-                                <div class="mb-4 align-items-center">
-                                    <video controls style="width:100%; max-height:300px;">
-                                        <source src="{{ product.video.url }}" type="video/mp4">
-                                        Your browser does not support video.
-                                    </video>
-                                </div>
-                                <p class="mb-3"><strong>Current Video:</strong> {{ product.video.name|slice:"15:" }}</p>
-                            {% else %}
-                                <p class="text-muted mb-3">No video uploaded</p>
-                            {% endif %}
-                            <label class="form-label fw-bold">Replace Video (MP4 recommended)</label>
-                            <input type="file" name="video" accept="video/*" class="form-control form-control-lg">
-                            <small class="text-muted">Max 25MB recommended</small>
-                        </div>
+                    <!-- VIDEO & IMAGES -->
+                    <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
+                        <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Product Video</h5>
+                        <label class="form-label fw-bold">Upload Video</label>
+                        <input type="file" name="video" accept="video/*" class="form-control form-control-lg">
+                    </div>
 
-                        <!-- ADD MORE IMAGES -->
-                        <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
-                            <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Add More Images</h5>
-                            <input type="file" name="extra_images" multiple accept="image/*" class="form-control form-control-lg">
-                            <small class="text-muted d-block mt-2">Hold Ctrl (Windows) or Cmd (Mac) to select multiple images</small>
-                        </div>
+                    <div class="bg-white rounded-4 shadow-sm p-4 mb-5">
+                        <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Product Images</h5>
+                        <label class="form-label fw-bold">Upload Images</label>
+                        <input type="file" name="extra_images" multiple accept="image/*" class="form-control form-control-lg">
+                    </div>
 
-                        <!-- CURRENT IMAGES -->
-                        {% if product.images.exists %}
-                        <div class="bg-white rounded-4 shadow-sm p-4">
-                            <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Current Images ({{ product.images.count }})</h5>
-                            <div class="row g-4" id="image-sortable">
-                                {% for img in product.images.all %}
-                                <div class="col-6 col-md-4 col-lg-3 image-item" data-id="{{ img.id }}">
-                                    <div class="card border-0 shadow-sm h-100 hover-lift">
-                                        <img src="{{ img.image.url }}" class="card-img-top" style="height:180px; object-fit:cover;">
-                                        <div class="card-body p-3 d-flex flex-column gap-2">
-                                            {% if img.is_main %}
-                                                <span class="badge bg-primary w-100 py-2">MAIN IMAGE</span>
-                                            {% else %}
-                                                <button type="submit" name="main_image" value="{{ img.id }}" class="btn btn-outline-primary btn-sm w-100">Set as Main</button>
-                                            {% endif %}
-                                            <button type="submit" name="delete_image" value="{{ img.id }}"
-                                                    onclick="return confirm('Delete this image permanently?')"
-                                                    class="btn btn-danger btn-sm w-100">Delete</button>
-                                            <input type="hidden" name="image_order" value="{{ img.id }}" class="order-input">
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        <!-- SAVE BUTTONS -->
-                        <div class="d-flex flex-column flex-md-row gap-3 justify-content-end mt-5 pt-4 border-top">
-                            <a href="{% url 'store_products' %}" class="btn btn-secondary btn-lg w-100 w-md-auto order-2 order-md-1">Cancel</a>
-                            <button type="submit" class="btn btn-success btn-lg w-100 w-md-auto fw-bold order-1 order-md-2">SAVE ALL Product</button>
-                        </div>
-                    </form>
-                </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-success btn-lg rounded-pill px-5 py-3 fw-bold shadow-lg">
+                            Add Product
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
 
 <style>
-    @media (min-width: 1200px) {
-        .col-lg-2-4 { flex: 0 0 20%; max-width: 20%; }
-    }
     .hover-lift {
-        transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transition: all 0.3s ease;
     }
     .hover-lift:hover {
-        transform: translateY(-20px) scale(1.05) !important;
-        box-shadow: 0 35px 80px rgba(0,0,0,0.35) !important;
-        z-index: 100;
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     }
-    .blink { animation: blink 1.6s infinite; }
-    @keyframes blink {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.6; }
-    }
-    .card { border-radius: 18px !important; }
-    .badge { font-size: 0.8rem !important; border-radius: 12px !important; }
 </style>
 
 <script>
+    // Search & Filter
     const searchInput = document.getElementById('searchInput');
     const categoryFilter = document.getElementById('categoryFilter');
 
@@ -320,5 +293,38 @@
 
     searchInput.addEventListener('input', filterProducts);
     categoryFilter.addEventListener('change', filterProducts);
+
+    // Add/Remove Specs
+    document.getElementById('add-spec')?.addEventListener('click', function() {
+        const totalForms = document.querySelector('[name="specifications-TOTAL_FORMS"]');
+        const formCount = parseInt(totalForms.value);
+        const template = document.querySelector('.spec-form');
+        const newForm = template.cloneNode(true);
+        
+        newForm.innerHTML = newForm.innerHTML.replace(/specifications-\d+/g, `specifications-${formCount}`);
+        newForm.querySelectorAll('input').forEach(input => {
+            if (!input.name.includes('DELETE') && input.type !== 'hidden') input.value = '';
+            if (input.type === 'checkbox') input.checked = false;
+        });
+        
+        document.getElementById('spec-forms').appendChild(newForm);
+        totalForms.value = formCount + 1;
+    });
+
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.remove-spec')) {
+            const form = e.target.closest('.spec-form');
+            const deleteInput = form.querySelector('input[name$="-DELETE"]');
+            if (deleteInput) {
+                deleteInput.checked = true;
+                form.style.display = 'none';
+            } else {
+                form.remove();
+            }
+            
+            const totalForms = document.querySelector('[name="specifications-TOTAL_FORMS"]');
+            totalForms.value = document.querySelectorAll('.spec-form:not([style*="display: none"])').length;
+        }
+    });
 </script>
 {% endblock %}

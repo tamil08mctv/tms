@@ -1,120 +1,227 @@
-    {% extends 'TMS/storeadmin/base.html' %}
-    {% load static %}
+{% extends 'TMS/storeadmin/base.html' %}
+{% load static %}
 
-    {% block title %}Edit Product - {{ product.name }}{% endblock %}
+{% block title %}Edit Product - {{ product.name }}{% endblock %}
 
-    {% block content %}
-    <div class="container-fluid py-4 py-md-5">
-        <div class="row justify-content-center">
-            <div class="col-12 col-xl-11">
-                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-                    <div class="card-header bg-success text-white text-center py-4">
-                        <h3 class="mb-0 fw-bold fs-4">Edit Product</h3>
-                        <small class="d-block opacity-90">{{ product.name }}</small>
+{% block content %}
+<div class="container-fluid py-4 py-md-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-11">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-success text-white text-center py-4">
+                    <h3 class="mb-0 fw-bold fs-4">Edit Product</h3>
+                    <small class="d-block opacity-90">{{ product.name }}</small>
+                </div>
+
+                <div class="card-body p-4 p-lg-5">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- PRODUCT INFORMATION -->
+                        <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
+                            <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Product Information</h5>
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Product Name</label>
+                                    {{ form.name }}
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold">Category</label>
+                                    {{ form.category }}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Short Description</label>
+                                    {{ form.short_desc }}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Full Description</label>
+                                    {{ form.description }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PRICE & OFFER + STATUS -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-12 col-lg-6">
+                                <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+                                    <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Price & Offer</h5>
+                                    <div class="mb-3">{{ form.regular_price }}</div>
+                                    <div class="mb-3">{{ form.offer_price }}</div>
+                                    <div class="mb-3">{{ form.deal_end_date }}</div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-lg-6">
+                                <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+                                    <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Status & Badges</h5>
+                                    
+                                    <div class="form-check form-switch mb-3">
+                                        {{ form.is_featured }}
+                                        <label class="form-check-label ms-3">{{ form.is_featured.label }}</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-3">
+                                        {{ form.in_stock }}
+                                        <label class="form-check-label ms-3">{{ form.in_stock.label }}</label>
+                                    </div>
+
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" name="is_new_arrival" id="is_new_arrival"
+                                               {% if product.is_new_arrival %}checked{% endif %}>
+                                        <label class="form-check-label ms-3 fw-bold text-success" for="is_new_arrival">
+                                            New Arrival Badge
+                                        </label>
+                                    </div>
+
+                                    <hr class="my-4">
+                                    <h6 class="fw-bold text-primary mb-3">Special Badges</h6>
+                                    
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" name="is_best_seller" id="id_is_best_seller"
+                                               {% if product.is_best_seller %}checked{% endif %}>
+                                        <label class="form-check-label ms-3 fw-bold text-warning" for="id_is_best_seller">
+                                            BEST SELLER
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" name="is_limited_deal" id="id_is_limited_deal"
+                                               {% if product.is_limited_deal %}checked{% endif %}>
+                                        <label class="form-check-label ms-3 fw-bold text-danger" for="id_is_limited_deal">
+                                            LIMITED DEAL
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" name="is_special_offer" id="id_is_special_offer"
+                                               {% if product.is_special_offer %}checked{% endif %}>
+                                        <label class="form-check-label ms-3 fw-bold" style="color: purple;" for="id_is_special_offer">
+                                            SPECIAL OFFER
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                  <!-- SPECIFICATIONS — LABELS VISIBLE -->
+                    <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
+                        <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Specifications</h5>
+                        {{ spec_formset.management_form }}
+                        <div id="spec-forms">
+                            {% for form in spec_formset %}
+                            <div class="row g-3 mb-3 spec-form align-items-end">
+                                {% if form.instance.pk %}
+                                    {{ form.id }}
+                                {% endif %}
+                                <div class="col-md-5">
+                                    <label class="form-label fw-bold">Specification Name</label>
+                                    {{ form.name }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Value</label>
+                                    {{ form.value }}
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-danger btn-sm rounded-pill remove-spec w-100 mt-4">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <div class="form-check mt-2">
+                                        {{ form.DELETE }}
+                                        <label class="form-check-label small text-danger" for="{{ form.DELETE.id_for_label }}">Delete</label>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button type="button" class="btn btn-outline-success rounded-pill px-4 mt-3" id="add-spec">
+                            <i class="fas fa-plus me-2"></i> Add Specification
+                        </button>
                     </div>
 
-                    <div class="card-body p-4 p-lg-5">
-                        <form method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
+                        <!-- VIDEO -->
+                        <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
+                            <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Product Video</h5>
+                            {% if product.video %}
+                                <video controls class="w-100 rounded-3 mb-3" style="max-height:300px;">
+                                    <source src="{{ product.video.url }}" type="video/mp4">
+                                </video>
+                                <p class="small text-muted">Current video uploaded</p>
+                            {% endif %}
+                            <label class="form-label fw-bold">Replace Video</label>
+                            <input type="file" name="video" accept="video/*" class="form-control">
+                        </div>
 
-                            <!-- PRODUCT INFORMATION -->
-                            <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
-                                <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Product Information</h5>
-                                <div class="row g-4">
-                                    <div class="col-12">
-                                        <label class="form-label fw-bold">Product Name</label>
-                                        {{ form.name }}
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <label class="form-label fw-bold">Category</label>
-                                        {{ form.category }}
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="form-label fw-bold">Short Description</label>
-                                        {{ form.short_desc }}
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="form-label fw-bold">Full Description</label>
-                                        {{ form.description }}
-                                    </div>
-                                </div>
-                            </div>
+                        <!-- ADD MORE IMAGES -->
+                        <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
+                            <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Add More Images</h5>
+                            <input type="file" name="extra_images" multiple accept="image/*" class="form-control">
+                        </div>
 
-                            <!-- PRICE & OFFER -->
-                            <div class="row g-4 mb-4">
-                                <div class="col-12 col-lg-6">
-                                    <div class="bg-white rounded-4 shadow-sm p-4 h-100">
-                                        <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Price & Offer</h5>
-                                        <div class="mb-3">{{ form.price_style }}</div>
-                                        <div class="mb-3">{{ form.regular_price }}</div>
-                                        <div class="mb-3">{{ form.offer_price }}</div>
-                                        <div class="mb-3">{{ form.deal_end_date }}</div>
-                                    </div>
-                                </div>
-
-                                <!-- STATUS & BADGES -->
-                                <div class="col-12 col-lg-6">
-                                    <div class="bg-white rounded-4 shadow-sm p-4 h-100">
-                                        <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Status & Badges</h5>
-                                        
-                                        <div class="form-check form-switch mb-3">
-                                            {{ form.is_featured }}
-                                            <label class="form-check-label ms-3">{{ form.is_featured.label }}</label>
-                                        </div>
-                                        <div class="form-check form-switch mb-3">
-                                            {{ form.is_new }}
-                                            <label class="form-check-label ms-3">{{ form.is_new.label }}</label>
-                                        </div>
-                                        <div class="form-check form-switch mb-3">
-                                            {{ form.in_stock }}
-                                            <label class="form-check-label ms-3">{{ form.in_stock.label }}</label>
-                                        </div>
-
-                                        <!-- NEW BADGES -->
-                                        <hr class="my-4">
-                                        <h6 class="fw-bold text-primary mb-3">Special Badges (Only one will show on site)</h6>
-                                        
-                                        <div class="form-check form-switch mb-3">
-                                            <input class="form-check-input" type="checkbox" name="is_best_seller" id="id_is_best_seller"
-                                                {% if product.is_best_seller %}checked{% endif %}>
-                                            <label class="form-check-label ms-3 fw-bold text-warning" for="id_is_best_seller">
-                                                BEST SELLER (Gold Badge - Highest Priority)
-                                            </label>
-                                        </div>
-
-                                        <div class="form-check form-switch mb-3">
-                                            <input class="form-check-input" type="checkbox" name="is_limited_deal" id="id_is_limited_deal"
-                                                {% if product.is_limited_deal %}checked{% endif %}>
-                                            <label class="form-check-label ms-3 fw-bold text-danger" for="id_is_limited_deal">
-                                                LIMITED DEAL (Red Urgency Badge)
-                                            </label>
-                                        </div>
-
-                                        <div class="form-check form-switch mb-3">
-                                            <input class="form-check-input" type="checkbox" name="is_special_offer" id="id_is_special_offer"
-                                                {% if product.is_special_offer %}checked{% endif %}>
-                                            <label class="form-check-label ms-3 fw-bold" 
-                                                    for="id_is_special_offer" style="color: purple;">
-                                                SPECIAL OFFER (Purple Premium Badge)
-                                            </label>
+                        <!-- CURRENT IMAGES -->
+                        {% if product.images.exists %}
+                        <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
+                            <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Current Images</h5>
+                            <div class="row g-4">
+                                {% for img in product.images.all %}
+                                <div class="col-6 col-md-4 col-lg-3">
+                                    <div class="card border-0 shadow-sm">
+                                        <img src="{{ img.image.url }}" class="card-img-top" style="height:180px; object-fit:cover;">
+                                        <div class="card-body p-2 text-center">
+                                            {% if img.is_main %}
+                                            <span class="badge bg-primary w-100">MAIN</span>
+                                            {% else %}
+                                            <button type="submit" name="main_image" value="{{ img.id }}" class="btn btn-outline-primary btn-sm w-100 mb-1">Set Main</button>
+                                            {% endif %}
+                                            <button type="submit" name="delete_image" value="{{ img.id }}"
+                                                    onclick="return confirm('Delete image?')" class="btn btn-danger btn-sm w-100">Delete</button>
                                         </div>
                                     </div>
                                 </div>
+                                {% endfor %}
                             </div>
+                        </div>
+                        {% endif %}
 
-                            <!-- VIDEO, IMAGES, ETC (UNCHANGED) -->
-                            <!-- Keep your existing video and image sections exactly as they are -->
-                            <!-- ... your existing code ... -->
-
-                            <!-- SAVE BUTTONS -->
-                            <div class="d-flex flex-column flex-md-row gap-3 justify-content-end mt-5 pt-4 border-top">
-                                <a href="{% url 'store_products' %}" class="btn btn-secondary btn-lg w-100 w-md-auto">Cancel</a>
-                                <button type="submit" class="btn btn-success btn-lg w-100 w-md-auto fw-bold">SAVE ALL CHANGES</button>
-                            </div>
-                        </form>
-                    </div>
+                        <!-- SAVE BUTTONS -->
+                        <div class="d-flex flex-column flex-md-row gap-3 justify-content-end mt-5 pt-4 border-top">
+                            <a href="{% url 'store_products' %}" class="btn btn-secondary btn-lg w-100 w-md-auto">Cancel</a>
+                            <button type="submit" class="btn btn-success btn-lg w-100 w-md-auto fw-bold">SAVE CHANGES</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-    {% endblock %}
+</div>
+
+<script>
+document.getElementById('add-spec')?.addEventListener('click', function() {
+    const totalForms = document.querySelector('[name="specifications-TOTAL_FORMS"]');
+    const formCount = parseInt(totalForms.value);
+    const template = document.querySelector('.spec-form');
+    const newForm = template.cloneNode(true);
+    
+    newForm.innerHTML = newForm.innerHTML.replace(/specifications-\d+/g, `specifications-${formCount}`);
+    newForm.querySelectorAll('input').forEach(input => {
+        if (!input.name.includes('DELETE') && input.type !== 'hidden') input.value = '';
+        if (input.type === 'checkbox') input.checked = false;
+    });
+    
+    document.getElementById('spec-forms').appendChild(newForm);
+    totalForms.value = formCount + 1;
+});
+
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.remove-spec')) {
+        const form = e.target.closest('.spec-form');
+        const deleteInput = form.querySelector('input[name$="-DELETE"]');
+        if (deleteInput) {
+            deleteInput.checked = true;
+            form.style.display = 'none';
+        } else {
+            form.remove();
+        }
+        
+        const totalForms = document.querySelector('[name="specifications-TOTAL_FORMS"]');
+        totalForms.value = document.querySelectorAll('.spec-form:not([style*="display: none"])').length;
+    }
+});
+</script>
+{% endblock %}

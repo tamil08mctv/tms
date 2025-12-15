@@ -5,6 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Store Admin - {{ store.name }}{% endblock %}</title>
+
+   {% block meta %}
+<meta name="description" content="Buy {{ product.name }} from {{ product.store.name }} in {{ product.store.city }}. {{ product.short_desc|truncatechars:155 }}">
+<meta name="keywords" content="{{ product.name }}, {{ product.category.name|default:'furniture' }}, {{ product.store.city }}, buy {{ product.name }} online">
+<meta property="og:title" content="{{ product.name }} - {{ product.store.name }}">
+<meta property="og:description" content="{{ product.short_desc }}">
+<meta property="og:image" content="{{ product.images.first.image.url }}">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta property="og:type" content="product">
+<meta property="product:price:amount" content="{% if product.offer_price %}{{ product.offer_price }}{% else %}{{ product.regular_price }}{% endif %}">
+<meta property="product:price:currency" content="INR">
+<meta name="twitter:card" content="summary_large_image">
+{% endblock %}
     
     <!-- Bootstrap 5 + Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">

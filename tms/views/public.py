@@ -57,16 +57,15 @@ def home(request):
 
     # NEW ARRIVALS (LAST 7 DAYS)
     new_arrivals = Product.objects.filter(
-        created_at__gte=seven_days_ago,
+        Q(is_new_arrival=True) | Q(created_at__gte=seven_days_ago),
         store__is_active=True
-    ).select_related('store', 'category').prefetch_related('images')[:20]
+    ).select_related('store', 'category').distinct().prefetch_related('images')[:20]
 
     # BANNERS
     all_store_banners = StoreBanner.objects.filter(
         is_active=True,
         store__is_active=True
     ).order_by('order', '-created_at')
-    
     
     
     context.update({
@@ -129,7 +128,9 @@ def all_products(request):
     elif filter_type == 'special':
         products = products.filter(is_special_offer=True)
     elif filter_type == 'new':
-        products = products.filter(created_at__gte=seven_days_ago)
+        products = products.filter(
+        Q(is_new_arrival=True) | Q(created_at__gte=seven_days_ago)
+    )
     elif filter_type == 'featured':
         products = products.filter(is_featured=True)
 
@@ -262,7 +263,9 @@ def store_detail(request, slug):
     # PRE-COMPUTE ALL SECTIONS
     store_deals = store_products.filter(deal_end_date__gte=today)[:20]
     store_best_sellers = store_products.filter(is_best_seller=True)[:20]
-    store_new_arrivals = store_products.filter(created_at__gte=seven_days_ago)[:20]
+    store_new_arrivals = store_products.filter(
+    Q(is_new_arrival=True) | Q(created_at__gte=seven_days_ago)
+    ).distinct()[:20]
     store_limited_deals = store_products.filter(is_limited_deal=True)[:20]
     store_special_offers = store_products.filter(is_special_offer=True)[:20]
     store_featured = store_products.filter(is_featured=True)[:20]
@@ -315,10 +318,16 @@ from django.utils import timezone
 from datetime import timedelta
 def product_detail(request, store_slug, product_slug):
     context = get_common_context()
-    product = get_object_or_404(Product, slug=product_slug, store__slug=store_slug, store__is_active=True)
-  
+    
+    product = get_object_or_404(
+        Product.objects.prefetch_related('specifications', 'images'),
+        slug=product_slug, 
+        store__slug=store_slug, 
+        store__is_active=True
+    )
     Product.objects.filter(pk=product.pk).update(views_count=F('views_count') + 1)
     product.refresh_from_db()
+    
     images = product.images.all()
     similar = Product.objects.filter(store__is_active=True).exclude(id=product.id)[:15]
     if not similar.exists():
