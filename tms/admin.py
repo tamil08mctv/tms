@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.shortcuts import redirect
 from .models import (
     Store, StoreAdmin, Category, Product, ProductImage,
-    Lead, StoreBanner, ProductSpecification
+    Lead, StoreBanner, ProductSpecification, SiteSettings, SocialLink
 )
 
 # ======================================================
@@ -198,3 +199,31 @@ class ProductSpecificationAdmin(admin.ModelAdmin):
     list_display = ('product', 'name', 'value')
     list_filter = ('product__store',)
     search_fields = ('name', 'value', 'product__name')
+
+
+# ======================= SITE SETTINGS ADMIN =======================
+class SocialLinkInline(admin.TabularInline):
+    model = SocialLink
+    extra = 1
+    fields = ('platform', 'url', 'order')
+    verbose_name = "Social Link"
+    verbose_name_plural = "Social Links"
+
+
+@admin.register(SiteSettings)
+class SiteSettingsAdmin(admin.ModelAdmin):
+    list_display = ('site_name', 'phone', 'email')
+    inlines = [SocialLinkInline]
+
+    def has_add_permission(self, request):
+        # Only allow one instance
+        return not SiteSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def changelist_view(self, request, extra_context=None):
+        # If no SiteSettings exists, redirect to add page
+        if not SiteSettings.objects.exists():
+            return redirect('admin:tms_sitesettings_add')
+        return super().changelist_view(request, extra_context=extra_context)

@@ -14,31 +14,69 @@ C:.
 |   |   __init__.py
 |   |   
 |   +---media
+|   |   +---banners
+|   |   |   +---desktop
+|   |   |   |       dall.webp
+|   |   |   |       dall_MQ3iDvR.webp
+|   |   |   |       
+|   |   |   \---mobile
+|   |   |           sampleerkn.webp
+|   |   |           sampleerkn_XTAS9LS.webp
+|   |   |           
 |   |   +---categories
 |   |   |       bedsheet.jpeg
 |   |   |       
-|   |   |       WhatsApp_Image_2025-11-25_at_18.58.00_cafa1ce8.jpg
-|   |   |       
 |   |   +---products
-|   |   |   +---360
-|   |   |   |       3969436-uhd_3840_2160_25fps.mp4
-|   |   |   |       
+|   |   |  
 |   |   |   +---images
-|   |   |   |       
+|   |   |   |       bedsheet.jpeg
 |   |   |   |       
 |   |   |   \---videos
-|   |   |    
+|   |   |           3969436-uhd_3840_2160_25fps.mp4
 |   |   |           
 |   |   +---stores
 |   |   |   +---banners
-|   |   
-|   |  
-|   |   \---subcategories
-|   |          
-|   |           
+|   |   |   |   |   ChatGPT_Image_Oct_3_2025_06_59_47_PM.png
+|   |   |   |   |   
+|   |   |   |   \---extra
+|   |   |   |           Body3.png
+|   |   |   |           Tovatra_vault_insta.jpg
+|   |   |   |           
+|   |   |   \---logos
+|   |   |           Contemporary_Logo_Tovatra_Vault_Security.png
+|   |   |           
+|   |   |       
+|   |   \---tms-furnitures
+|   |       +---banners
+|   |       |   +---desktop
+|   |       |   |       2abe5a2407b5.jpg
+|   |       |   |       
+|   |       |   \---mobile
+|   |       |           37bc6d223ea4.png
+|   |       |           7dbdf4e9a59f.webp
+|   |       |           
+|   |       +---categories
+|   |       |       23391f56dd50.png
+|   |       |       6f240712e59c.png
+|   |       |       
+|   |       \---products
+|   |           \---images
+|   |                   110f1daade76.jpg
+|   |                   
 |   +---migrations
 |   |   |   0001_initial.py
-|   |   | 
+|   |   |   0002_alter_lead_status.py
+|   |   |   0003_product_call_for_price_productspecification.py
+|   |   |   0004_product_is_new_arrival.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           0001_initial.cpython-313.pyc
+|   |           0002_alter_lead_status.cpython-313.pyc
+|   |           0003_product_call_for_price_productspecification.cpython-313.pyc
+|   |           0004_product_is_new_arrival.cpython-313.pyc
+|   |           __init__.cpython-313.pyc
+|   |           
 |   +---static
 |   |   \---TMS
 |   |       +---css
@@ -55,8 +93,7 @@ C:.
 |   |       |   
 |   |       +---public
 |   |       |       allproducts.html
-|   |       |       deals.html
-|   |       |       featured.html
+|   |       |       categories.html
 |   |       |       home.html
 |   |       |       productdetail.html
 |   |       |       storedetail.html
@@ -85,7 +122,19 @@ C:.
 |   |   |   storeadmin.py
 |   |   |   superadmin.py
 |   |   |   
-|   | 
+|   |   \---__pycache__
+|   |           auth.cpython-313.pyc
+|   |           public.cpython-313.pyc
+|   |           storeadmin.cpython-313.pyc
+|   |           superadmin.cpython-313.pyc
+|   |           
+|   \---__pycache__
+|           admin.cpython-313.pyc
+|           apps.cpython-313.pyc
+|           forms.cpython-313.pyc
+|           models.cpython-313.pyc
+|           urls.cpython-313.pyc
+|           __init__.cpython-313.pyc
 |           
 \---tmsgroups
     |   asgi.py
@@ -95,4 +144,6 @@ C:.
     |   
     \---__pycache__
             settings.cpython-313.pyc
-           
+            urls.cpython-313.pyc
+            wsgi.cpython-313.pyc
+            

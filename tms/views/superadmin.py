@@ -1,3 +1,6 @@
+# tms/views/superadmin.py → FINAL VERSION WITH PROFESSIONAL LOGGING
+
+import logging
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import logout
 from django.shortcuts import render, redirect, get_object_or_404
@@ -6,8 +9,11 @@ from django.contrib import messages
 from django.db.models import Count, Q
 import csv
 from datetime import date
-from ..models import Store, Lead, StoreAdmin, User
-from ..forms import StoreForm, StoreUpdateForm
+from ..models import Store, Lead, StoreAdmin, User, SiteSettings, SocialLink
+from ..forms import StoreForm, StoreUpdateForm, SiteSettingsForm, SocialLinkFormSet
+
+# Logger for superadmin actions
+superadmin_logger = logging.getLogger('superadmin')
 
 def superuser_required(view_func):
     return login_required(user_passes_test(lambda u: u.is_superuser, login_url='/')(view_func))
@@ -16,8 +22,10 @@ from django.core.paginator import Paginator
 
 @superuser_required
 def store_list_super(request):
+    superadmin_logger.info(f"Superuser {request.user.username} accessed store list")
+    
     store_list = Store.objects.prefetch_related('store_admins__user').all().order_by('-id')
-    paginator = Paginator(store_list, 20)  # 20 stores per page
+    paginator = Paginator(store_list, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
@@ -30,6 +38,8 @@ def store_list_super(request):
 
 @superuser_required
 def super_dashboard(request):
+    superadmin_logger.info(f"Superuser {request.user.username} accessed dashboard")
+    
     context = {
         'total_stores': Store.objects.count(),
         'total_leads': Lead.objects.count(),
@@ -40,13 +50,10 @@ def super_dashboard(request):
     }
     return render(request, 'TMS/superadmin/dashboard.html', context)
 
-
-@superuser_required
-def store_list_super(request):
-    stores = Store.objects.prefetch_related('store_admins__user').all()
-    return render(request, 'TMS/superadmin/store_list.html', {'stores': stores})
 @superuser_required
 def create_store(request):
+    superadmin_logger.info(f"Superuser {request.user.username} accessed create store page")
+    
     if request.method == 'POST':
         form = StoreForm(request.POST, request.FILES)
         if form.is_valid():
@@ -54,30 +61,33 @@ def create_store(request):
             store.created_by = request.user
             store.save()
 
-            # Create admin only when creating new store
             username = form.cleaned_data['admin_username']
             password = form.cleaned_data['admin_password']
             if username and password:
                 user = User.objects.create_user(username=username, password=password)
                 StoreAdmin.objects.create(user=user, store=store)
 
+            superadmin_logger.info(f"Superuser {request.user.username} CREATED store: '{store.name}' ({store.city}) | Admin: {username}")
             messages.success(request, f"Store '{store.name}' created successfully!")
             return redirect('store_list_super')
     else:
-        form = StoreForm()  # Blank form
+        form = StoreForm()
 
     return render(request, 'TMS/superadmin/createstore.html', {
         'form': form,
-        'store': None  # Important: tells template it's create mode
+        'store': None
     })
 
 @superuser_required
 def edit_store(request, pk):
     store = get_object_or_404(Store, pk=pk)
+    superadmin_logger.info(f"Superuser {request.user.username} accessed edit store: '{store.name}' ({store.city})")
+    
     if request.method == 'POST':
         form = StoreUpdateForm(request.POST, request.FILES, instance=store)
         if form.is_valid():
             form.save()
+            superadmin_logger.info(f"Superuser {request.user.username} UPDATED store: '{store.name}' ({store.city})")
             messages.success(request, f"Store '{store.name}' updated successfully!")
             return redirect('store_list_super')
     else:
@@ -85,22 +95,24 @@ def edit_store(request, pk):
 
     return render(request, 'TMS/superadmin/createstore.html', {
         'form': form,
-        'store': store  # Important: tells template it's edit mode
+        'store': store
     })
-
 
 @superuser_required
 def toggle_store(request, pk):
     store = get_object_or_404(Store, pk=pk)
+    old_status = "Active" if store.is_active else "Inactive"
     store.is_active = not store.is_active
     store.save()
-    status = "activated" if store.is_active else "disabled"
-    messages.success(request, f"Store '{store.name}' has been {status}")
+    
+    superadmin_logger.info(f"Superuser {request.user.username} toggled store status: '{store.name}' | {old_status} → {'Active' if store.is_active else 'Inactive'}")
+    messages.success(request, f"Store '{store.name}' has been {'activated' if store.is_active else 'disabled'}")
     return redirect('store_list_super')
-
 
 @superuser_required
 def all_leads(request):
+    superadmin_logger.info(f"Superuser {request.user.username} accessed all leads page")
+    
     leads = Lead.objects.select_related('store', 'product').order_by('-created_at')
     stores = Store.objects.all()
 
@@ -127,12 +139,9 @@ def all_leads(request):
     }
     return render(request, 'TMS/superadmin/allleads.html', context)
 
-
 @superuser_required
-@login_required
 def export_all_leads(request):
-    if not request.user.is_superuser:
-        return redirect('super_dashboard')
+    superadmin_logger.info(f"Superuser {request.user.username} exported all leads CSV")
     
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="tms_all_leads.csv"'
@@ -154,5 +163,44 @@ def export_all_leads(request):
     return response
 
 def logout_view(request):
+    if request.user.is_authenticated:
+        superadmin_logger.info(f"Superuser {request.user.username} logged out")
     logout(request)
     return redirect('home')
+
+@superuser_required
+def site_settings(request):
+    superadmin_logger.info(f"Superuser {request.user.username} accessed site settings")
+    
+    settings, created = SiteSettings.objects.get_or_create(pk=1)
+
+    if request.method == 'POST':
+        superadmin_logger.info(f"Superuser {request.user.username} submitted site settings form")
+        
+        form = SiteSettingsForm(request.POST, request.FILES, instance=settings)
+        formset = SocialLinkFormSet(request.POST, instance=settings)
+
+        if form.is_valid() and formset.is_valid():
+            saved_settings = form.save()
+            formset.instance = saved_settings
+            formset.save()
+            
+            superadmin_logger.info(f"Superuser {request.user.username} SUCCESSFULLY updated site settings & social links")
+            messages.success(request, "Site settings and social links updated successfully!")
+            return redirect('site_settings')
+        else:
+            superadmin_logger.warning(f"Superuser {request.user.username} site settings validation FAILED")
+            if not form.is_valid():
+                superadmin_logger.warning(f"Main form errors: {form.errors}")
+            if not formset.is_valid():
+                superadmin_logger.warning(f"Formset errors: {formset.errors}")
+            messages.error(request, "Please fix the errors below.")
+    else:
+        form = SiteSettingsForm(instance=settings)
+        formset = SocialLinkFormSet(instance=settings)
+
+    return render(request, 'TMS/superadmin/site_settings.html', {
+        'form': form,
+        'formset': formset,
+        'site_settings': settings,
+    })

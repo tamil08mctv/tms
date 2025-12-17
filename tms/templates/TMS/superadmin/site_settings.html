@@ -1,0 +1,197 @@
+{% extends 'TMS/superadmin/base_superadmin.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Site Settings{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+
+            <div class="card border-0 shadow rounded-4">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h4 class="fw-bold mb-0">
+                        <i class="fas fa-cog me-3"></i>Site Settings
+                    </h4>
+                    <small class="opacity-90">Brand • Contact • Social Media</small>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- General Info & Branding -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                {{ form.site_name|as_crispy_field }}
+                                {{ form.phone|as_crispy_field }}
+                                {{ form.email|as_crispy_field }}
+                                {{ form.copyright_text|as_crispy_field }}
+                                {{ form.address|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    {{ form.logo|as_crispy_field }}
+                                    {% if site_settings.logo %}
+                                    <div class="text-center mt-3">
+                                        <img src="{{ site_settings.logo.url }}" class="img-thumbnail rounded-3 shadow-sm" style="max-height: 140px;">
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    {{ form.favicon|as_crispy_field }}
+                                    {% if site_settings.favicon %}
+                                    <div class="text-center mt-3">
+                                        <img src="{{ site_settings.favicon.url }}" class="img-thumbnail rounded-3 shadow-sm" style="max-height: 70px;">
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Social Links with Add Button -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold mb-0">
+                                <i class="fab fa-share-alt me-2 text-primary"></i>Social Media Links
+                            </h6>
+                            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-4" id="add-more-link">
+                                <i class="fas fa-plus me-2"></i>Add More Link
+                            </button>
+                        </div>
+
+                        {{ formset.management_form }}
+                        <div class="table-responsive mb-4">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Platform</th>
+                                        <th>URL</th>
+                                        <th width="120">Order</th>
+                                        <th width="80">Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="social-table-body">
+                                    {% for form in formset %}
+                                    <tr class="social-form-row">
+                                        <td>
+                                            {{ form.platform }}
+                                            {% if form.platform.errors %}
+                                            <div class="text-danger small">{{ form.platform.errors }}</div>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ form.url }}
+                                            {% if form.url.errors %}
+                                            <div class="text-danger small">{{ form.url.errors }}</div>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ form.order }}
+                                            {% if form.order.errors %}
+                                            <div class="text-danger small">{{ form.order.errors }}</div>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {{ form.DELETE }}
+                                        </td>
+                                        <td class="d-none">{{ form.id }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr id="empty-row" class="text-center text-muted">
+                                        <td colspan="5" class="py-4">No social links added yet. Click "Add More Link" to start.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Save Button -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success px-5 py-3 rounded-pill shadow-sm fw-bold">
+                                <i class="fas fa-save me-2"></i>Save All Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('add-more-link').addEventListener('click', function() {
+        const tableBody = document.getElementById('social-table-body');
+        const totalForms = document.getElementById('id_social_links-TOTAL_FORMS');
+        const formCount = parseInt(totalForms.value);
+
+        // Remove empty row if exists
+        const emptyRow = document.getElementById('empty-row');
+        if (emptyRow) emptyRow.remove();
+
+        // Clone the last row (or use a hidden template if needed)
+        const rows = tableBody.querySelectorAll('.social-form-row');
+        
+
+        if (!templateRow) {
+            // Create first row if none exist
+            tableBody.innerHTML += `
+            <tr class="social-form-row">
+                <td><select name="social_links-0-platform" class="form-select" id="id_social_links-0-platform">
+                    <option value="">---------</option>
+                    <option value="facebook">Facebook</option>
+                    <option value="instagram">Instagram</option>
+                    <option value="youtube">YouTube</option>
+                    <option value="twitter">Twitter</option>
+                    <option value="whatsapp">WhatsApp</option>
+                    <option value="linkedin">LinkedIn</option>
+                    <option value="tiktok">TikTok</option>
+                </select></td>
+                <td><input type="url" name="social_links-0-url" class="form-control" id="id_social_links-0-url"></td>
+                <td><input type="number" name="social_links-0-order" class="form-control" min="0" id="id_social_links-0-order"></td>
+                <td class="text-center"><input type="checkbox" name="social_links-0-DELETE" id="id_social_links-0-DELETE"></td>
+                <td class="d-none"><input type="hidden" name="social_links-0-id" id="id_social_links-0-id"></td>
+            </tr>`;
+            totalForms.value = 1;
+            return;
+        }
+
+        // Clone existing row
+        const newRow = templateRow.cloneNode(true);
+
+        // Update names and IDs
+        newRow.querySelectorAll('input, select').forEach(el => {
+            if (el.name) el.name = el.name.replace(/-\d+-/, `-${formCount}-`);
+            if (el.id) el.id = el.id.replace(/-\d+-/, `-${formCount}-`);
+            if (el.type !== 'hidden') el.value = '';
+            if (el.type === 'checkbox') el.checked = false;
+        });
+
+        // Set default order
+        const orderInput = newRow.querySelector('input[name$="-order"]');
+        if (orderInput) orderInput.value = formCount;
+
+        tableBody.appendChild(newRow);
+        totalForms.value = formCount + 1;
+    });
+</script>
+
+<style>
+    .card { border-radius: 16px; }
+    .card-header { border-radius: 16px 16px 0 0 !important; }
+    .table th { font-weight: 600; color: #495057; }
+    .table td { vertical-align: middle; }
+    .form-select, .form-control {
+        border-radius: 8px;
+    }
+    .form-check-input:checked {
+        background-color: #e91e63;
+        border-color: #e91e63;
+    }
+    #add-more-link:hover {
+        background-color: #e91e63;
+        color: white;
+    }
+</style>
+{% endblock %}

@@ -15,6 +15,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
 SECRET_KEY = 'django-insecure-j^6hn5x4)n2jg45r!l0h&q)5^q*01g+e)g9o=x*tcxd9rcf=lk'
 DEBUG = True
 ALLOWED_HOSTS = ['*']
@@ -74,6 +75,8 @@ DATABASES = {
     }
 }
 
+
+
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'tms/static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -85,3 +88,88 @@ LOGIN_REDIRECT_URL = '/login-redirect/'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+
+# ==================== PROFESSIONAL LOGGING CONFIGURATION ====================
+import os
+
+# Create logs directory if not exists
+LOGS_DIR = BASE_DIR / 'logs'
+LOGS_DIR.mkdir(exist_ok=True)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {asctime} {message}',
+            'style': '{',
+        },
+        'with_ip': {
+            'format': '{levelname} {asctime} [IP: {client_ip}] [User: {user}] {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'superadmin_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGS_DIR / 'superadmin.log',
+            'maxBytes': 10485760,  # 10 MB
+            'backupCount': 10,
+            'formatter': 'verbose',
+        },
+        'storeadmin_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGS_DIR / 'storeadmin.log',
+            'maxBytes': 10485760,  # 10 MB
+            'backupCount': 10,
+            'formatter': 'verbose',
+        },
+        'public_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGS_DIR / 'public.log',
+            'maxBytes': 10485760,  # 10 MB
+            'backupCount': 5,
+            'formatter': 'with_ip',
+        },
+        'error_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGS_DIR / 'errors.log',
+            'maxBytes': 10485760,  # 10 MB
+            'backupCount': 10,
+            'formatter': 'verbose',
+            'level': 'ERROR',
+        },
+    },
+    'loggers': {
+        'superadmin': {
+            'handlers': ['superadmin_file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'storeadmin': {
+            'handlers': ['storeadmin_file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'public': {
+            'handlers': ['public_file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django': {
+            'handlers': ['error_file', 'console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+}
+# ============================================================================

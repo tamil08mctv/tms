@@ -305,9 +305,14 @@
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNavbar">
     <div class="container-fluid px-3 px-md-4">
         <!-- Logo Left -->
-        <a class="navbar-brand fs-4 fw-bold" href="/">
-            <i class="fas fa-couch text-warning me-2"></i>TMS FURNITURES
-        </a>
+       <!-- Dynamic Logo in Header -->
+<a class="navbar-brand fs-4 fw-bold d-flex align-items-center" href="/">
+    {% if site_settings.logo %}
+    <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" style="height: 50px; object-fit: contain;">
+    {% else %}
+    <i class="fas fa-couch text-warning me-2"></i>TMS FURNITURES
+    {% endif %}
+</a>
 
         <!-- Toggle Button - Far Right on Mobile -->
         <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -381,13 +386,20 @@
 <!-- PREMIUM FOOTER -->
 <footer>
     <div class="containerfluid py-3 px-4">
-        <div class="row text-center text-md-start g-5">
+       <div class="row text-center text-md-start g-5">
             <div class="col-lg-5">
-                <h4>TMS FURNITURES</h4>
-                <p class="text-light opacity-90">Tamil Nadu's Most Trusted & Premium Brand</p>
+                <h4>{{ site_settings.site_name|default:"TMS FURNITURES" }}</h4>
+                <p class="text-light opacity-90">{{ site_settings.address|default:"Tamil Nadu's Most Trusted & Premium Brand" }}</p>
+                {% if site_settings.phone %}
                 <p class="text-success fs-6">
-                    <i class="fab fa-whatsapp"></i> +91 96298 28969
+                    <i class="fab fa-whatsapp"></i> {{ site_settings.phone }}
                 </p>
+                {% endif %}
+                {% if site_settings.email %}
+                <p class="text-light small">
+                    <i class="fas fa-envelope"></i> {{ site_settings.email }}
+                </p>
+                {% endif %}
             </div>
 
             <div class="col-lg-3">
@@ -402,12 +414,18 @@
 
             <div class="col-md-4 text-center">
                 <h6 class="text-warning">Follow Us</h6>
-                <div class="fs-3">
-                    <a href="#" class="text-white mx-3"><i class="fab fa-facebook"></i></a>
-                    <a href="#" class="text-white mx-3"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="text-white mx-3"><i class="fab fa-youtube"></i></a>
+                <div class="fs-3 d-flex justify-content-center gap-4 flex-wrap mb-3">
+                    {% for link in social_links %}
+                    <a href="{{ link.url }}" target="_blank" class="text-white" title="{{ link.get_platform_display }}">
+                        <i class="{{ link.get_icon_class }} hover-scale"></i>
+                    </a>
+                    {% empty %}
+                    <p class="text-muted small">Social links coming soon</p>
+                    {% endfor %}
                 </div>
-                <p class="mt-4 small text-light">© {% now "Y" %} TMS | All rights reserved</p>
+                <p class="mt-4 small text-light">
+                    © {% now "Y" %} {{ site_settings.copyright_text|default:"TMS | All rights reserved" }}
+                </p>
             </div>
         </div>
 

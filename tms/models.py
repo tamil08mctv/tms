@@ -213,3 +213,55 @@ class Lead(models.Model):
 
     def __str__(self):
         return f"{self.customer_name} → {self.store.name}"
+    
+
+# ======================= SITE SETTINGS (DYNAMIC FOOTER & HEADER) =======================
+class SiteSettings(models.Model):
+    SOCIAL_CHOICES = [
+        ('facebook', 'Facebook'),
+        ('instagram', 'Instagram'),
+        ('youtube', 'YouTube'),
+        ('twitter', 'Twitter'),
+        ('whatsapp', 'WhatsApp'),
+        ('linkedin', 'LinkedIn'),
+        ('tiktok', 'TikTok'),
+    ]
+
+    site_name = models.CharField(max_length=100, default="TMS Furnitures")
+    logo = models.ImageField(upload_to="site/logo/", blank=True, null=True)
+    favicon = models.ImageField(upload_to="site/favicon/", blank=True, null=True)
+    phone = models.CharField(max_length=15, default="+91 96298 28969")
+    email = models.EmailField(default="info@tmsfurnitures.com")
+    address = models.TextField(default="Tamil Nadu's Most Trusted Furniture Brand")
+    copyright_text = models.CharField(max_length=200, default="TMS | All rights reserved")
+
+    def __str__(self):
+        return "Site Settings"
+
+    class Meta:
+        verbose_name_plural = "Site Settings"
+
+
+class SocialLink(models.Model):
+    settings = models.ForeignKey(SiteSettings, on_delete=models.CASCADE, related_name='social_links')
+    platform = models.CharField(max_length=20, choices=SiteSettings.SOCIAL_CHOICES)
+    url = models.URLField(max_length=500)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.get_platform_display()}"
+
+    def get_icon_class(self):
+        icons = {
+            'facebook': 'fab fa-facebook-f',
+            'instagram': 'fab fa-instagram',
+            'youtube': 'fab fa-youtube',
+            'twitter': 'fab fa-twitter',
+            'whatsapp': 'fab fa-whatsapp',
+            'linkedin': 'fab fa-linkedin-in',
+            'tiktok': 'fab fa-tiktok',
+        }
+        return icons.get(self.platform, 'fas fa-link')

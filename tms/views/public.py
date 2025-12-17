@@ -3,7 +3,7 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q, F
-from ..models import Store, Product, Category, Lead,StoreBanner
+from ..models import Store, Product, Category, Lead,StoreBanner,SiteSettings
 from ..forms import EnquiryForm
 import urllib.parse
 from datetime import date
@@ -11,21 +11,35 @@ from django.db.models import Count
 from django.utils import timezone
 from django.db.models.functions import Coalesce
 import re
+import logging
 
 # tms/views/public.py → FINAL FIXED HOME VIEW
 
 from django.db.models import Prefetch
 
+# Logger for public actions
+public_logger = logging.getLogger('public')
+
 def get_common_context():
+    site_settings = SiteSettings.objects.first()
     return {
         'stores_all': Store.objects.filter(is_active=True),
         'categories_all': Category.objects.all().distinct(),
+        'site_settings': site_settings,
+        'social_links': site_settings.social_links.all() if site_settings else [],
     }
 
 def home(request):
+
+    client_ip = request.META.get('REMOTE_ADDR', 'unknown')
+    user = request.user.username if request.user.is_authenticated else 'Anonymous'
+    public_logger.info(f"Home page accessed | IP: {client_ip} | User: {user}")
+
+
     context = get_common_context()
     today = date.today()
     seven_days_ago = timezone.now() - timedelta(days=7)
+
 
     # DEALS OF THE DAY
     deals = Product.objects.filter(
@@ -460,6 +474,11 @@ from django.http import JsonResponse
 from django.utils import timezone
 from datetime import timedelta
 def product_detail(request, store_slug, product_slug):
+
+    client_ip = request.META.get('REMOTE_ADDR', 'unknown')
+    user = request.user.username if request.user.is_authenticated else 'Anonymous'
+   
+
     context = get_common_context()
     
     product = get_object_or_404(
@@ -513,6 +532,9 @@ def product_detail(request, store_slug, product_slug):
             # MARK AS ENQUIRED IN SESSION — FORM WILL NEVER COME BACK!
             request.session[session_key] = True
             request.session.modified = True
+
+            # MOST IMPORTANT LOG — NEW LEAD!
+            public_logger.info(f"NEW LEAD | Name: {name} | Phone: {phone_input} | Product: {product.name} | Store: {product.store.name} | IP: {client_ip}")
             return JsonResponse({
                 'success': True,
                 'name': name,

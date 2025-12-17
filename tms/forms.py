@@ -1,6 +1,6 @@
 # tms/forms.py → FINAL FIXED & PROFESSIONAL VERSION (NO ERROR!)
 from django import forms
-from .models import Product, Store, StoreBanner,Category,ProductSpecification
+from .models import Product, Store, StoreBanner,Category,ProductSpecification,SiteSettings,SocialLink
 
 class EnquiryForm(forms.Form):
     customer_name = forms.CharField(
@@ -16,6 +16,33 @@ class EnquiryForm(forms.Form):
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your City'})
     )
 
+class SiteSettingsForm(forms.ModelForm):
+    class Meta:
+        model = SiteSettings
+        fields = '__all__'
+        widgets = {
+            'address': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
+            'site_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'copyright_text': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+
+from django.forms import inlineformset_factory
+
+SocialLinkFormSet = inlineformset_factory(
+    SiteSettings,
+    SocialLink,
+    fields=('platform', 'url', 'order'),
+    extra=1,
+    can_delete=True,
+    widgets={
+        'platform': forms.Select(attrs={'class': 'form-select'}),
+        'url': forms.URLInput(attrs={'class': 'form-control'}),
+        'order': forms.NumberInput(attrs={'class': 'form-control', 'min': '0', 'step': '1'}),
+    }
+)
 
 # tms/forms.py → FINAL CLEAN VERSION (NO ERROR!)
 

@@ -91,7 +91,7 @@
                     <li><a href="{% url 'store_list_super' %}" class="nav-link {% if 'store' in request.path and 'create' not in request.path %}active{% endif %}">All Stores</a></li>
                     <li><a href="{% url 'create_store' %}" class="nav-link">Create Store</a></li>
                     <li><a href="{% url 'all_leads' %}" class="nav-link">All Leads</a></li>
-                    <li><a href="/" class="nav-link">Website</a></li>
+                    <li><a href="{% url 'site_settings' %}" class="nav-link"><i class="fas fa-cog"></i> Site Settings</a></li>
                     <li><a href="{% url 'logout' %}" class="btn btn-logout">Logout</a></li>
                 </ul>
             </div>
