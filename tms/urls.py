@@ -6,7 +6,7 @@ from django.contrib.auth import views as auth_views
 from .views.public import (
     home, all_products, store_list, store_detail, 
     product_list, product_detail,
-    categories_page
+    categories_page,search_suggestions
 )
 from .views.storeadmin import (
     store_dashboard, store_products, edit_product, delete_product,
@@ -30,6 +30,7 @@ urlpatterns = [
     path('categories/', categories_page, name='categories_page'),
  
     path('store/<slug:slug>/categories/', categories_page, name='store_categories'),
+    path('search-suggestions/', search_suggestions, name='search_suggestions'),
 
     # ==================== STORE ADMIN PANEL ====================
     path('store-admin/', store_dashboard, name='store_dashboard'),

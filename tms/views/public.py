@@ -9,6 +9,8 @@ import urllib.parse
 from datetime import date
 from django.db.models import Count
 from django.utils import timezone
+from django.db.models.functions import Coalesce
+import re
 
 # tms/views/public.py → FINAL FIXED HOME VIEW
 
@@ -89,54 +91,98 @@ def home(request):
     })
     return render(request, 'TMS/public/home.html', context)
 
-
 def all_products(request):
     context = get_common_context()
     today = date.today()
     seven_days_ago = timezone.now() - timedelta(days=7)
 
+    # Base queryset - optimized for large scale
     products = Product.objects.filter(store__is_active=True)\
         .select_related('store', 'category')\
-        .prefetch_related('images')
+        .prefetch_related('images', 'specifications')\
+        .annotate(effective_price=Coalesce('offer_price', 'regular_price'))
 
-    # SEARCH
-    q = request.GET.get('q', '').strip()
-    if q:
+    original_q = request.GET.get('q', '').strip()
+    q = original_q.lower() if original_q else ''
+
+    applied_filters = []
+    search_terms = []
+    sort_by_relevance = False
+
+    # 1. Price filters
+    price_match = re.search(r'(under|below|less than|upto|budget)\s*₹?(\d+)', q)
+    if price_match:
+        max_price = int(price_match.group(2))
+        products = products.filter(effective_price__lte=max_price)
+        applied_filters.append(f"Under ₹{max_price:,}")
+
+    # 2. Quality indicators
+    if any(word in q for word in ['best', 'top', 'popular', 'premium', 'good', 'high quality', 'luxury']):
+        sort_by_relevance = True
+
+    # 3. Offers
+    if any(word in q for word in ['offer', 'deal', 'discount', 'sale', 'on offer', 'clearance']):
         products = products.filter(
-            Q(name__icontains=q) |
-            Q(short_desc__icontains=q) |
-            Q(store__name__icontains=q)
+            Q(is_special_offer=True) |
+            Q(is_limited_deal=True) |
+            Q(deal_end_date__gte=today)
+        )
+        applied_filters.append("Offers & Deals")
+        sort_by_relevance = True
+
+    # Clean query
+    clean_q = re.sub(r'(under|below|less than|upto|budget)\s*₹?\d+', '', q)
+    clean_q = re.sub(r'\b(best|top|popular|premium|good|high quality|luxury|offer|deal|discount|sale|on offer|clearance)\b', '', clean_q, flags=re.IGNORECASE)
+    clean_q = clean_q.strip()
+
+    # 4. ULTIMATE SEARCH - INCLUDING ALL SPECS (SCALABLE FOR 50 LAKH+)
+    if clean_q:
+        # Base search
+        base_search = Q(name__icontains=clean_q) | \
+                      Q(short_desc__icontains=clean_q) | \
+                      Q(category__name__icontains=clean_q) | \
+                      Q(store__name__icontains=clean_q)
+
+        # Specifications search - safe & scalable
+        from django.db.models import Exists, OuterRef
+        from ..models import ProductSpecification  # Use your actual model name
+
+        spec_subquery = ProductSpecification.objects.filter(
+            product=OuterRef('pk')
+        ).filter(
+            Q(name__icontains=clean_q) | Q(value__icontains=clean_q)
         )
 
-    # FILTERS
+        products = products.filter(base_search | Exists(spec_subquery))
+        products = products.distinct()
+
+        search_terms.append(clean_q.title())
+
+    # MANUAL FILTERS
+    filter_type = request.GET.get('filter')
     category_slug = request.GET.get('category')
     store_slug = request.GET.get('store')
-    filter_type = request.GET.get('filter', '').lower()
+
+    if filter_type:
+        if filter_type == 'deals':
+            products = products.filter(deal_end_date__gte=today)
+        elif filter_type == 'bestselling':
+            products = products.filter(is_best_seller=True)
+        elif filter_type == 'limited':
+            products = products.filter(is_limited_deal=True)
+        elif filter_type == 'special':
+            products = products.filter(is_special_offer=True)
+        elif filter_type == 'new':
+            products = products.filter(Q(is_new_arrival=True) | Q(created_at__gte=seven_days_ago))
+        elif filter_type == 'featured':
+            products = products.filter(is_featured=True)
 
     if category_slug:
         products = products.filter(category__slug=category_slug)
     if store_slug:
         products = products.filter(store__slug=store_slug)
 
-    # MAIN FILTER LOGIC
-    if filter_type == 'deals':
-        products = products.filter(deal_end_date__gte=today)
-    elif filter_type == 'bestselling':
-        products = products.filter(is_best_seller=True)
-    elif filter_type == 'limited':
-        products = products.filter(is_limited_deal=True)
-    elif filter_type == 'special':
-        products = products.filter(is_special_offer=True)
-    elif filter_type == 'new':
-        products = products.filter(
-        Q(is_new_arrival=True) | Q(created_at__gte=seven_days_ago)
-    )
-    elif filter_type == 'featured':
-        products = products.filter(is_featured=True)
-
-    # SORT
-    from django.db.models.functions import Coalesce
-    products = products.annotate(effective_price=Coalesce('offer_price', 'regular_price'))
+    # SORTING
     sort = request.GET.get('sort')
     if sort == 'price_low':
         products = products.order_by('effective_price')
@@ -145,23 +191,120 @@ def all_products(request):
     elif sort == 'newest':
         products = products.order_by('-created_at')
     else:
-        products = products.order_by('name')
+        if sort_by_relevance or any(word in q for word in ['best', 'top', 'premium']):
+            products = products.order_by(
+                '-is_best_seller',
+                '-is_featured',
+                '-is_special_offer',
+                '-is_limited_deal',
+                F('deal_end_date').desc(nulls_last=True),
+                '-created_at'
+            )
+        else:
+            products = products.order_by('-created_at')
 
-    # Pagination
-    paginator = Paginator(products, 60)
+
+     # Dynamic page title
+    title_parts = []
+    if applied_filters:
+        title_parts.extend(applied_filters)
+    if search_terms:
+        title_parts.extend(search_terms)
+    if not title_parts:
+        title_parts.append("All Products")
+
+    # Pagination - increased to 100 for better UX
+    paginator = Paginator(products, 100)
     page = request.GET.get('page')
     products_page = paginator.get_page(page)
 
     context.update({
         'products': products_page,
-        'filter_type': filter_type,
+        'query': original_q,
+        'applied_filters': applied_filters,
+        'search_terms': search_terms,
+        'filter_type': filter_type or '',
         'current_category': Category.objects.filter(slug=category_slug).first() if category_slug else None,
         'current_store': Store.objects.filter(slug=store_slug).first() if store_slug else None,
         'categories_all': Category.objects.all(),
         'stores_all': Store.objects.filter(is_active=True),
-        'seven_days_ago': seven_days_ago,
     })
     return render(request, 'TMS/public/allproducts.html', context)
+
+
+
+# def all_products(request):
+#     context = get_common_context()
+#     today = date.today()
+#     seven_days_ago = timezone.now() - timedelta(days=7)
+
+#     products = Product.objects.filter(store__is_active=True)\
+#         .select_related('store', 'category')\
+#         .prefetch_related('images')
+
+#     # SEARCH
+#     q = request.GET.get('q', '').strip()
+#     if q:
+#         products = products.filter(
+#             Q(name__icontains=q) |
+#             Q(short_desc__icontains=q) |
+#             Q(store__name__icontains=q)
+#         )
+
+#     # FILTERS
+#     category_slug = request.GET.get('category')
+#     store_slug = request.GET.get('store')
+#     filter_type = request.GET.get('filter', '').lower()
+
+#     if category_slug:
+#         products = products.filter(category__slug=category_slug)
+#     if store_slug:
+#         products = products.filter(store__slug=store_slug)
+
+#     # MAIN FILTER LOGIC
+#     if filter_type == 'deals':
+#         products = products.filter(deal_end_date__gte=today)
+#     elif filter_type == 'bestselling':
+#         products = products.filter(is_best_seller=True)
+#     elif filter_type == 'limited':
+#         products = products.filter(is_limited_deal=True)
+#     elif filter_type == 'special':
+#         products = products.filter(is_special_offer=True)
+#     elif filter_type == 'new':
+#         products = products.filter(
+#         Q(is_new_arrival=True) | Q(created_at__gte=seven_days_ago)
+#     )
+#     elif filter_type == 'featured':
+#         products = products.filter(is_featured=True)
+
+#     # SORT
+#     from django.db.models.functions import Coalesce
+#     products = products.annotate(effective_price=Coalesce('offer_price', 'regular_price'))
+#     sort = request.GET.get('sort')
+#     if sort == 'price_low':
+#         products = products.order_by('effective_price')
+#     elif sort == 'price_high':
+#         products = products.order_by('-effective_price')
+#     elif sort == 'newest':
+#         products = products.order_by('-created_at')
+#     else:
+#         products = products.order_by('name')
+
+#     # Pagination
+#     paginator = Paginator(products, 60)
+#     page = request.GET.get('page')
+#     products_page = paginator.get_page(page)
+
+#     context.update({
+#         'products': products_page,
+#         'filter_type': filter_type,
+#         'current_category': Category.objects.filter(slug=category_slug).first() if category_slug else None,
+#         'current_store': Store.objects.filter(slug=store_slug).first() if store_slug else None,
+#         'categories_all': Category.objects.all(),
+#         'stores_all': Store.objects.filter(is_active=True),
+#         'seven_days_ago': seven_days_ago,
+#     })
+#     return render(request, 'TMS/public/allproducts.html', context)
 
 # def all_products(request):
 #     context = get_common_context()
@@ -422,3 +565,50 @@ def categories_page(request):
             'paginator': paginator,
             'is_paginated': categories.has_other_pages(),
         })
+    
+from django.http import JsonResponse
+
+
+def search_suggestions(request):
+    q = request.GET.get('q', '').strip()
+    if len(q) < 2:  # Increased to 2 for better performance
+        return JsonResponse({'products': [], 'categories': [], 'stores': [], 'specs': []})
+
+    q_lower = q.lower()
+
+    # Products
+    products = Product.objects.filter(
+        Q(name__icontains=q) | Q(short_desc__icontains=q),
+        store__is_active=True
+    ).select_related('store').prefetch_related('images')[:6]
+
+    # Categories
+    categories = Category.objects.filter(name__icontains=q)[:4]
+
+    # Stores
+    stores = Store.objects.filter(
+        Q(name__icontains=q) | Q(city__icontains=q),
+        is_active=True
+    )[:4]
+
+    # NEW: Popular spec suggestions (like Flipkart)
+    from ..models import ProductSpecification
+    specs = ProductSpecification.objects.filter(
+        Q(name__icontains=q) | Q(value__icontains=q)
+    ).values('name', 'value').annotate(count=Count('id')).order_by('-count')[:8]
+
+    spec_suggestions = [f"{s['value']} {s['name']}" for s in specs]  # e.g. "M Size", "King Size"
+
+    data = {
+        'products': [
+            {
+                'name': p.name,
+                'price': p.offer_price or p.regular_price,
+                'image': p.images.first().image.url if p.images.exists() else 'no img',
+            } for p in products
+        ],
+        'categories': [{'name': c.name} for c in categories],
+        'stores': [{'name': f"{s.name} - {s.city}"} for s in stores],
+        'specs': spec_suggestions,  # Will show in suggestions dropdown
+    }
+    return JsonResponse(data)

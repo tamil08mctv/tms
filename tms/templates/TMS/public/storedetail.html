@@ -612,7 +612,7 @@
             <div class="swiper-wrapper">
                 {% for cat in store_categories %}
                 <div class="swiper-slide">
-                    <a href="{% url 'all_products' %}?store={{ store.slug }}" class="d-block text-center">
+                    <a href="{% url 'all_products' %}?store={{ store.slug }}&category={{ cat.slug }}" class="d-block text-center">
                         <div class="category-card position-relative mb-3 mx-auto" style="width: 110px;">
                             <!-- Pink glow background -->
                             <div style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%); 

@@ -4,29 +4,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="TMS Furnitures - Premium Furniture Store in Tamil Nadu. Best Prices, Quality & Design.">
-    <meta name="keywords" content="furniture, sofa, bed, dining table, wardrobe, tms furnitures, tamil nadu furniture">
+
+   <!-- ULTIMATE DYNAMIC SEO - MULTI-STORE + ALL SPECS + CITY -->
+  <!-- Make sure this is at top if not already -->
+
+{% block seo %}
+    {% if product %}
+    <title>{{ product.name }} - {{ product.store.name }}, {{ product.store.city }} | TMS Furniture</title>
+    <meta name="description" content="{{ product.short_desc|default:product.name|truncatewords:20 }}. Premium {{ product.category.name }} available at {{ product.store.name }}, {{ product.store.city }}. Best prices across Tamil Nadu multi-store network.">
+    <meta name="keywords" content="{{ product.name }}, {{ product.name }} {{ product.category.name }}, {{ product.store.name }}, {{ product.store.city }} furniture, buy {{ product.name }} online {{ product.store.city }}, {{ product.name }} price tamilnadu, premium furniture tamil nadu">
+    {% elif category %}
+    <title>{{ category.name }} - Buy Premium {{ category.name }} Online Across Tamil Nadu | TMS Furniture</title>
+    <meta name="description" content="Shop high-quality {{ category.name }} in all sizes and materials from multiple TMS Furniture stores across Tamil Nadu. Best prices guaranteed.">
+    <meta name="keywords" content="{{ category.name }}, {{ category.name }} tamil nadu, buy {{ category.name }} online, {{ category.name }} price, best {{ category.name }}, {{ category.name }} showroom near me">
+    {% elif store %}
+    <title>{{ store.name }} {{ store.city }} | Premium Furniture Showroom - TMS Furniture</title>
+    <meta name="description" content="{{ store.name }} in {{ store.city }} offers premium sofas, beds, dining tables, wardrobes. Best deals from trusted multi-store brand in Tamil Nadu.">
+    <meta name="keywords" content="{{ store.name }}, {{ store.city }} furniture, TMS furniture {{ store.city }}, furniture showroom {{ store.city }}, sofa {{ store.city }}, bed {{ store.city }}, dining table {{ store.city }}">
+    {% else %}
+    <title>{% block title %}TMS Furnitures – Premium Multi-Store Furniture in Tamil Nadu{% endblock %}</title>
+    <meta name="description" content="TMS Furnitures - Leading premium furniture brand with multiple stores across Tamil Nadu. Best prices on sofas, beds, dining tables, wardrobes with quality designs.">
+    <meta name="keywords" content="furniture tamil nadu, premium furniture, multi store furniture, sofa, bed, dining table, wardrobe, tms furnitures">
+    {% endif %}
+{% endblock %}
+
+
     <meta name="author" content="TMS Groups">
     <meta name="theme-color" content="#e91e63">
-    
-    <title>{% block title %}TMS Furnitures – Premium Furniture Store in Tamil Nadu{% endblock %}</title>
 
+    <!-- Links -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-
-    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- Bootstrap 5.3 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Swiper -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    
-    <!-- AOS -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-
-    <!-- Custom CSS -->
     <link href="{% static 'TMS/css/styles.css' %}" rel="stylesheet">
 
     <style>
@@ -35,23 +47,17 @@
             --gold: #FFD700;
             --dark: #0f0f0f;
             --success: #25D366;
+            --blue: #2874f0;
         }
 
         * { scroll-behavior: smooth; }
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            background: #f9f9f9;
-            margin: 0;
-            padding: 0;
-        }
+        body { font-family: 'Poppins', sans-serif; background: #f9f9f9; margin: 0; padding: 0; }
 
-        /* PREMIUM NAVBAR - WORKS PERFECT ON MOBILE & DESKTOP */
         .navbar {
             background: rgba(15, 15, 15, 0.96) !important;
             backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255,255,255,0.08);
             transition: all 0.4s ease;
-           
             position: fixed;
             width: 100%;
             top: 0;
@@ -87,8 +93,28 @@
             color: var(--gold) !important;
         }
 
-        /* MOBILE FIXES - PERFECT LIKE OLD CODE */
+        /* PERFECT MOBILE ALIGNMENT */
         @media (max-width: 991.98px) {
+            .navbar .container-fluid {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0 15px;
+            }
+            .navbar-brand {
+                margin: 0;
+                padding: 0;
+            }
+            .navbar-toggler {
+                margin: 0;
+                padding: 0.5rem;
+                border: none;
+            }
+            .search-container.d-flex.d-lg-none {
+                width: 100%;
+                margin: 12px 0 0 0 !important;
+                padding: 0 15px;
+            }
             .navbar-collapse {
                 background: rgba(20, 20, 20, 0.98);
                 margin-top: 15px;
@@ -96,22 +122,13 @@
                 padding: 20px;
                 box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             }
-            .navbar-nav {
-                gap: 10px !important;
-            }
             .nav-link {
                 padding: 12px 20px !important;
                 border-radius: 12px;
                 text-align: center;
             }
-            .whatsapp-btn {
-                margin: 20px auto 10px;
-                display: block;
-                width: fit-content;
-            }
         }
 
-        /* CATEGORIES DROPDOWN - SCROLLABLE & BEAUTIFUL */
         .dropdown-menu {
             background: rgba(30, 30, 30, 0.98);
             border: none;
@@ -149,34 +166,118 @@
             padding-left: 32px;
         }
 
-        /* WHATSAPP BUTTON */
-        .whatsapp-btn {
-            background: var(--success);
-            color: white !important;
-            border: none;
-            padding: 10px 28px;
-            border-radius: 50px;
-            font-weight: 600;
-            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
-            transition: all 0.4s ease;
-            white-space: nowrap;
-        }
-
-        .whatsapp-btn:hover {
-            transform: translateY(-4px) scale(1.05);
-            box-shadow: 0 15px 40px rgba(37, 211, 102, 0.6);
-        }
-
-          /* FOOTER - PREMIUM */
-        footer {
-            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
-            color: #ddd;
-            margin-top: 5px;
-            padding-top: 5px;   
+        /* SEARCH BAR */
+        .search-container {
             position: relative;
         }
 
-   
+        .search-input {
+            width: 100%;
+            height: 48px;
+            padding: 12px 50px 12px 20px;
+            border-radius: 8px;
+            border: none;
+            background: #fff;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            outline: none !important;
+        }
+
+        .search-input:focus {
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--blue);
+            font-size: 1.3rem;
+            pointer-events: none;
+        }
+
+        /* SUGGESTIONS */
+        #globalSuggestions {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+            max-height: 70vh;
+            overflow-y: auto;
+            z-index: 99999;
+            display: none;
+            margin-top: 10px;
+            border: 1px solid #eee;
+        }
+
+        .section-title {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #555;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+        }
+
+        .suggestion-item {
+            padding: 14px 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: background 0.2s;
+        }
+
+        .suggestion-item:hover {
+            background: #f5f7ff;
+        }
+
+        .suggestion-thumb {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            background: #fff;
+            padding: 4px;
+            flex-shrink: 0;
+        }
+
+        .suggestion-icon {
+            width: 45px;
+            height: 45px;
+            background: #f0f4ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .suggestion-name {
+            font-weight: 500;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .suggestion-meta {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        footer {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+            color: #ddd;
+            margin-top: 50px;
+            padding-top: 50px;
+        }
 
         footer h4, footer h6 {
             background: linear-gradient(45deg, #FFD700, #FFA500);
@@ -196,82 +297,80 @@
             color: #FFD700;
             padding-left: 8px;
         }
-
-        .social-icons a {
-            width: 50px;
-            height: 50px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 10px;
-            transition: all 0.4s ease;
-        }
-
-        .social-icons a:hover {
-            background: #FFD700;
-            color: rgb(13, 235, 91) !important;
-            transform: translateY(-10px) rotate(10deg);
-        }
     </style>
 </head>
 <body>
 
-<!-- PERFECT NAVBAR - WORKS ON MOBILE & DESKTOP -->
 {% if not 'admin' in request.path and not 'login' in request.path %}
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNavbar">
     <div class="container-fluid px-3 px-md-4">
+        <!-- Logo Left -->
         <a class="navbar-brand fs-4 fw-bold" href="/">
             <i class="fas fa-couch text-warning me-2"></i>TMS FURNITURES
         </a>
 
-        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <!-- Toggle Button - Far Right on Mobile -->
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
 
+        <!-- Mobile Search - Full Width Below -->
+        <div class="search-container d-flex d-lg-none w-100 mt-2">
+            <form action="{% url 'all_products' %}" method="get" class="w-100 position-relative">
+                <input type="text" name="q" class="search-input" id="mobileSearchInput"
+                       placeholder="Search products, stores..." value="{{ request.GET.q|default:'' }}" autocomplete="off">
+                <button type="submit" class="position-absolute top-50 end-0 translate-middle-y me-3 bg-transparent border-0">
+                    <i class="fas fa-search text-primary"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- Desktop Search - Center -->
+        <div class="search-container d-none d-lg-flex mx-auto">
+            <form action="{% url 'all_products' %}" method="get" class="w-100 position-relative">
+                <input type="text" name="q" class="search-input" id="desktopSearchInput"
+                       placeholder="Search for products, categories, stores..." value="{{ request.GET.q|default:'' }}" autocomplete="off">
+                <button type="submit" class="position-absolute top-50 end-0 translate-middle-y me-3 bg-transparent border-0">
+                    <i class="fas fa-search text-primary"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- Menu -->
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto align-items-center ">
-                <li class="nav-item">
-                    <a class="nav-link px-3" href="/">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link px-3" href="{% url 'all_products' %}">All Products</a>
-                </li>
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item"><a class="nav-link px-3" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link px-3" href="{% url 'all_products' %}">All Products</a></li>
                 
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle px-3" href="#" role="button" data-bs-toggle="dropdown">
-                        Categories
-                    </a>
+                    <a class="nav-link dropdown-toggle px-3" href="#" role="button" data-bs-toggle="dropdown">Categories</a>
                     <ul class="dropdown-menu">
                         {% for cat in categories_all|slice:":30" %}
                         <li><a class="dropdown-item" href="{% url 'all_products' %}?category={{ cat.slug }}">{{ cat.name }}</a></li>
                         {% endfor %}
                         {% if categories_all|length > 30 %}
-                        <li><hr class="dropdown-divider">
+                        <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-center text-primary fw-bold" href="{% url 'categories_page' %}">View All Categories</a></li>
                         {% endif %}
                     </ul>
                 </li>
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle px-3" href="#" role="button" data-bs-toggle="dropdown">
-                        Our Stores
-                    </a>
+                    <a class="nav-link dropdown-toggle px-3" href="#" role="button" data-bs-toggle="dropdown">Our Stores</a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         {% for store in stores_all|slice:":15" %}
                         <li><a class="dropdown-item" href="/store/{{ store.slug }}/">{{ store.name }} – {{ store.city }}</a></li>
                         {% endfor %}
-                        <li><hr class="dropdown-divider">
+                        <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-primary fw-bold" href="/stores/">View All Stores</a></li>
                     </ul>
                 </li>
-
-                
             </ul>
         </div>
     </div>
 </nav>
+
+<div id="globalSuggestions"></div>
 {% endif %}
 
 <!-- MAIN CONTENT -->
@@ -313,8 +412,6 @@
         </div>
 
         <div class="text-center pt-2 border-top border-secondary opacity-80">
-       
-         
                 <p class="opacity-60">Made with love in Tamil Nadu |
                     Developed with passion by <strong class="text-warning fw-bold">TAMIL</strong>
                 </p>    
@@ -322,29 +419,120 @@
     </div>
 </footer>
 
-<!-- Scripts -->
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script src="{% static 'TMS/js/main.js' %}"></script>
 
 <script>
-    // Navbar scroll effect
-    window.addEventListener('scroll', function() {
-        const navbar = document.getElementById('mainNavbar');
-        if (window.scrollY > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
+    window.addEventListener('scroll', () => {
+        document.getElementById('mainNavbar').classList.toggle('scrolled', window.scrollY > 50);
     });
 
-    // AOS
-    AOS.init({
-        duration: 800,
-        easing: 'ease-in-out',
-        once: true,
-        mirror: false
+    AOS.init({ duration: 800, easing: 'ease-in-out', once: true });
+
+    // ULTIMATE SMART SUGGESTIONS - SPECS FIRST LIKE FLIPKART
+    document.addEventListener('DOMContentLoaded', function () {
+        const desktopInput = document.getElementById('desktopSearchInput');
+        const mobileInput = document.getElementById('mobileSearchInput');
+        const dropdown = document.getElementById('globalSuggestions');
+        let timeout;
+
+        const inputs = [];
+        if (desktopInput) inputs.push(desktopInput);
+        if (mobileInput) inputs.push(mobileInput);
+
+        if (inputs.length === 0) return;
+
+        function handleSearch(q) {
+            if (q.length < 2) {
+                dropdown.style.display = 'none';
+                return;
+            }
+
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                fetch(`/search-suggestions/?q=${encodeURIComponent(q)}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        let html = '';
+
+                        // SPECS FIRST - LIKE FLIPKART (M Size, King Size, Leather, etc.)
+                        if (data.specs?.length) {
+                            html += '<div class="section-title">Popular Searches</div>';
+                            data.specs.forEach(term => {
+                                html += `<div class="suggestion-item" data-term="${term}">
+                                    <div class="suggestion-icon"><i class="fas fa-search text-primary"></i></div>
+                                    <div class="suggestion-name">${term}</div>
+                                </div>`;
+                            });
+                        }
+
+                        // Products
+                        if (data.products?.length) {
+                            html += '<div class="section-title">Products</div>';
+                            data.products.forEach(p => {
+                                const img = p.image && p.image !== 'no img' ? p.image : 'https://via.placeholder.com/50';
+                                html += `<div class="suggestion-item" data-term="${p.name}">
+                                    <img src="${img}" class="suggestion-thumb">
+                                    <div><div class="suggestion-name">${p.name}</div>
+                                    <div class="suggestion-meta">₹${p.price}</div></div>
+                                </div>`;
+                            });
+                        }
+
+                        // Categories
+                        if (data.categories?.length) {
+                            html += '<div class="section-title">Categories</div>';
+                            data.categories.forEach(c => {
+                                html += `<div class="suggestion-item" data-term="${c.name}">
+                                    <div class="suggestion-icon"><i class="fas fa-th-large"></i></div>
+                                    <div class="suggestion-name">${c.name}</div>
+                                </div>`;
+                            });
+                        }
+
+                        // Stores
+                        if (data.stores?.length) {
+                            html += '<div class="section-title">Stores</div>';
+                            data.stores.forEach(s => {
+                                html += `<div class="suggestion-item" data-term="${s.name}">
+                                    <div class="suggestion-icon"><i class="fas fa-store"></i></div>
+                                    <div><div class="suggestion-name">${s.name}</div>
+                                    <div class="suggestion-meta">${s.city}</div></div>
+                                </div>`;
+                            });
+                        }
+
+                        dropdown.innerHTML = html || '<div class="p-4 text-center text-muted">No results found</div>';
+                        dropdown.style.display = html ? 'block' : 'none';
+
+                        dropdown.querySelectorAll('.suggestion-item').forEach(item => {
+                            item.onclick = () => {
+                                const term = item.dataset.term;
+                                inputs.forEach(i => i.value = term);
+                                window.location.href = `{% url 'all_products' %}?q=${encodeURIComponent(term)}`;
+                            };
+                        });
+                    })
+                    .catch(() => dropdown.style.display = 'none');
+            }, 300);
+        }
+
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                const q = input.value;
+                inputs.forEach(i => i.value = q);
+                handleSearch(q);
+            });
+        });
+
+        document.addEventListener('click', e => {
+            if (!dropdown.contains(e.target) && !inputs.some(i => i && i.contains(e.target))) {
+                dropdown.style.display = 'none';
+            }
+        });
     });
 </script>
 </body>
