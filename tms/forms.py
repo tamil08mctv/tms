@@ -35,7 +35,7 @@ SocialLinkFormSet = inlineformset_factory(
     SiteSettings,
     SocialLink,
     fields=('platform', 'url', 'order'),
-    extra=1,
+    extra=0,
     can_delete=True,
     widgets={
         'platform': forms.Select(attrs={'class': 'form-select'}),

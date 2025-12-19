@@ -1,0 +1,93 @@
+INFO 2025-12-18 19:22:22,485 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-18 19:22:56,864 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-18 19:23:07,739 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-18 19:23:18,642 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-18 19:23:22,211 storeadmin Leads CSV exported | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-18 19:23:36,685 storeadmin Leads CSV exported | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-18 19:23:46,648 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-18 19:23:48,166 storeadmin Leads CSV exported | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-18 19:30:03,804 storeadmin Leads CSV exported | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-18 19:37:32,326 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-18 19:37:36,439 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-18 19:37:40,360 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 11:21:59,668 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 11:22:30,221 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 11:22:42,293 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 11:59:15,710 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 12:28:11,651 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 12:28:15,236 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 12:28:19,720 storeadmin Edit product accessed: 'Kids Bed' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 12:28:43,201 storeadmin Edit product accessed: 'Kids Bed' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 12:28:43,346 storeadmin Product UPDATED: 'Kids Bed' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 12:28:43,499 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 14:55:40,135 storeadmin Edit product accessed: 'Work Desk' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 14:55:50,901 storeadmin Edit product accessed: 'Work Desk' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 14:55:50,983 storeadmin Product UPDATED: 'Work Desk' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 14:55:51,156 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 14:55:56,085 storeadmin Edit product accessed: 'Wardrobe' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 14:56:10,826 storeadmin Edit product accessed: 'Wardrobe' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 14:56:10,846 storeadmin Product UPDATED: 'Wardrobe' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 14:56:10,992 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 14:56:19,895 storeadmin Edit product accessed: 'Loveseat' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 14:56:29,591 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 14:56:32,555 storeadmin Edit product accessed: 'Filing' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 14:56:39,815 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 14:56:43,121 storeadmin Edit product accessed: 'lampet' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 14:56:53,152 storeadmin Edit product accessed: 'lampet' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 14:56:53,178 storeadmin Product UPDATED: 'lampet' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 14:56:53,319 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 14:57:16,199 storeadmin Edit product accessed: 'Storage Bench' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 14:57:25,527 storeadmin Edit product accessed: 'Storage Bench' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 14:57:25,549 storeadmin Product UPDATED: 'Storage Bench' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 14:57:25,704 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 14:57:30,295 storeadmin Edit product accessed: 'sofa 7 seater' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 14:57:37,539 storeadmin Edit product accessed: 'sofa 7 seater' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 14:57:37,565 storeadmin Product UPDATED: 'sofa 7 seater' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 14:57:37,773 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 14:58:26,835 storeadmin Edit product accessed: 'Bench' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 14:58:32,136 storeadmin Edit product accessed: '6 Seater Sofa' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 14:58:37,827 storeadmin Edit product accessed: 'tv' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 14:58:46,333 storeadmin Edit product accessed: 'tv' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 14:58:46,354 storeadmin Product UPDATED: 'tv' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 14:58:46,487 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 14:59:37,707 storeadmin Edit product accessed: 'Loveseat' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 14:59:50,495 storeadmin Edit product accessed: 'Loveseat' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 14:59:50,520 storeadmin Product UPDATED: 'Loveseat' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 14:59:50,682 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 14:59:54,032 storeadmin Edit product accessed: 'hubdhab' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 15:00:08,513 storeadmin Edit product accessed: '4 seater' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 15:00:15,132 storeadmin Edit product accessed: '4 seater' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 15:00:15,153 storeadmin Product UPDATED: '4 seater' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 15:00:15,319 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 15:00:19,137 storeadmin Edit product accessed: 'bedcover' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 15:00:23,712 storeadmin Edit product accessed: '4 seater' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 15:00:29,562 storeadmin Edit product accessed: '4 seat table with chair' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 15:00:34,942 storeadmin Edit product accessed: 'tv' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 15:00:40,386 storeadmin Edit product accessed: 'tv' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 15:00:40,409 storeadmin Product UPDATED: 'tv' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 15:00:40,557 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 15:00:45,097 storeadmin Edit product accessed: 'Single chair' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 15:00:51,752 storeadmin Edit product accessed: 'Single chair' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 15:00:51,776 storeadmin Product UPDATED: 'Single chair' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 15:00:51,938 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 15:00:58,583 storeadmin Edit product accessed: 'Cot' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 15:01:03,821 storeadmin Edit product accessed: 'Sideboard' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 15:01:09,167 storeadmin Edit product accessed: '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 15:01:15,344 storeadmin Edit product accessed: '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 15:01:15,369 storeadmin Product UPDATED: '2 Seater Sofa' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 15:01:15,526 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 15:01:21,608 storeadmin Edit product accessed: '5 seater' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 15:01:28,760 storeadmin Edit product accessed: 'hbbkb' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 15:01:37,759 storeadmin Edit product accessed: 'hbbkb' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 15:01:37,785 storeadmin Product UPDATED: 'hbbkb' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 15:01:37,921 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 15:03:07,069 storeadmin Edit product accessed: 'Futton' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 15:03:18,291 storeadmin Edit product accessed: 'Futton' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-19 15:03:18,329 storeadmin Product UPDATED: 'Futton' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 15:03:18,475 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 18:03:21,371 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 18:03:26,711 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 18:03:29,891 storeadmin Leads CSV exported | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 18:11:24,942 storeadmin Leads CSV exported | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 18:29:17,216 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-19 18:29:25,372 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1

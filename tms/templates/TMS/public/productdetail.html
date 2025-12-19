@@ -59,7 +59,7 @@
                 <div class="row g-3">
                     <!-- VERTICAL THUMBNAILS (Desktop only) -->
                     <div class="col-auto d-none d-lg-block pe-2">
-                        <div class="d-flex flex-column gap-2" id="thumbnailStrip" style="height: 460px; overflow-y: auto;">
+                        <div class="d-flex flex-column gap-2" id="thumbnailStrip" style="height: 400px; overflow-y: auto;">
                             {% for img in product.images.all %}
                             <img src="{{ img.image.url }}" 
                                  class="rounded-2 border border-2 flex-shrink-0 {% if forloop.first %}border-success{% else %}border-light{% endif %}"
@@ -87,7 +87,7 @@
                     
                     <!-- MAIN IMAGE WITH ZOOM -->
                     <div class="col">
-                        <div class="position-relative overflow-hidden bg-white shadow" id="mainImageContainer" style="height: 460px;">
+                        <div class="position-relative overflow-hidden bg-white shadow" id="mainImageContainer" style="height: 400px;">
                             <!-- Zoom Area -->
                             <div id="zoomArea" style="width: 100%; height: 100%; overflow: hidden; position: relative;">
                                 <img id="mainImage" 

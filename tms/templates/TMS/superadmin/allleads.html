@@ -1,71 +1,174 @@
 {% extends 'TMS/superadmin/base_superadmin.html' %}
+{% load static %}
+
 {% block title %}All Leads{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <h2 class="fw-bold mb-4">All Leads ({{ leads.count }})</h2>
+<div class="container-fluid py-2">
 
-    <!-- FILTERS -->
-    <div class="card mb-4 shadow">
-        <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary mb-0">
+            <i class="fas fa-headset"></i> All Leads 
+            <span class="text-muted fs-5">({{ leads.paginator.count }})</span>
+        </h2>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" onclick="document.getElementById('filterCard').classList.toggle('d-none')">
+                <i class="fas fa-filter"></i> Filters
+            </button>
+            <a href="{% url 'export_all_leads' %}?{{ request.GET.urlencode }}" class="btn btn-success">
+                <i class="fas fa-download"></i> Export CSV
+            </a>
+        </div>
+    </div>
+
+    <!-- FILTER CARD (HIDDEN BY DEFAULT) -->
+    <div id="filterCard" class="card border-0 shadow-sm rounded-4 mb-4 d-none">
+        <div class="card-body p-4">
             <form method="get" class="row g-3">
                 <div class="col-md-3">
-                    <label>Store</label>
+                    <label class="form-label fw-bold">Store</label>
                     <select name="store" class="form-select">
                         <option value="">All Stores</option>
                         {% for s in stores %}
-                        <option value="{{ s.id }}" {% if request.GET.store == s.id|stringformat:"s" %}selected{% endif %}>{{ s.name }}</option>
+                        <option value="{{ s.id }}" {% if current_store == s.id|stringformat:"s" %}selected{% endif %}>{{ s.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label>From Date</label>
-                    <input type="date" name="from" value="{{ request.GET.from }}" class="form-control">
+                    <label class="form-label fw-bold">From Date</label>
+                    <input type="date" name="from" value="{{ from_date }}" class="form-control">
                 </div>
                 <div class="col-md-3">
-                    <label>To Date</label>
-                    <input type="date" name="to" value="{{ request.GET.to }}" class="form-control">
+                    <label class="form-label fw-bold">To Date</label>
+                    <input type="date" name="to" value="{{ to_date }}" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="">All Status</option>
+                        <option value="new" {% if current_status == "new" %}selected{% endif %}>New</option>
+                        <option value="contacted" {% if current_status == "contacted" %}selected{% endif %}>Contacted</option>
+                        <option value="converted" {% if current_status == "converted" %}selected{% endif %}>Converted</option>
+                        <option value="Just Enquiry" {% if current_status == "Just Enquiry" %}selected{% endif %}>Just Enquiry</option>
+                    </select>
                 </div>
                 <div class="col-md-3 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary me-2">Filter</button>
-                    <a href="/super-admin/export-all/?{{ request.GET.urlencode }}" class="btn btn-success">Export CSV</a>
+                    <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- TABLE -->
-    <div class="card shadow">
+    <!-- SEARCH BAR -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+            <input type="text" id="searchInput" class="form-control form-control-lg rounded-pill" 
+                   placeholder="Search by name, phone, product, store..." autocomplete="off">
+        </div>
+    </div>
+
+    <!-- LEADS TABLE -->
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
         <div class="table-responsive">
-            <table class="table table-striped">
-                <thead class="table-dark">
+            <table class="table table-hover mb-0 align-middle" id="leadsTable">
+                <thead class="bg-primary text-white">
                     <tr>
-                        <th>Date</th>
-                        <th>Store</th>
-                        <th>Name</th>
-                        <th>Phone</th>
-                        <th>Product</th>
-                        <th>Status</th>
+                        <th>DATE</th>
+                        <th>STORE</th>
+                        <th>NAME</th>
+                        <th>PHONE</th>
+                        <th>CITY</th>
+                        <th>PRODUCT</th>
+                        <th>STATUS</th>
+                      
                     </tr>
                 </thead>
                 <tbody>
-                    {% for lead in leads %}
-                    <tr>
-                        <td>{{ lead.created_at|date:"d M Y, h:i A" }}</td>
-                        <td>{{ lead.store.name }}</td>
-                        <td>{{ lead.customer_name }}</td>
-                        <td>{{ lead.phone }}</td>
-                        <td>{{ lead.product.name|default:"General" }}</td>
-                        <td>
-                            <span class="badge bg-{% if lead.status == 'converted' %}success{% elif lead.status == 'new' %}warning{% else %}secondary{% endif %}">
-                                {{ lead.get_status_display }}
-                            </span>
-                        </td>
-                    </tr>
-                    {% endfor %}
+                {% for lead in leads %}
+                <tr class="lead-row" 
+                    data-name="{{ lead.customer_name|lower }}" 
+                    data-phone="{{ lead.phone }}" 
+                    data-product="{{ lead.product.name|default:''|lower }}"
+                    data-store="{{ lead.store.name|lower }}">
+                    <td>
+                        <small class="fw-bold">{{ lead.created_at|date:"d M" }}</small><br>
+                        {{ lead.created_at|time:"h:i A" }}
+                    </td>
+                    <td><span class="fs-6">{{ lead.store.name }}</span></td>
+                    <td><strong>{{ lead.customer_name }}</strong></td>
+                    <td>
+                        <a href="tel:{{ lead.phone }}" class="text-decoration-none text-primary fw-bold">{{ lead.phone }}</a>
+                    </td>
+                    <td>{{ lead.city|default:"—" }}</td>
+                    <td>{{ lead.product.name|default:"<em>General</em>"|safe }}</td>
+                    <td>
+                        <span class="badge bg-{% if lead.status == 'converted' %}success{% elif lead.status == 'new' %}warning{% elif lead.status == 'contacted' %}info{% else %}secondary{% endif %}">
+                            {{ lead.get_status_display }}
+                        </span>
+                    </td>
+                   
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center py-5 text-muted fs-5">
+                        No leads found
+                    </td>
+                </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>
+
+        <!-- PAGINATION -->
+        {% if leads.has_other_pages %}
+        <nav class="m-4">
+            <ul class="pagination justify-content-center pagination-lg">
+                {% if leads.has_previous %}
+                    <li class="page-item"><a class="page-link rounded-pill mx-1" href="?{{ request.GET.urlencode|slice:":-&page=" }}&page=1">First</a></li>
+                    <li class="page-item"><a class="page-link rounded-pill mx-1" href="?{{ request.GET.urlencode|slice:":-&page=" }}&page={{ leads.previous_page_number }}">Prev</a></li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <span class="page-link rounded-pill bg-primary border-primary mx-1">{{ leads.number }}</span>
+                </li>
+
+                {% if leads.has_next %}
+                    <li class="page-item"><a class="page-link rounded-pill mx-1" href="?{{ request.GET.urlencode|slice:":-&page=" }}&page={{ leads.next_page_number }}">Next</a></li>
+                    <li class="page-item"><a class="page-link rounded-pill mx-1" href="?{{ request.GET.urlencode|slice:":-&page=" }}&page={{ leads.paginator.num_pages }}">Last</a></li>
+                {% endif %}
+            </ul>
+            <p class="text-center text-muted mt-3">
+                Showing {{ leads.start_index }}–{{ leads.end_index }} of {{ leads.paginator.count }} leads
+            </p>
+        </nav>
+        {% endif %}
     </div>
 </div>
+
+<script>
+    // LIVE SEARCH - Searches Name, Phone, Product, Store
+    document.getElementById('searchInput').addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        document.querySelectorAll('.lead-row').forEach(row => {
+            const name = row.dataset.name;
+            const phone = row.dataset.phone;
+            const product = row.dataset.product;
+            const store = row.dataset.store;
+
+            const match = name.includes(query) || 
+                          phone.includes(query) || 
+                          product.includes(query) || 
+                          store.includes(query);
+
+            row.style.display = match ? '' : 'none';
+        });
+    });
+</script>
+
+<style>
+    .card { border-radius: 16px !important; }
+    .table th { font-weight: 600; }
+    .badge { font-size: 0.85rem; }
+    .btn-sm { font-size: 0.85rem; }
+</style>
 {% endblock %}

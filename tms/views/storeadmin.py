@@ -1,5 +1,4 @@
 # tms/views/storeadmin.py → FINAL VERSION WITH PROFESSIONAL LOGGING
-
 import logging
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -318,17 +317,14 @@ def update_lead_status(request, lead_id):
 @login_required
 def export_leads_csv(request):
     store = request.user.storeadmin.store
-    client_ip = request.META.get('REMOTE_ADDR', 'unknown')
-    
-    storeadmin_logger.info(f"Leads CSV exported | Store: {store.name} | User: {request.user.username} | IP: {client_ip}")
     
     leads = Lead.objects.filter(store=store).order_by('-created_at')
     
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = f'attachment; filename="{store.slug}_leads_{datetime.now().strftime("%Y%m%d")}.csv"'
+    response['Content-Disposition'] = f'attachment; filename="{store.slug}_leads.csv"'
     
     writer = csv.writer(response)
-    writer.writerow(['Date', 'Name', 'Phone', 'City', 'Product', 'Message', 'Status', 'Source'])
+    writer.writerow(['Date', 'Name', 'Phone', 'City', 'Product', 'Status', 'Source'])
     for lead in leads:
         writer.writerow([
             lead.created_at.strftime('%d-%m-%Y %I:%M %p'),
@@ -337,10 +333,9 @@ def export_leads_csv(request):
             lead.city or '-',
             lead.product.name if lead.product else 'General',
             lead.get_status_display(),
-            lead.get_source_display()
+            lead.source  # ← Fixed
         ])
     return response
-
 
 @login_required
 def store_categories(request):

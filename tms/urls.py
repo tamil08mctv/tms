@@ -15,7 +15,7 @@ from .views.storeadmin import (
 )
 from .views.superadmin import (
     super_dashboard, store_list_super, create_store, 
-    edit_store, toggle_store, all_leads, export_all_leads,site_settings
+    edit_store, toggle_store, export_all_leads,site_settings, all_leads
 )
 from .views.auth import login_redirect
 
@@ -57,6 +57,6 @@ urlpatterns = [
 
     # ==================== AUTH ====================
     path('login/', auth_views.LoginView.as_view(template_name='TMS/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
+    path('logout/', auth_views.LogoutView.as_view(template_name='TMS/login.html'), name='logout'),
     path('login-redirect/', login_redirect, name='login_redirect'),
 ]

@@ -5,29 +5,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-   <!-- ULTIMATE DYNAMIC SEO - MULTI-STORE + ALL SPECS + CITY -->
-  <!-- Make sure this is at top if not already -->
+    <!-- PRELOAD CRITICAL RESOURCES FOR FASTER LOADING -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" as="style">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" as="style">
 
-{% block seo %}
-    {% if product %}
-    <title>{{ product.name }} - {{ product.store.name }}, {{ product.store.city }} | TMS Furniture</title>
-    <meta name="description" content="{{ product.short_desc|default:product.name|truncatewords:20 }}. Premium {{ product.category.name }} available at {{ product.store.name }}, {{ product.store.city }}. Best prices across Tamil Nadu multi-store network.">
-    <meta name="keywords" content="{{ product.name }}, {{ product.name }} {{ product.category.name }}, {{ product.store.name }}, {{ product.store.city }} furniture, buy {{ product.name }} online {{ product.store.city }}, {{ product.name }} price tamilnadu, premium furniture tamil nadu">
-    {% elif category %}
-    <title>{{ category.name }} - Buy Premium {{ category.name }} Online Across Tamil Nadu | TMS Furniture</title>
-    <meta name="description" content="Shop high-quality {{ category.name }} in all sizes and materials from multiple TMS Furniture stores across Tamil Nadu. Best prices guaranteed.">
-    <meta name="keywords" content="{{ category.name }}, {{ category.name }} tamil nadu, buy {{ category.name }} online, {{ category.name }} price, best {{ category.name }}, {{ category.name }} showroom near me">
-    {% elif store %}
-    <title>{{ store.name }} {{ store.city }} | Premium Furniture Showroom - TMS Furniture</title>
-    <meta name="description" content="{{ store.name }} in {{ store.city }} offers premium sofas, beds, dining tables, wardrobes. Best deals from trusted multi-store brand in Tamil Nadu.">
-    <meta name="keywords" content="{{ store.name }}, {{ store.city }} furniture, TMS furniture {{ store.city }}, furniture showroom {{ store.city }}, sofa {{ store.city }}, bed {{ store.city }}, dining table {{ store.city }}">
-    {% else %}
-    <title>{% block title %}TMS Furnitures – Premium Multi-Store Furniture in Tamil Nadu{% endblock %}</title>
-    <meta name="description" content="TMS Furnitures - Leading premium furniture brand with multiple stores across Tamil Nadu. Best prices on sofas, beds, dining tables, wardrobes with quality designs.">
-    <meta name="keywords" content="furniture tamil nadu, premium furniture, multi store furniture, sofa, bed, dining table, wardrobe, tms furnitures">
-    {% endif %}
-{% endblock %}
-
+    {% block seo %}
+        {% if product %}
+        <title>{{ product.name }} - {{ product.store.name }}, {{ product.store.city }} | TMS Furniture</title>
+        <meta name="description" content="{{ product.short_desc|default:product.name|truncatewords:20 }}. Premium {{ product.category.name }} available at {{ product.store.name }}, {{ product.store.city }}. Best prices across Tamil Nadu multi-store network.">
+        <meta name="keywords" content="{{ product.name }}, {{ product.name }} {{ product.category.name }}, {{ product.store.name }}, {{ product.store.city }} furniture, buy {{ product.name }} online {{ product.store.city }}, {{ product.name }} price tamilnadu, premium furniture tamil nadu">
+        {% elif category %}
+        <title>{{ category.name }} - Buy Premium {{ category.name }} Online Across Tamil Nadu | TMS Furniture</title>
+        <meta name="description" content="Shop high-quality {{ category.name }} in all sizes and materials from multiple TMS Furniture stores across Tamil Nadu. Best prices guaranteed.">
+        <meta name="keywords" content="{{ category.name }}, {{ category.name }} tamil nadu, buy {{ category.name }} online, {{ category.name }} price, best {{ category.name }}, {{ category.name }} showroom near me">
+        {% elif store %}
+        <title>{{ store.name }} {{ store.city }} | Premium Furniture Showroom - TMS Furniture</title>
+        <meta name="description" content="{{ store.name }} in {{ store.city }} offers premium sofas, beds, dining tables, wardrobes. Best deals from trusted multi-store brand in Tamil Nadu.">
+        <meta name="keywords" content="{{ store.name }}, {{ store.city }} furniture, TMS furniture {{ store.city }}, furniture showroom {{ store.city }}, sofa {{ store.city }}, bed {{ store.city }}, dining table {{ store.city }}">
+        {% else %}
+        <title>{% block title %}TMS Furnitures – Premium Multi-Store Furniture in Tamil Nadu{% endblock %}</title>
+        <meta name="description" content="TMS Furnitures - Leading premium furniture brand with multiple stores across Tamil Nadu. Best prices on sofas, beds, dining tables, wardrobes with quality designs.">
+        <meta name="keywords" content="furniture tamil nadu, premium furniture, multi store furniture, sofa, bed, dining table, wardrobe, tms furnitures">
+        {% endif %}
+    {% endblock %}
 
     <meta name="author" content="TMS Groups">
     <meta name="theme-color" content="#e91e63">
@@ -48,20 +48,61 @@
             --dark: #0f0f0f;
             --success: #25D366;
             --blue: #2874f0;
+            --ripple-color: rgba(233, 30, 103, 0.3);
         }
 
         * { scroll-behavior: smooth; }
-        body { font-family: 'Poppins', sans-serif; background: #f9f9f9; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: #f9f9f9; 
+            margin: 0; 
+            padding: 0; 
+        }
+
+        /* MICRO-INTERACTION: RIPPLE EFFECT ON CLICK */
+        .ripple {
+            position: relative;
+            overflow: hidden;
+            transform: translateZ(0);
+        }
+
+        .ripple::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            background: var(--ripple-color);
+            opacity: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            animation: ripple-animation 0.6s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(4);
+            }
+        }
+
+        /* FIXED NAVBAR */
+        .navbar-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 9999;
+        }
 
         .navbar {
             background: rgba(15, 15, 15, 0.96) !important;
             backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255,255,255,0.08);
             transition: all 0.4s ease;
-            position: fixed;
             width: 100%;
-            top: 0;
-            z-index: 9999;
         }
 
         .navbar.scrolled {
@@ -93,7 +134,7 @@
             color: var(--gold) !important;
         }
 
-        /* PERFECT MOBILE ALIGNMENT */
+        /* MOBILE STYLES */
         @media (max-width: 991.98px) {
             .navbar .container-fluid {
                 display: flex;
@@ -101,15 +142,8 @@
                 align-items: center;
                 padding: 0 15px;
             }
-            .navbar-brand {
-                margin: 0;
-                padding: 0;
-            }
-            .navbar-toggler {
-                margin: 0;
-                padding: 0.5rem;
-                border: none;
-            }
+            .navbar-brand { margin: 0; padding: 0; }
+            .navbar-toggler { margin: 0; padding: 0.5rem; border: none; }
             .search-container.d-flex.d-lg-none {
                 width: 100%;
                 margin: 12px 0 0 0 !important;
@@ -137,20 +171,6 @@
             margin-top: 10px;
             max-height: 70vh;
             overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary) #333;
-        }
-
-        .dropdown-menu::-webkit-scrollbar {
-            width: 6px;
-        }
-        .dropdown-menu::-webkit-scrollbar-track {
-            background: #222;
-            border-radius: 10px;
-        }
-        .dropdown-menu::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
         }
 
         .dropdown-item {
@@ -169,55 +189,87 @@
         /* SEARCH BAR */
         .search-container {
             position: relative;
+            max-width: 620px;
+            width: 100%;
         }
 
         .search-input {
             width: 100%;
-            height: 48px;
-            padding: 12px 50px 12px 20px;
-            border-radius: 8px;
+            height: 52px;
+            padding: 14px 70px 14px 24px;
+            border-radius: 12px;
             border: none;
             background: #fff;
-            font-size: 1rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            outline: none !important;
+            font-size: 1.05rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            outline: none;
+            transition: all 0.3s ease;
         }
 
         .search-input:focus {
-            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 0 4px rgba(233, 30, 103, 0.2);
         }
 
         .search-icon {
             position: absolute;
-            right: 15px;
+            right: 20px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--blue);
-            font-size: 1.3rem;
+            font-size: 1.5rem;
+            color: var(--primary);
             pointer-events: none;
         }
 
-        /* SUGGESTIONS */
-        #globalSuggestions {
-            position: fixed;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 600px;
+        @media (max-width: 991.98px) {
+            .search-input {
+                height: 48px;
+                padding: 12px 60px 12px 20px;
+                font-size: 1rem;
+                border-radius: 8px;
+            }
+            .search-icon {
+                right: 15px;
+                font-size: 1.3rem;
+            }
+        }
+
+        /* SUGGESTIONS DROPDOWN */
+        .suggestions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
             max-height: 70vh;
             overflow-y: auto;
-            z-index: 99999;
+            z-index: 9999;
             display: none;
-            margin-top: 10px;
+            margin-top: 12px;
             border: 1px solid #eee;
         }
 
+        @media (min-width: 992px) {
+            .desktop-search-wrapper .suggestions-dropdown {
+                left: 50%;
+                transform: translateX(-50%);
+                width: 100%;
+                max-width: 620px;
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            .mobile-search-wrapper .suggestions-dropdown {
+                left: 15px;
+                right: 15px;
+                width: auto;
+            }
+        }
+
         .section-title {
-            padding: 10px 20px;
-            font-size: 0.9rem;
+            padding: 12px 24px;
+            font-size: 0.95rem;
             font-weight: 600;
             color: #555;
             background: #f8f9fa;
@@ -225,51 +277,61 @@
         }
 
         .suggestion-item {
-            padding: 14px 18px;
+            padding: 16px 24px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 16px;
-            transition: background 0.2s;
+            gap: 18px;
+            transition: all 0.2s ease;
         }
 
         .suggestion-item:hover {
             background: #f5f7ff;
+            padding-left: 32px;
         }
 
         .suggestion-thumb {
-            width: 45px;
-            height: 45px;
-            object-fit: contain;
-            border-radius: 8px;
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 10px;
             border: 1px solid #eee;
-            background: #fff;
-            padding: 4px;
-            flex-shrink: 0;
         }
 
         .suggestion-icon {
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             background: #f0f4ff;
-            border-radius: 8px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #667eea;
-            font-size: 20px;
-            flex-shrink: 0;
+            font-size: 22px;
         }
 
         .suggestion-name {
             font-weight: 500;
             color: #333;
-            font-size: 1rem;
+            font-size: 1.05rem;
         }
 
         .suggestion-meta {
-            font-size: 0.85rem;
-            color: #888;
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        /* CONTENT SPACING */
+        main {
+            margin-top: 60px;
+            display: block;
+            min-height: calc(100vh - 200px);
+        }
+
+        @media (max-width: 991.98px) {
+            main {
+                margin-top: 100px;
+            }
         }
 
         footer {
@@ -302,141 +364,127 @@
 <body>
 
 {% if not 'admin' in request.path and not 'login' in request.path %}
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNavbar">
-    <div class="container-fluid px-3 px-md-4">
-        <!-- Logo Left -->
-       <!-- Dynamic Logo in Header -->
-<a class="navbar-brand fs-4 fw-bold d-flex align-items-center" href="/">
-    {% if site_settings.logo %}
-    <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" style="height: 50px; object-fit: contain;">
-    {% else %}
-    <i class="fas fa-couch text-warning me-2"></i>TMS FURNITURES
-    {% endif %}
-</a>
-
-        <!-- Toggle Button - Far Right on Mobile -->
-        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <!-- Mobile Search - Full Width Below -->
-        <div class="search-container d-flex d-lg-none w-100 mt-2">
-            <form action="{% url 'all_products' %}" method="get" class="w-100 position-relative">
-                <input type="text" name="q" class="search-input" id="mobileSearchInput"
-                       placeholder="Search products, stores..." value="{{ request.GET.q|default:'' }}" autocomplete="off">
-                <button type="submit" class="position-absolute top-50 end-0 translate-middle-y me-3 bg-transparent border-0">
-                    <i class="fas fa-search text-primary"></i>
-                </button>
-            </form>
-        </div>
-
-        <!-- Desktop Search - Center -->
-        <div class="search-container d-none d-lg-flex mx-auto">
-            <form action="{% url 'all_products' %}" method="get" class="w-100 position-relative">
-                <input type="text" name="q" class="search-input" id="desktopSearchInput"
-                       placeholder="Search for products, categories, stores..." value="{{ request.GET.q|default:'' }}" autocomplete="off">
-                <button type="submit" class="position-absolute top-50 end-0 translate-middle-y me-3 bg-transparent border-0">
-                    <i class="fas fa-search text-primary"></i>
-                </button>
-            </form>
-        </div>
-
-        <!-- Menu -->
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto align-items-center">
-                <li class="nav-item"><a class="nav-link px-3" href="/">Home</a></li>
-                <li class="nav-item"><a class="nav-link px-3" href="{% url 'all_products' %}">All Products</a></li>
-                
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle px-3" href="#" role="button" data-bs-toggle="dropdown">Categories</a>
-                    <ul class="dropdown-menu">
-                        {% for cat in categories_all|slice:":30" %}
-                        <li><a class="dropdown-item" href="{% url 'all_products' %}?category={{ cat.slug }}">{{ cat.name }}</a></li>
-                        {% endfor %}
-                        {% if categories_all|length > 30 %}
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-center text-primary fw-bold" href="{% url 'categories_page' %}">View All Categories</a></li>
-                        {% endif %}
-                    </ul>
-                </li>
-
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle px-3" href="#" role="button" data-bs-toggle="dropdown">Our Stores</a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        {% for store in stores_all|slice:":15" %}
-                        <li><a class="dropdown-item" href="/store/{{ store.slug }}/">{{ store.name }} – {{ store.city }}</a></li>
-                        {% endfor %}
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-primary fw-bold" href="/stores/">View All Stores</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-<div id="globalSuggestions"></div>
-{% endif %}
-
-<!-- MAIN CONTENT -->
-<main class="pt-3 mt-4">
-    {% block content %}{% endblock %}
-</main>
-
-<!-- PREMIUM FOOTER -->
-<footer>
-    <div class="containerfluid py-3 px-4">
-       <div class="row text-center text-md-start g-5">
-            <div class="col-lg-5">
-                <h4>{{ site_settings.site_name|default:"TMS FURNITURES" }}</h4>
-                <p class="text-light opacity-90">{{ site_settings.address|default:"Tamil Nadu's Most Trusted & Premium Brand" }}</p>
-                {% if site_settings.phone %}
-                <p class="text-success fs-6">
-                    <i class="fab fa-whatsapp"></i> {{ site_settings.phone }}
-                </p>
+<div class="navbar-wrapper">
+    <nav class="navbar navbar-expand-lg navbar-dark" id="mainNavbar">
+        <div class="container-fluid px-3 px-md-5">
+            <a class="navbar-brand fs-4 fw-bold d-flex align-items-center ripple" href="/">
+                {% if site_settings.logo %}
+                <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" style="height: 50px; object-fit: contain;">
+                {% else %}
+                <i class="fas fa-couch text-warning me-2"></i>TMS FURNITURE
                 {% endif %}
-                {% if site_settings.email %}
-                <p class="text-light small">
-                    <i class="fas fa-envelope"></i> {{ site_settings.email }}
-                </p>
-                {% endif %}
+            </a>
+
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="search-container d-flex d-lg-none w-100 mt-3 mobile-search-wrapper">
+                <form action="{% url 'all_products' %}" method="get" class="w-100 position-relative">
+                    <input type="text" name="q" class="search-input" id="mobileSearchInput"
+                           placeholder="Search products, stores, categories..." value="{{ request.GET.q|default:'' }}" autocomplete="off">
+                    <i class="fas fa-search search-icon"></i>
+                </form>
+                <div class="suggestions-dropdown" id="mobileSuggestions"></div>
             </div>
 
-            <div class="col-lg-3">
-                <h6>Quick Links</h6>
-                <ul class="list-unstyled">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="{% url 'all_products' %}">All Products</a></li>
-                    <li><a href="/stores/">Our Stores</a></li>
-                    <li><a href="/about/">About Us</a></li>
+            <div class="d-none d-lg-flex flex-grow-1 justify-content-center desktop-search-wrapper">
+                <div class="search-container position-relative">
+                    <form action="{% url 'all_products' %}" method="get" class="w-100">
+                        <input type="text" name="q" class="search-input" id="desktopSearchInput"
+                               placeholder="Search for products, categories, stores..." value="{{ request.GET.q|default:'' }}" autocomplete="off">
+                        <i class="fas fa-search search-icon"></i>
+                    </form>
+                    <div class="suggestions-dropdown" id="desktopSuggestions"></div>
+                </div>
+            </div>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center gap-2">
+                    <li class="nav-item"><a class="nav-link px-4 ripple" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link px-4 ripple" href="{% url 'all_products' %}">All Products</a></li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle px-4 ripple" href="#" role="button" data-bs-toggle="dropdown">Categories</a>
+                        <ul class="dropdown-menu">
+                            {% for cat in categories_all|slice:":12" %}
+                            <li><a class="dropdown-item ripple" href="{% url 'all_products' %}?category={{ cat.slug }}">{{ cat.name }}</a></li>
+                            {% endfor %}
+                            {% if categories_all|length > 8 %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-center text-primary fw-bold ripple" href="{% url 'categories_page' %}">View All Categories</a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle px-4 ripple" href="#" role="button" data-bs-toggle="dropdown">Our Stores</a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% for store in stores_all|slice:":10" %}
+                            <li><a class="dropdown-item ripple" href="/store/{{ store.slug }}/">{{ store.name }} – {{ store.city }}</a></li>
+                            {% endfor %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-primary fw-bold ripple" href="/stores/">View All Stores</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
+        </div>
+    </nav>
+</div>
+{% endif %}
 
-            <div class="col-md-4 text-center">
+<main>
+    {% block content %}
+        <!-- REMINDER: In product listing templates, use loading="lazy" on images -->
+        <!-- Example: <img src="..." loading="lazy" class="card-img-top" alt="..."> -->
+    {% endblock %}
+</main>
+
+<!-- Footer -->
+<footer>
+    <div class="container-fluid py-1 px-5">
+        <div class="row text-center text-md-start g-5">
+            <div class="col-lg-5">
+                <h4>{{ site_settings.site_name|default:"TMS FURNITURE" }}</h4>
+                <p class="text-light opacity-90">{{ site_settings.address|default:"Tamil Nadu's Most Trusted & Premium Brand" }}</p>
+                {% if site_settings.phone %}
+                <p class="text-success fs-6"><i class="fab fa-whatsapp"></i> {{ site_settings.phone }}</p>
+                {% endif %}
+                {% if site_settings.email %}
+                <p class="text-light small"><i class="fas fa-envelope"></i> {{ site_settings.email }}</p>
+                {% endif %}
+            </div>
+            <div class="col-lg-4">
+                <h6>Quick Links</h6>
+                <ul class="list-unstyled">
+                    <li><a class="ripple" href="/">Home</a></li>
+                    <li><a class="ripple" href="{% url 'all_products' %}">All Products</a></li>
+                    <li><a class="ripple" href="/stores/">Our Stores</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 text-center">
                 <h6 class="text-warning">Follow Us</h6>
-                <div class="fs-3 d-flex justify-content-center gap-4 flex-wrap mb-3">
+                <div class="fs-4 d-flex justify-content-center gap-4 flex-wrap mb-3">
                     {% for link in social_links %}
-                    <a href="{{ link.url }}" target="_blank" class="text-white" title="{{ link.get_platform_display }}">
+                    <a href="{{ link.url }}" target="_blank" class="text-white ripple" title="{{ link.get_platform_display }}">
                         <i class="{{ link.get_icon_class }} hover-scale"></i>
                     </a>
                     {% empty %}
-                    <p class="text-muted small">Social links coming soon</p>
+                    <a href="#" class="text-white ripple"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="text-white ripple"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-white ripple"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-white ripple"><i class="fab fa-youtube"></i></a>
                     {% endfor %}
                 </div>
-                <p class="mt-4 small text-light">
-                    © {% now "Y" %} {{ site_settings.copyright_text|default:"TMS | All rights reserved" }}
-                </p>
+                <p class="mt-4 small text-light">© {% now "Y" %} {{ site_settings.copyright_text|default:"TMS | All rights reserved" }}</p>
             </div>
         </div>
-
-        <div class="text-center pt-2 border-top border-secondary opacity-80">
-                <p class="opacity-60">Made with love in Tamil Nadu |
-                    Developed with passion by <strong class="text-warning fw-bold">TAMIL</strong>
-                </p>    
+        <div class="text-center pt-3 border-top border-secondary opacity-80">
+            <p class="opacity-60">Made with love in Tamil Nadu | Developed with passion by <strong class="text-warning fw-bold">TAMIL</strong></p>
         </div>
     </div>
 </footer>
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -444,27 +492,48 @@
 <script src="{% static 'TMS/js/main.js' %}"></script>
 
 <script>
+    // Scroll effect
     window.addEventListener('scroll', () => {
         document.getElementById('mainNavbar').classList.toggle('scrolled', window.scrollY > 50);
     });
 
     AOS.init({ duration: 800, easing: 'ease-in-out', once: true });
 
-    // ULTIMATE SMART SUGGESTIONS - SPECS FIRST LIKE FLIPKART
+    // RIPPLE MICRO-INTERACTION ON CLICK
+    document.querySelectorAll('.ripple').forEach(element => {
+        element.addEventListener('click', function(e) {
+            const ripple = document.createElement('span');
+            this.appendChild(ripple);
+
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+            ripple.style.position = 'absolute';
+            ripple.style.borderRadius = '50%';
+            ripple.style.background = 'var(--ripple-color)';
+            ripple.style.transform = 'translate(-50%, -50%) scale(0)';
+            ripple.style.animation = 'ripple-animation 0.6s ease-out';
+            ripple.style.pointerEvents = 'none';
+
+            ripple.addEventListener('animationend', () => ripple.remove());
+        });
+    });
+
+    // SEARCH SUGGESTIONS (perfect as before)
     document.addEventListener('DOMContentLoaded', function () {
         const desktopInput = document.getElementById('desktopSearchInput');
         const mobileInput = document.getElementById('mobileSearchInput');
-        const dropdown = document.getElementById('globalSuggestions');
+        const desktopDropdown = document.getElementById('desktopSuggestions');
+        const mobileDropdown = document.getElementById('mobileSuggestions');
         let timeout;
 
-        const inputs = [];
-        if (desktopInput) inputs.push(desktopInput);
-        if (mobileInput) inputs.push(mobileInput);
-
-        if (inputs.length === 0) return;
-
-        function handleSearch(q) {
-            if (q.length < 2) {
+        function handleSearch(q, dropdown) {
+            if (q.length === 0) {
                 dropdown.style.display = 'none';
                 return;
             }
@@ -476,82 +545,82 @@
                     .then(data => {
                         let html = '';
 
-                        // SPECS FIRST - LIKE FLIPKART (M Size, King Size, Leather, etc.)
                         if (data.specs?.length) {
                             html += '<div class="section-title">Popular Searches</div>';
                             data.specs.forEach(term => {
-                                html += `<div class="suggestion-item" data-term="${term}">
+                                html += `<div class="suggestion-item ripple" data-term="${term}">
                                     <div class="suggestion-icon"><i class="fas fa-search text-primary"></i></div>
                                     <div class="suggestion-name">${term}</div>
                                 </div>`;
                             });
                         }
 
-                        // Products
                         if (data.products?.length) {
                             html += '<div class="section-title">Products</div>';
                             data.products.forEach(p => {
-                                const img = p.image && p.image !== 'no img' ? p.image : 'https://via.placeholder.com/50';
-                                html += `<div class="suggestion-item" data-term="${p.name}">
-                                    <img src="${img}" class="suggestion-thumb">
-                                    <div><div class="suggestion-name">${p.name}</div>
-                                    <div class="suggestion-meta">₹${p.price}</div></div>
+                                html += `<div class="suggestion-item ripple" data-term="${p.name}">
+                                    <img src="${p.image}" class="suggestion-thumb" onerror="this.src='/static/TMS/images/no-image.jpg'">
+                                    <div>
+                                        <div class="suggestion-name">${p.name}</div>
+                                        <div class="suggestion-meta">${p.price_display} • ${p.store}</div>
+                                    </div>
                                 </div>`;
                             });
                         }
 
-                        // Categories
                         if (data.categories?.length) {
                             html += '<div class="section-title">Categories</div>';
                             data.categories.forEach(c => {
-                                html += `<div class="suggestion-item" data-term="${c.name}">
+                                html += `<div class="suggestion-item ripple" data-term="${c.name}">
                                     <div class="suggestion-icon"><i class="fas fa-th-large"></i></div>
                                     <div class="suggestion-name">${c.name}</div>
                                 </div>`;
                             });
                         }
 
-                        // Stores
                         if (data.stores?.length) {
                             html += '<div class="section-title">Stores</div>';
                             data.stores.forEach(s => {
-                                html += `<div class="suggestion-item" data-term="${s.name}">
+                                html += `<div class="suggestion-item ripple" data-term="${s.name}">
                                     <div class="suggestion-icon"><i class="fas fa-store"></i></div>
-                                    <div><div class="suggestion-name">${s.name}</div>
-                                    <div class="suggestion-meta">${s.city}</div></div>
+                                    <div class="suggestion-name">${s.name}</div>
                                 </div>`;
                             });
                         }
 
                         dropdown.innerHTML = html || '<div class="p-4 text-center text-muted">No results found</div>';
                         dropdown.style.display = html ? 'block' : 'none';
-
-                        dropdown.querySelectorAll('.suggestion-item').forEach(item => {
-                            item.onclick = () => {
-                                const term = item.dataset.term;
-                                inputs.forEach(i => i.value = term);
-                                window.location.href = `{% url 'all_products' %}?q=${encodeURIComponent(term)}`;
-                            };
-                        });
                     })
                     .catch(() => dropdown.style.display = 'none');
-            }, 300);
+            }, 150);
         }
 
-        inputs.forEach(input => {
-            input.addEventListener('input', () => {
-                const q = input.value;
-                inputs.forEach(i => i.value = q);
-                handleSearch(q);
+        if (desktopInput && desktopDropdown) {
+            desktopInput.addEventListener('input', () => {
+                const q = desktopInput.value.trim();
+                if (mobileInput) mobileInput.value = q;
+                handleSearch(q, desktopDropdown);
             });
-        });
+        }
 
-        document.addEventListener('click', e => {
-            if (!dropdown.contains(e.target) && !inputs.some(i => i && i.contains(e.target))) {
-                dropdown.style.display = 'none';
+        if (mobileInput && mobileDropdown) {
+            mobileInput.addEventListener('input', () => {
+                const q = mobileInput.value.trim();
+                if (desktopInput) desktopInput.value = q;
+                handleSearch(q, mobileDropdown);
+            });
+        }
+
+        document.addEventListener('click', (e) => {
+            if (desktopDropdown && !desktopDropdown.contains(e.target) && !(desktopInput && desktopInput.contains(e.target))) {
+                desktopDropdown.style.display = 'none';
+            }
+            if (mobileDropdown && !mobileDropdown.contains(e.target) && !(mobileInput && mobileInput.contains(e.target))) {
+                mobileDropdown.style.display = 'none';
             }
         });
     });
 </script>
+
 </body>
 </html>
