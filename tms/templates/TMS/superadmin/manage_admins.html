@@ -1,0 +1,64 @@
+{% extends 'TMS/superadmin/base_superadmin.html' %}
+
+{% block title %}Manage Admins for {{ store.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary mb-0">
+            <i class="fas fa-users-cog"></i> Manage Admins for {{ store.name }}
+            <span class="text-muted fs-5">({{ admins.count }})</span>
+        </h2>
+        <a href="{% url 'create_store_admin' store.id %}" class="btn btn-success">
+            <i class="fas fa-user-plus"></i> Add Admin
+        </a>
+    </div>
+
+    <!-- ADMINS TABLE -->
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th>USERNAME</th>
+                        <th>STATUS</th>
+                        <th>ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for admin in admins %}
+                <tr>
+                    <td><strong>{{ admin.user.username }}</strong></td>
+                    <td>
+                        <span class="badge bg-{% if admin.is_active %}success{% else %}danger{% endif %}">
+                            {% if admin.is_active %}Active{% else %}Disabled{% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{% url 'edit_store_admin' store.id admin.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <a href="{% url 'toggle_store_admin' store.id admin.id %}" class="btn btn-sm btn-{% if admin.is_active %}danger{% else %}success{% endif %}">
+                            {% if admin.is_active %}Disable{% else %}Enable{% endif %}
+                        </a>
+                        <form method="post" action="{% url 'delete_store_admin' store.id admin.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete admin?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center py-5 text-muted">
+                        No admins yet - Add one above!
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'store_list_super' %}" class="btn btn-outline-secondary">Back to Stores</a>
+    </div>
+</div>
+{% endblock %}

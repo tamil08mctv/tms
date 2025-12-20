@@ -1,4 +1,4 @@
-# tms/models.py → FINAL: STRUCTURED FOLDERS + TYPO TOLERANCE + 10 LAKH+ READY
+# tms/models.py → FINAL: WITH is_active FOR ADMINS
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -90,8 +90,10 @@ class Store(models.Model):
 class StoreAdmin(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='store_admins')
+    is_active = models.BooleanField(default=True)  # ← NEW: For enable/disable
+
     def __str__(self):
-        return f"{self.user.username} → {self.store.name}"
+        return f"{self.user.username} → {self.store.name} ({'Active' if self.is_active else 'Disabled'})"
 
 
 class Category(models.Model):

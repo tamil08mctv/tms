@@ -1,4 +1,5 @@
-# tms/urls.py → FINAL 100% CLEAN & WORKING VERSION
+# tms/urls.py → FINAL WITH ADMIN PATHS
+
 from django.urls import path
 from django.contrib.auth import views as auth_views
 
@@ -15,7 +16,8 @@ from .views.storeadmin import (
 )
 from .views.superadmin import (
     super_dashboard, store_list_super, create_store, 
-    edit_store, toggle_store, export_all_leads,site_settings, all_leads
+    edit_store, toggle_store, export_all_leads,site_settings, all_leads,
+    manage_store_admins, create_store_admin, edit_store_admin, toggle_store_admin, delete_store_admin,delete_store # ← NEW
 )
 from .views.auth import login_redirect
 
@@ -54,6 +56,14 @@ urlpatterns = [
     path('super-admin/all-leads/', all_leads, name='all_leads'),
     path('super-admin/export-all/', export_all_leads, name='export_all_leads'),
     path('site-settings/', site_settings, name='site_settings'),
+
+    # NEW: Admin Management Paths
+    path('super-admin/store/<int:pk>/admins/', manage_store_admins, name='manage_store_admins'),
+    path('super-admin/store/<int:pk>/admins/create/', create_store_admin, name='create_store_admin'),
+    path('super-admin/store/<int:pk>/admins/edit/<int:admin_pk>/', edit_store_admin, name='edit_store_admin'),
+    path('super-admin/store/<int:pk>/admins/toggle/<int:admin_pk>/', toggle_store_admin, name='toggle_store_admin'),
+    path('super-admin/store/<int:pk>/admins/delete/<int:admin_pk>/', delete_store_admin, name='delete_store_admin'),
+    path('super-admin/delete-store/<int:pk>/', delete_store, name='delete_store'),
 
     # ==================== AUTH ====================
     path('login/', auth_views.LoginView.as_view(template_name='TMS/login.html'), name='login'),

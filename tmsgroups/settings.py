@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'crispy_forms',
     'crispy_bootstrap5',
+    'django.contrib.humanize'
 ]
 
 MIDDLEWARE = [

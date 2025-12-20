@@ -138,3 +138,8 @@ INFO 2025-12-19 18:40:17,407 superadmin Superuser tamil accessed all leads page
 INFO 2025-12-19 18:41:21,897 superadmin Superuser tamil accessed all leads page
 INFO 2025-12-19 18:42:03,042 superadmin Superuser tamil accessed all leads page
 INFO 2025-12-19 18:42:04,755 superadmin Superuser tamil accessed all leads page
+INFO 2025-12-19 19:15:10,873 superadmin Superuser tamil deleted admin 'vs1' from store 'TMS Decors'
+INFO 2025-12-19 19:18:20,065 superadmin Superuser tamil CREATED store: 'TMS ELECT' (namakkal)
+INFO 2025-12-19 19:18:39,261 superadmin Superuser tamil added admin to store 'TMS ELECT'
+INFO 2025-12-19 19:26:32,116 superadmin Superuser tamil DELETED store: 'TMS ELECT' (namakkal)
+INFO 2025-12-20 10:11:07,930 superadmin Superuser tamil exported filtered leads CSV

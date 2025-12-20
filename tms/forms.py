@@ -1,6 +1,7 @@
-# tms/forms.py → FINAL FIXED & PROFESSIONAL VERSION (NO ERROR!)
+# tms/forms.py → FINAL: WITH StoreAdminForm
+from django.contrib.auth.models import User
 from django import forms
-from .models import Product, Store, StoreBanner,Category,ProductSpecification,SiteSettings,SocialLink
+from .models import Product, Store, StoreBanner,Category,ProductSpecification,SiteSettings,SocialLink, StoreAdmin
 
 class EnquiryForm(forms.Form):
     customer_name = forms.CharField(
@@ -87,8 +88,7 @@ class CategoryForm(forms.ModelForm):
         }
 
 class StoreForm(forms.ModelForm):
-    admin_username = forms.CharField(max_length=150)
-    admin_password = forms.CharField(widget=forms.PasswordInput())
+    # ← REMOVED admin_username/admin_password - now separate
 
     class Meta:
         model = Store
@@ -139,3 +139,66 @@ ProductSpecFormSet = inlineformset_factory(
         'value': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Teak Wood'}),
     }
 )
+
+
+# Add this import at the top if not already there
+from django.contrib.auth.models import User
+
+class StoreAdminForm(forms.ModelForm):
+    username = forms.CharField(
+        max_length=150,
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter username'})
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter password (required for new admin)'}),
+        required=False,
+        help_text="Leave blank to keep current password"
+    )
+
+    class Meta:
+        model = StoreAdmin
+        fields = ['is_active']
+        widgets = {
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields['username'].initial = self.instance.user.username
+            self.fields['password'].help_text = "Leave blank to keep current password"
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        # Check if username exists (excluding current user if editing)
+        if self.instance.pk:
+            if User.objects.exclude(pk=self.instance.user.pk).filter(username=username).exists():
+                raise forms.ValidationError("This username is already taken. Please choose another.")
+        else:
+            if User.objects.filter(username=username).exists():
+                raise forms.ValidationError("This username is already taken. Please choose another.")
+        return username
+
+    def save(self, commit=True):
+        store_admin = super().save(commit=False)
+        username = self.cleaned_data['username']
+        password = self.cleaned_data.get('password')
+
+        if self.instance.pk:
+            # Editing existing admin
+            user = self.instance.user
+            user.username = username
+            if password:  # Only update password if provided
+                user.set_password(password)
+            user.save()
+        else:
+            # Creating new admin
+            if not password:
+                raise forms.ValidationError("Password is required for new admin.")
+            user = User.objects.create_user(username=username, password=password)
+            store_admin.user = user
+
+        if commit:
+            store_admin.save()
+        return store_admin

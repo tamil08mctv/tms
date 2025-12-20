@@ -20,7 +20,7 @@
                     <i class="fas fa-store"></i> {{ store.name }} • {{ store.city }}
                 </p>
                 {% else %}
-                <p class="text-muted lead">Launch a new showroom + admin in 2 minutes</p>
+                <p class="text-muted lead">Launch a new showroom in 2 minutes</p>
                 {% endif %}
             </div>
 
@@ -28,7 +28,7 @@
             <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
                 <div class="card-header bg-primary text-white text-center py-4">
                     <h3 class="mb-0 fw-bold">
-                        {% if store %}Update Store Details{% else %}Setup New Store + Admin{% endif %}
+                        {% if store %}Update Store Details{% else %}Setup New Store{% endif %}
                     </h3>
                 </div>
 
@@ -100,25 +100,6 @@
                             </div>
                         </div>
 
-                        <!-- Admin Credentials (Only on Create) -->
-                        {% if not store %}
-                        <hr class="my-4 border-danger">
-                        <div class="bg-danger bg-opacity-10 rounded-4 p-4 border border-danger">
-                            <h5 class="fw-bold text-danger mb-3">Create Store Admin Account</h5>
-                            <div class="row g-4">
-                                <div class="col-md-6">
-                                    {{ form.admin_username|as_crispy_field }}
-                                </div>
-                                <div class="col-md-6">
-                                    {{ form.admin_password|as_crispy_field }}
-                                </div>
-                            </div>
-                            <small class="text-muted d-block mt-3">
-                                This user will have full access to this store's dashboard
-                            </small>
-                        </div>
-                        {% endif %}
-
                         <!-- Current Admins (On Edit) -->
                         {% if store %}
                         <hr class="my-4">
@@ -127,7 +108,7 @@
                             {% for admin in store.store_admins.all %}
                                 <span class="badge bg-primary fs-6 me-2 mb-2">{{ admin.user.username }}</span>
                             {% empty %}
-                                <p class="text-muted mb-0">No admin assigned</p>
+                                <p class="text-muted mb-0">No admin assigned - Add from Manage Admins</p>
                             {% endfor %}
                         </div>
                         {% endif %}
@@ -135,7 +116,7 @@
                         <!-- Submit Button -->
                         <div class="text-center mt-3">
                             <button type="submit" class="btn btn-success btn-lg px-5 py-3 rounded-pill shadow-lg fw-bold">
-                                {% if store %}Update Store{% else %}Create Store & Admin{% endif %}
+                                {% if store %}Update Store{% else %}Create Store{% endif %}
                             </button>
                             <a href="{% url 'store_list_super' %}" class="btn btn-outline-secondary btn-lg px-5 py-3 rounded-pill ms-3">
                                 Cancel

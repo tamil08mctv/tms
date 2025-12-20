@@ -1,4 +1,4 @@
-# tms/views/superadmin.py → FINAL 100% WORKING VERSION (WITH all_leads!)
+# tms/views/superadmin.py → FINAL: WITH ADMIN MANAGEMENT!
 
 import logging
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -13,7 +13,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 from ..models import Store, Lead, StoreAdmin, User, SiteSettings, SocialLink
-from ..forms import StoreForm, StoreUpdateForm, SiteSettingsForm, SocialLinkFormSet
+from ..forms import StoreForm, StoreUpdateForm, SiteSettingsForm, SocialLinkFormSet, StoreAdminForm
 
 superadmin_logger = logging.getLogger('superadmin')
 
@@ -80,15 +80,10 @@ def create_store(request):
             store.created_by = request.user
             store.save()
 
-            username = form.cleaned_data['admin_username']
-            password = form.cleaned_data['admin_password']
-            if username and password:
-                user = User.objects.create_user(username=username, password=password)
-                StoreAdmin.objects.create(user=user, store=store)
-
+            # NO MORE ADMIN CREATION HERE - Redirect to manage admins
             superadmin_logger.info(f"Superuser {request.user.username} CREATED store: '{store.name}' ({store.city})")
-            messages.success(request, f"Store '{store.name}' created successfully!")
-            return redirect('store_list_super')
+            messages.success(request, f"Store '{store.name}' created successfully! Now add admins.")
+            return redirect('manage_store_admins', pk=store.pk)
     else:
         form = StoreForm()
 
@@ -127,7 +122,6 @@ def toggle_store(request, pk):
     messages.success(request, f"Store '{store.name}' is now {'activated' if store.is_active else 'deactivated'}")
     return redirect('store_list_super')
 
-# ← THIS WAS MISSING! ADD THIS FUNCTION
 @superuser_required
 def all_leads(request):
     
@@ -251,3 +245,100 @@ def logout_view(request):
     logout(request)
     messages.success(request, "You have been logged out successfully!")
     return redirect('login')
+
+
+# NEW: Manage Store Admins Views
+@superuser_required
+def manage_store_admins(request, pk):
+    store = get_object_or_404(Store, pk=pk)
+    admins = store.store_admins.all().order_by('-id')
+
+    return render(request, 'TMS/superadmin/manage_admins.html', {
+        'store': store,
+        'admins': admins,
+    })
+
+@superuser_required
+def create_store_admin(request, pk):
+    store = get_object_or_404(Store, pk=pk)
+
+    if request.method == 'POST':
+        form = StoreAdminForm(request.POST)
+        if form.is_valid():
+            store_admin = form.save(commit=False)
+            store_admin.store = store
+            store_admin.save()
+            messages.success(request, "Admin added successfully!")
+            superadmin_logger.info(f"Superuser {request.user.username} added admin to store '{store.name}'")
+            return redirect('manage_store_admins', pk=store.pk)
+    else:
+        form = StoreAdminForm()
+
+    return render(request, 'TMS/superadmin/admin_form.html', {
+        'form': form,
+        'store': store,
+        'title': 'Add New Admin',
+    })
+
+@superuser_required
+def edit_store_admin(request, pk, admin_pk):
+    store = get_object_or_404(Store, pk=pk)
+    store_admin = get_object_or_404(StoreAdmin, pk=admin_pk, store=store)
+
+    if request.method == 'POST':
+        form = StoreAdminForm(request.POST, instance=store_admin)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Admin updated successfully!")
+            superadmin_logger.info(f"Superuser {request.user.username} updated admin '{store_admin.user.username}' for store '{store.name}'")
+            return redirect('manage_store_admins', pk=store.pk)
+    else:
+        form = StoreAdminForm(instance=store_admin)
+
+    return render(request, 'TMS/superadmin/admin_form.html', {
+        'form': form,
+        'store': store,
+        'title': 'Edit Admin',
+    })
+
+@superuser_required
+def toggle_store_admin(request, pk, admin_pk):
+    store = get_object_or_404(Store, pk=pk)
+    store_admin = get_object_or_404(StoreAdmin, pk=admin_pk, store=store)
+    old_status = "Active" if store_admin.is_active else "Inactive"
+    store_admin.is_active = not store_admin.is_active
+    store_admin.save()
+    
+    superadmin_logger.info(f"Superuser {request.user.username} toggled admin '{store_admin.user.username}' for store '{store.name}' → {'Active' if store_admin.is_active else 'Inactive'}")
+    messages.success(request, f"Admin '{store_admin.user.username}' is now {'activated' if store_admin.is_active else 'deactivated'}")
+    return redirect('manage_store_admins', pk=store.pk)
+
+@superuser_required
+def delete_store_admin(request, pk, admin_pk):
+    store = get_object_or_404(Store, pk=pk)
+    store_admin = get_object_or_404(StoreAdmin, pk=admin_pk, store=store)
+    
+    if request.method == 'POST':
+        username = store_admin.user.username
+        store_admin.user.delete()  # Deletes user too
+        superadmin_logger.info(f"Superuser {request.user.username} deleted admin '{username}' from store '{store.name}'")
+        messages.success(request, f"Admin '{username}' deleted!")
+    return redirect('manage_store_admins', pk=store.pk)
+
+
+@superuser_required
+def delete_store(request, pk):
+    store = get_object_or_404(Store, pk=pk)
+    
+    if request.method == 'POST':
+        store_name = store.name
+        store_city = store.city
+        store.delete()
+        
+        superadmin_logger.info(f"Superuser {request.user.username} DELETED store: '{store_name}' ({store_city})")
+        messages.success(request, f"Store '{store_name}' ({store_city}) has been permanently deleted.")
+        return redirect('store_list_super')
+    
+    return render(request, 'TMS/superadmin/delete_store_confirm.html', {
+        'store': store
+    })

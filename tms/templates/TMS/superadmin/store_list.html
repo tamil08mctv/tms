@@ -4,30 +4,63 @@
 {% block content %}
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="fw-bold text-primary">All Stores ({{ stores.count }})</h1>
+        <h1 class="fw-bold text-primary">All Stores</h1>
         <a href="{% url 'create_store' %}" class="btn btn-success btn-lg rounded-pill">
-            + Create Store
+            <i class="fas fa-plus"></i> Create Store
         </a>
     </div>
 
     <div class="row g-4 justify-content-center">
         {% for store in stores %}
-        <div class="col-lg-3 col-md-4 col-sm-6 justify-content-center">
-            <div class="card-modern h-100">
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="card-modern h-100 position-relative">
                 {% if store.logo %}
                 <img src="{{ store.logo.url }}" class="card-img-top" style="height:180px; object-fit:cover;">
                 {% endif %}
                 <div class="card-body text-center">
                     <h5 class="fw-bold">{{ store.name }}</h5>
                     <p class="text-muted small">{{ store.city }}</p>
-                    <span class="badge bg-{% if store.is_active %}success{% else %}danger{% endif %}">
+                    <span class="badge bg-{% if store.is_active %}success{% else %}danger{% endif %} fs-6">
                         {% if store.is_active %}Active{% else %}Disabled{% endif %}
                     </span>
-                    <div class="mt-3">
-                        <a href="{% url 'edit_store' store.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <div class="mt-3 d-flex justify-content-center gap-2 flex-wrap">
+                        <a href="{% url 'edit_store' store.id %}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
                         <a href="{% url 'toggle_store' store.id %}" class="btn btn-sm btn-{% if store.is_active %}danger{% else %}success{% endif %}">
                             {% if store.is_active %}Disable{% else %}Enable{% endif %}
                         </a>
+                        <a href="{% url 'manage_store_admins' store.id %}" class="btn btn-sm btn-outline-info">
+                            <i class="fas fa-users"></i> Admins
+                        </a>
+                        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ store.id }}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delete Confirmation Modal -->
+            <div class="modal fade" id="deleteModal{{ store.id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow-lg">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title"><i class="fas fa-exclamation-triangle"></i> Confirm Delete</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body text-center py-4">
+                            <p class="fs-5">Are you sure you want to <strong>permanently delete</strong>?</p>
+                            <h4 class="fw-bold text-danger">{{ store.name }}</h4>
+                            <p class="text-muted">{{ store.city }}</p>
+                            <p class="text-danger small">This will delete all products, leads, banners, and admins linked to this store.</p>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                            <form method="post" action="{% url 'delete_store' store.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger px-5">Yes, Delete Forever</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -38,13 +71,13 @@
     <!-- Pagination -->
     {% if stores.has_other_pages %}
     <nav class="mt-5">
-        <ul class="pagination justify-content-center">
+        <ul class="pagination justify-content-center pagination-lg">
             {% if stores.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page={{ stores.previous_page_number }}">Previous</a></li>
+            <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ stores.previous_page_number }}">Previous</a></li>
             {% endif %}
-            <li class="page-item active"><a class="page-link">{{ stores.number }}</a></li>
+            <li class="page-item active"><a class="page-link rounded-pill">{{ stores.number }}</a></li>
             {% if stores.has_next %}
-            <li class="page-item"><a class="page-link" href="?page={{ stores.next_page_number }}">Next</a></li>
+            <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ stores.next_page_number }}">Next</a></li>
             {% endif %}
         </ul>
     </nav>

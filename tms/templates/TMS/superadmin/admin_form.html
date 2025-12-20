@@ -1,0 +1,21 @@
+{% extends 'TMS/superadmin/base_superadmin.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ title }} for {{ store.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="fw-bold text-primary mb-4">{{ title }} for {{ store.name }}</h2>
+
+    <div class="card shadow-lg rounded-4 p-4">
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success">Save</button>
+                <a href="{% url 'manage_store_admins' store.id %}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
