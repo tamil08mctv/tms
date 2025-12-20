@@ -143,3 +143,15 @@ INFO 2025-12-19 19:18:20,065 superadmin Superuser tamil CREATED store: 'TMS ELEC
 INFO 2025-12-19 19:18:39,261 superadmin Superuser tamil added admin to store 'TMS ELECT'
 INFO 2025-12-19 19:26:32,116 superadmin Superuser tamil DELETED store: 'TMS ELECT' (namakkal)
 INFO 2025-12-20 10:11:07,930 superadmin Superuser tamil exported filtered leads CSV
+INFO 2025-12-20 10:21:56,907 superadmin Superuser tamil added admin to store 'TMS FURNITURES'
+INFO 2025-12-20 10:46:45,909 superadmin Superuser tamil exported filtered leads CSV
+INFO 2025-12-20 14:25:40,636 superadmin Superuser tamil DELETED store: 'TMS Decors' (Bangalore)
+INFO 2025-12-20 14:26:28,545 superadmin Superuser tamil DELETED store: 'TMS TEXTILES' (Trichy)
+INFO 2025-12-20 14:38:01,541 superadmin Superuser tamil updated site settings
+INFO 2025-12-20 14:42:05,644 superadmin Superuser tamil updated site settings
+INFO 2025-12-20 14:56:29,927 superadmin Superuser tamil exported filtered leads CSV
+INFO 2025-12-20 15:11:03,223 superadmin Superuser tamil updated site settings
+INFO 2025-12-20 15:11:28,648 superadmin Superuser tamil updated site settings
+INFO 2025-12-20 15:58:58,128 superadmin Superuser tamil CREATED store: 'TMS ELECT' (CBE)
+INFO 2025-12-20 15:59:51,916 superadmin Superuser tamil added admin to store 'TMS ELECT'
+INFO 2025-12-20 16:00:16,509 superadmin Superuser tamil UPDATED store: 'TMS ELECTRONICS'

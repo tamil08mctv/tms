@@ -4,12 +4,12 @@
 {% block title %}Site Settings{% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="container-fluid mb-3">
     <div class="row justify-content-center">
         <div class="col-12 col-lg-8">
 
             <div class="card border-0 shadow rounded-4">
-                <div class="card-header bg-primary text-white text-center py-4">
+                <div class="card-header bg-primary text-white text-center py-3">
                     <h4 class="fw-bold mb-0">
                         <i class="fas fa-cog me-3"></i>Site Settings
                     </h4>
@@ -21,7 +21,7 @@
                         {% csrf_token %}
 
                         <!-- General Info & Branding -->
-                        <div class="row g-4 mb-4">
+                        <div class="row g-4 mb-2">
                             <div class="col-md-6">
                                 {{ form.site_name|as_crispy_field }}
                                 {{ form.phone|as_crispy_field }}
@@ -33,7 +33,7 @@
                                 <div class="mb-4">
                                     {{ form.logo|as_crispy_field }}
                                     {% if site_settings.logo %}
-                                    <div class="text-center mt-3">
+                                    <div class="text-center mt-1">
                                         <img src="{{ site_settings.logo.url }}" class="img-thumbnail rounded-3 shadow-sm" style="max-height: 140px;">
                                     </div>
                                     {% endif %}
@@ -49,7 +49,7 @@
                             </div>
                         </div>
 
-                        <hr class="my-4">
+                        <hr class="my-3">
 
                         <!-- Social Links with Add Button -->
                         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -62,7 +62,7 @@
                         </div>
 
                         {{ formset.management_form }}
-                        <div class="table-responsive mb-4">
+                        <div class="table-responsive mb-3">
                             <table class="table table-hover align-middle">
                                 <thead class="table-light">
                                     <tr>
@@ -109,7 +109,7 @@
 
                         <!-- Save Button -->
                         <div class="text-center">
-                            <button type="submit" class="btn btn-success px-5 py-3 rounded-pill shadow-sm fw-bold">
+                            <button type="submit" class="btn btn-success px-4 py-3 rounded-pill shadow-sm fw-bold">
                                 <i class="fas fa-save me-2"></i>Save All Changes
                             </button>
                         </div>

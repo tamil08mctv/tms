@@ -12,13 +12,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #f0f2f5 0%, #e0e7ff 100%);
-            margin: 0;
+            display: flex;
+            flex-direction: column;
             min-height: 100vh;
-            padding-top: 80px;
+            padding-top: 80px; /* For fixed navbar */
         }
+
         .navbar-admin {
             background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%) !important;
             backdrop-filter: blur(10px);
@@ -65,10 +71,7 @@
             transform: translateY(-3px) scale(1.05);
             box-shadow: 0 10px 25px rgba(239,68,68,0.6);
         }
-        .main-content {
-            min-height: calc(100vh - 80px);
-            padding: 40px 20px;
-        }
+       
         .card-modern {
             border: none;
             border-radius: 20px;
@@ -86,17 +89,35 @@
             border: none;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
+
+        /* Main content grows to push footer down */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-content > .container-fluid {
+            flex: 1;
+        }
+
+        /* Fixed Footer at Bottom */
         footer {
             background: #1e293b;
             color: #94a3b8;
             padding: 20px 0;
-            margin-top: 50px;
+            text-align: center;
+            font-size: 0.9rem;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            margin-top: auto; /* Key for sticky footer */
         }
+        footer p {
+            margin: 0;
+        }
+
         @media (max-width: 768px) {
             .navbar-brand { font-size: 1.5rem; }
             .nav-link { padding: 8px 15px !important; font-size: 0.9rem; }
             .btn-logout { padding: 8px 20px; font-size: 0.9rem; }
-            .main-content { padding: 20px 15px; }
         }
     </style>
 </head>
@@ -138,17 +159,21 @@
                         </a>
                     </li>
                     
-                    <li class="nav-item">
-                        <a href="{% url 'logout' %}" class="btn btn-logout">
-                            <i class="fas fa-sign-out-alt me-2"></i> Logout
-                        </a>
-                    </li>
+                <li class="nav-item">
+    <form action="{% url 'logout' %}" method="post" class="d-inline" id="logout-form">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-logout border-0" 
+                onclick="return confirm('Are you sure you want to logout?')">
+            <i class="fas fa-sign-out-alt me-2"></i> Logout
+        </button>
+    </form>
+</li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- MAIN CONTENT -->
+    <!-- MAIN CONTENT (Grows to fill space) -->
     <div class="main-content">
         <div class="container-fluid">
             <!-- Messages -->
@@ -156,10 +181,10 @@
                 {% for message in messages %}
                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-4 shadow-sm" role="alert">
                     <strong>
-                        {% if message.tags == 'success' %}✓ Success{% endif %}
-                        {% if message.tags == 'error' %}✗ Error{% endif %}
-                        {% if message.tags == 'warning' %}⚠ Warning{% endif %}
-                        {% if message.tags == 'info' %}ℹ Info{% endif %}
+                        {% if message.tags == 'success' %}Success{% endif %}
+                        {% if message.tags == 'error' %}Error{% endif %}
+                        {% if message.tags == 'warning' %}Warning{% endif %}
+                        {% if message.tags == 'info' %}Info{% endif %}
                     </strong> {{ message }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
@@ -171,8 +196,8 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="text-center">
+    <!-- Sticky Footer – Always at Bottom -->
+    <footer>
         <p class="mb-0">© {% now "Y" %} TMS Furniture • Super Admin Panel • Made with ❤️ in Tamil Nadu</p>
     </footer>
 

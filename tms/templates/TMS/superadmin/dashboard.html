@@ -2,122 +2,215 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="display-6 fw-bold text-primary">Welcome back, {{ user.username }}!</h1>
-        </div>
-        <div class="text-end">
-            <h5>{{ "now"|date:"d M Y" }}</h5>
-        </div>
-    </div>
+<div class="container-fluid py-3">
 
-    <!-- Stats Cards - Single Row -->
-    <div class="row g-4 mb-5">
-        <div class="col-xl-3 col-md-6">
-            <div class="card-modern bg-primary text-white">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h2 class="fw-bold">{{ total_stores }}</h2>
-                            <p class="mb-0 opacity-90">Total Stores</p>
-                        </div>
-                        <i class="fas fa-store fa-3x opacity-50"></i>
-                    </div>
+    <!-- KPI CARDS -->
+    <div class="row g-3 mb-4">
+        <!-- STORES -->
+        <div class="col-6 col-md-3">
+            <div class="kpi-card">
+                <div>
+                    <p class="kpi-label">Total Stores</p>
+                    <h3 class="kpi-value">{{ total_stores }}</h3>
+                </div>
+                <div class="kpi-icon bg-primary-soft">
+                    <i class="fas fa-store"></i>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card-modern bg-success text-white">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h2 class="fw-bold">{{ total_leads }}</h2>
-                            <p class="mb-0 opacity-90">Total Leads</p>
-                        </div>
-                        <i class="fas fa-users fa-3x opacity-50"></i>
-                    </div>
+
+        <!-- LEADS -->
+        <div class="col-6 col-md-3">
+            <div class="kpi-card">
+                <div>
+                    <p class="kpi-label">Leads This Month</p>
+                    <h3 class="kpi-value">{{ this_month_leads }}</h3>
+                </div>
+                <div class="kpi-icon bg-success-soft">
+                    <i class="fas fa-chart-line"></i>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card-modern bg-warning text-white">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h2 class="fw-bold">{{ converted }}</h2>
-                            <p class="mb-0 opacity-90">Converted</p>
-                        </div>
-                        <i class="fas fa-check-circle fa-3x opacity-50"></i>
-                    </div>
+
+        <!-- CONVERTED -->
+        <div class="col-6 col-md-3">
+            <div class="kpi-card">
+                <div>
+                    <p class="kpi-label">Converted</p>
+                    <h3 class="kpi-value">{{ this_month_converted }}</h3>
+                </div>
+                <div class="kpi-icon bg-warning-soft">
+                    <i class="fas fa-check-circle"></i>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card-modern bg-danger text-white">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h2 class="fw-bold">{{ pending }}</h2>
-                            <p class="mb-0 opacity-90">Pending</p>
-                        </div>
-                        <i class="fas fa-clock fa-3x opacity-50"></i>
-                    </div>
+
+        <!-- PENDING -->
+        <div class="col-6 col-md-3">
+            <div class="kpi-card">
+                <div>
+                    <p class="kpi-label">Pending</p>
+                    <h3 class="kpi-value">{{ pending }}</h3>
+                </div>
+                <div class="kpi-icon bg-danger-soft">
+                    <i class="fas fa-clock"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Recent & Top -->
-     <div class="card-modern">
-        <div class="card-body p-5">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="fw-bold text-primary mb-0">Recent Leads (Last 20)</h3>
-                <a href="{% url 'all_leads' %}" class="btn btn-outline-primary rounded-pill">View All Leads →</a>
-            </div>
+    <!-- MAIN CONTENT -->
+    <div class="row g-4">
 
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Date</th>
-                            <th>Store</th>
-                            <th>Customer</th>
-                            <th>Phone</th>
-                            <th>Product</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+        <!-- RECENT LEADS -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center px-4 py-3">
+                    <h5 class="fw-bold mb-0">Recent Leads</h5>
+                    <a href="{% url 'all_leads' %}" class="btn btn-sm btn-outline-primary rounded-pill">
+                        View All
+                    </a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-nowrap">Date</th>
+                                <th class="text-nowrap">Store</th>
+                                <th class="text-nowrap">Customer</th>
+                                <th class="text-nowrap">Phone</th>
+                                <th class="text-center" style="width: 110px;">Status</th> <!-- Fixed width + centered -->
+                            </tr>
+                        </thead>
+                        <tbody>
                         {% for lead in recent_leads %}
-                        <tr>
-                            <td>
-                                <small class="text-muted d-block">{{ lead.created_at|date:"d M Y" }}</small>
-                                <strong>{{ lead.created_at|time:"h:i A" }}</strong>
-                            </td>
-                            <td><span class="badge bg-primary fs-6">{{ lead.store.city }}</span></td>
-                            <td class="fw-bold">{{ lead.customer_name }}</td>
-                            <td><a href="tel:{{ lead.phone }}" class="text-success text-decoration-none fw-bold">{{ lead.phone }}</a></td>
-                            <td>{{ lead.product.name|default:"General" }}</td>
-                            <td>
-                                {% if lead.status == 'converted' %}
-                                    <span class="badge bg-success">Converted</span>
-                                {% elif lead.status == 'contacted' %}
-                                    <span class="badge bg-warning text-dark">Contacted</span>
-                                {% else %}
-                                    <span class="badge bg-danger">New</span>
-                                {% endif %}
-                            </td>
-                        </tr>
+                            <tr>
+                                <td class="text-nowrap">
+                                    <div class="fw-semibold">{{ lead.created_at|date:"d M" }}</div>
+                                    <small class="text-muted">{{ lead.created_at|time:"h:i A" }}</small>
+                                </td>
+                                <td class="text-nowrap">{{ lead.store.name }}</td>
+                                <td class="fw-semibold text-nowrap">{{ lead.customer_name }}</td>
+                                <td class="text-nowrap">
+                                    <a href="tel:{{ lead.phone }}" class="text-decoration-none fw-semibold">
+                                        {{ lead.phone }}
+                                    </a>
+                                </td>
+                                <td class="text-center">
+                                    <span class="status-pill status-{{ lead.status }} text-nowrap">
+                                        {{ lead.get_status_display }}
+                                    </span>
+                                </td>
+                            </tr>
                         {% empty %}
-                        <tr>
-                            <td colspan="6" class="text-center py-5 text-muted fs-5">No leads found</td>
-                        </tr>
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    No recent leads
+                                </td>
+                            </tr>
                         {% endfor %}
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+
+        <!-- TOP STORES -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 px-4 py-3">
+                    <h5 class="fw-bold mb-0">Top Performing Stores</h5>
+                </div>
+                <div class="card-body px-4">
+                    {% for store in top_stores %}
+                    <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
+                        <div>
+                            <div class="fw-semibold">{{ store.name }}</div>
+                            <small class="text-muted">{{ store.city }}</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="fw-bold text-primary">{{ store.lead_count }}</span>
+                            <small class="text-muted d-block">leads</small>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-5 text-muted">
+                        No data available
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
+
+<style>
+/* KPI CARDS */
+.kpi-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+    transition: all 0.25s ease;
+}
+.kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+}
+.kpi-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 4px;
+}
+.kpi-value {
+    margin: 0;
+    font-weight: 700;
+}
+.kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+.bg-primary-soft { background: #e7f1ff; color: #0d6efd; }
+.bg-success-soft { background: #e6f4ea; color: #198754; }
+.bg-warning-soft { background: #fff3cd; color: #856404; }
+.bg-danger-soft  { background: #fdecea; color: #dc3545; }
+
+/* STATUS PILLS – Compact & Stable */
+.status-pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-width: 80px;
+    max-width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.status-new { background: #fff3cd; color: #856404; }
+.status-contacted { background: #e7f1ff; color: #084298; }
+.status-converted { background: #e6f4ea; color: #0f5132; }
+.status-just_enquiry { background: #f8f9fa; color: #495057; }
+
+/* Prevent Any Column Breaking */
+.table th, .table td {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.table th.text-center, .table td.text-center {
+    white-space: nowrap;
+}
+</style>
 {% endblock %}

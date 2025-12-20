@@ -92,3 +92,14 @@ INFO 2025-12-19 18:11:24,942 storeadmin Leads CSV exported | Store: TMS FURNITUR
 INFO 2025-12-19 18:29:17,216 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
 INFO 2025-12-19 18:29:25,372 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
 INFO 2025-12-19 19:19:09,704 storeadmin Dashboard accessed | Store: TMS ELECT | User: tamilmctv | IP: 127.0.0.1
+INFO 2025-12-20 10:23:02,140 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-20 16:13:28,424 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-20 16:13:36,011 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-20 16:13:45,034 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-20 16:14:18,219 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-20 16:14:28,526 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-20 16:15:41,879 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-20 16:15:56,072 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-20 16:15:57,354 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-20 16:16:16,048 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-20 16:16:39,905 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1

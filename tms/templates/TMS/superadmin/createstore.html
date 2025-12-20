@@ -1,124 +1,75 @@
 {% extends 'TMS/superadmin/base_superadmin.html' %}
 {% load crispy_forms_tags %}
-
-{% block title %}
-    {% if store %}Edit Store - {{ store.name }}{% else %}Create New Store{% endif %}
-{% endblock %}
+{% block title %}{% if store %}Edit Store{% else %}Create Store{% endif %}{% endblock %}
 
 {% block content %}
-<div class="container py-2">
+<div class="container-fluid ">
     <div class="row justify-content-center">
         <div class="col-12 col-lg-10 col-xl-8">
-
-            <!-- Header -->
-            <div class="text-center mb-3">
-                <h1 class="display-5 fw-bold text-primary mb-3">
+            <div class="text-center mb-2">
+                <h2 class="display-6 fw-bold text-dark">
                     {% if store %}Edit Store{% else %}Create New Showroom{% endif %}
-                </h1>
-                {% if store %}
-                <p class="text-muted fs-5">
-                    <i class="fas fa-store"></i> {{ store.name }} • {{ store.city }}
-                </p>
-                {% else %}
-                <p class="text-muted lead">Launch a new showroom in 2 minutes</p>
-                {% endif %}
+                </h2>
+                <p class="text-muted lead">{% if store %}{{ store.name }} • {{ store.city }}{% else %}Setup in minutes{% endif %}</p>
             </div>
 
-            <!-- Clean & Compact Card -->
-            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-                <div class="card-header bg-primary text-white text-center py-4">
-                    <h3 class="mb-0 fw-bold">
-                        {% if store %}Update Store Details{% else %}Setup New Store{% endif %}
-                    </h3>
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-header bg-gradient-primary text-white py-3 text-center">
+                    <h4 class="mb-0 fw-bold">Store Details</h4>
                 </div>
-
-                <div class="card-body p-3">
+                <div class="card-body p-3 p-lg-5">
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
-
-                        <!-- Store Info -->
-                        <div class="row g-4 mb-4">
-                            <div class="col-md-6">
-                                {{ form.name|as_crispy_field }}
-                            </div>
-                            <div class="col-md-6">
-                                {{ form.city|as_crispy_field }}
-                            </div>
-                            <div class="col-12">
-                                {{ form.address|as_crispy_field }}
-                            </div>
-                        </div>
-
-                        <div class="row g-4 mb-4">
-                            <div class="col-md-4">
-                                {{ form.phone|as_crispy_field }}
-                            </div>
-                            <div class="col-md-4">
-                                {{ form.whatsapp|as_crispy_field }}
-                            </div>
-                            <div class="col-md-4">
-                                {{ form.email|as_crispy_field }}
-                            </div>
-                        </div>
-
-                        <div class="row g-4 mb-4">
-                            <div class="col-md-8">
-                                {{ form.working_hours|as_crispy_field }}
-                            </div>
-                            <div class="col-md-4 d-flex align-items-end">
+                        <div class="row g-2">
+                            <div class="col-md-6">{{ form.name|as_crispy_field }}</div>
+                            <div class="col-md-6">{{ form.city|as_crispy_field }}</div>
+                            <div class="col-12">{{ form.address|as_crispy_field }}</div>
+                            <div class="col-md-3">{{ form.phone|as_crispy_field }}</div>
+                            <div class="col-md-3">{{ form.whatsapp|as_crispy_field }}</div>
+                            <div class="col-md-6">{{ form.email|as_crispy_field }}</div>
+                            <div class="col-md-8">{{ form.working_hours|as_crispy_field }}</div>
+                            <div class="col-md-4 d-flex align-items-end justify-content-end">
                                 <div class="form-check form-switch">
                                     {{ form.is_active }}
-                                    <label class="form-check-label fw-bold ms-3 text-success">Store Active</label>
+                                    <label class="form-check-label fw-bold text-success ms-2">Active Store</label>
                                 </div>
                             </div>
                         </div>
 
-                        <hr class="my-4">
+                        <hr class="my-3">
 
-                        <!-- Social Links -->
-                        <h5 class="fw-bold text-primary mb-3">Social Media & Map</h5>
-                        <div class="row g-4 mb-4">
+                        <h5 class="fw-bold text-primary mb-4">Social & Location</h5>
+                        <div class="row g-4">
                             <div class="col-md-6">{{ form.facebook|as_crispy_field }}</div>
                             <div class="col-md-6">{{ form.instagram|as_crispy_field }}</div>
                             <div class="col-md-6">{{ form.youtube|as_crispy_field }}</div>
                             <div class="col-md-6">{{ form.map_link|as_crispy_field }}</div>
                         </div>
 
-                        <hr class="my-4">
+                        <hr class="my-3">
 
-                        <!-- Logo Upload -->
                         <h5 class="fw-bold text-primary mb-3">Store Logo</h5>
-                        <div class="row g-4 mb-4">
-                            <div class="col-md-6">
-                                {{ form.logo|as_crispy_field }}
-                                {% if store.logo %}
-                                <div class="mt-3 text-center">
-                                    <img src="{{ store.logo.url }}" class="img-thumbnail rounded-4" style="max-height: 100px;">
-                                    <p class="small text-success mt-2">Current Logo</p>
-                                </div>
-                                {% endif %}
+                        <div class="row g-3">
+                            <div class="col-md-8">{{ form.logo|as_crispy_field }}</div>
+                            {% if store.logo %}
+                            <div class="col-md-4 text-center">
+                                <img src="{{ store.logo.url }}" class="img-thumbnail rounded-4 shadow-sm" style="max-height: 140px;">
+                                <p class="small text-success mt-2">Current Logo</p>
                             </div>
+                            {% endif %}
                         </div>
 
-                        <!-- Current Admins (On Edit) -->
                         {% if store %}
-                        <hr class="my-4">
-                        <div class="bg-info bg-opacity-10 rounded-4 p-4 border border-info">
-                            <h5 class="fw-bold text-primary mb-3">Current Admin(s)</h5>
-                            {% for admin in store.store_admins.all %}
-                                <span class="badge bg-primary fs-6 me-2 mb-2">{{ admin.user.username }}</span>
-                            {% empty %}
-                                <p class="text-muted mb-0">No admin assigned - Add from Manage Admins</p>
-                            {% endfor %}
+                        <div class="alert alert-info rounded-4">
+                            <strong>Admins:</strong> Manage from <a href="{% url 'manage_store_admins' store.id %}">Admins Panel</a>
                         </div>
                         {% endif %}
 
-                        <!-- Submit Button -->
-                        <div class="text-center mt-3">
-                            <button type="submit" class="btn btn-success btn-lg px-5 py-3 rounded-pill shadow-lg fw-bold">
+                        <div class="text-center ">
+                            <button type="submit" class="btn btn-success btn-lg px-5 rounded-pill shadow">
                                 {% if store %}Update Store{% else %}Create Store{% endif %}
                             </button>
-                            <a href="{% url 'store_list_super' %}" class="btn btn-outline-secondary btn-lg px-5 py-3 rounded-pill ms-3">
+                            <a href="{% url 'store_list_super' %}" class="btn btn-outline-secondary btn-lg px-5 rounded-pill ms-3">
                                 Cancel
                             </a>
                         </div>
@@ -129,30 +80,17 @@
     </div>
 </div>
 
-<!-- Clean Styling -->
 <style>
-    .card {
-        border-radius: 20px !important;
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #007bff, #0056b3);
     }
     .form-control, .form-select {
         border-radius: 12px;
         padding: 0.75rem 1rem;
-        border: 2px solid #e0e0e0;
     }
     .form-control:focus {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-    }
-    .form-check-input:checked {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-    }
-    .btn {
-        border-radius: 12px !important;
-    }
-    @media (max-width: 768px) {
-        .display-5 { font-size: 2rem; }
-        .btn-lg { padding: 0.75rem 1.5rem; font-size: 1rem; }
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.25rem rgba(0,123,255,.25);
     }
 </style>
 {% endblock %}

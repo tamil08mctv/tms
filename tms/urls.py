@@ -67,6 +67,9 @@ urlpatterns = [
 
     # ==================== AUTH ====================
     path('login/', auth_views.LoginView.as_view(template_name='TMS/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name='TMS/login.html'), name='logout'),
+    path('logout/', auth_views.LogoutView.as_view(
+    template_name='TMS/login.html',
+    next_page='login'  # ← This forces redirect to /login/ URL
+), name='logout'),
     path('login-redirect/', login_redirect, name='login_redirect'),
 ]

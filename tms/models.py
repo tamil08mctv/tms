@@ -238,6 +238,13 @@ class Lead(models.Model):
                 return label
         return self.status
     
+    class Meta:
+        indexes = [
+            models.Index(fields=['-created_at']),
+            models.Index(fields=['status']),
+            models.Index(fields=['store']),
+        ]
+    
 
 class SiteSettings(models.Model):
     SOCIAL_CHOICES = [('facebook','Facebook'),('instagram','Instagram'),('youtube','YouTube'),('twitter','Twitter'),('whatsapp','WhatsApp'),('linkedin','LinkedIn'),('tiktok','TikTok')]

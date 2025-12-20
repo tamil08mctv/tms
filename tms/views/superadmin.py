@@ -25,7 +25,7 @@ from django.core.paginator import Paginator
 @superuser_required
 def store_list_super(request):
     
-    store_list = Store.objects.prefetch_related('store_admins__user').all().order_by('-id')
+    store_list = Store.objects.prefetch_related('store_admins__user').all().order_by('name')
     paginator = Paginator(store_list, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -124,10 +124,10 @@ def toggle_store(request, pk):
 
 @superuser_required
 def all_leads(request):
-    
     leads = Lead.objects.select_related('store', 'product').order_by('-created_at')
     stores = Store.objects.all()
 
+    # Filters
     store_filter = request.GET.get('store')
     from_date = request.GET.get('from')
     to_date = request.GET.get('to')
@@ -150,8 +150,13 @@ def all_leads(request):
     if status_filter:
         leads = leads.filter(status=status_filter)
 
+    # === PAGINATION ADDED HERE ===
+    paginator = Paginator(leads, 100)  # 100 leads per page – fast & clean
+    page_number = request.GET.get('page')
+    leads_page = paginator.get_page(page_number)
+
     context = {
-        'leads': leads,
+        'leads': leads_page,  # Now paginated!
         'stores': stores,
         'current_store': store_filter,
         'from_date': from_date,
@@ -195,7 +200,7 @@ def export_all_leads(request):
     response['Content-Disposition'] = f'attachment; filename="{filename}.csv"'
 
     writer = csv.writer(response)
-    writer.writerow(['Date', 'Store', 'Customer', 'Phone', 'Product', 'Status', 'Source'])
+    writer.writerow(['Date', 'Store', 'Customer', 'Phone','City', 'Product', 'Status', 'Source'])
 
     for lead in leads:
         writer.writerow([
@@ -203,6 +208,7 @@ def export_all_leads(request):
             lead.store.name,
             lead.customer_name,
             lead.phone,
+            lead.city,
             lead.product.name if lead.product else 'General',
             lead.get_status_display(),
             lead.source

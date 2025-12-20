@@ -384,7 +384,7 @@ def product_detail(request, store_slug, product_slug):
                 customer_name=name,
                 phone=phone_input,
                 city=form.cleaned_data['city'],
-                source='whatsapp_form'
+                source='website_form'
             )
             request.session[session_key] = True
             request.session.modified = True
