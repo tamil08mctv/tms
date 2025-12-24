@@ -1,4 +1,4 @@
-# tms/models.py → FINAL: WITH is_active FOR ADMINS
+# tms/models.py → FINAL: HYBRID FAST WEBP CONVERSION (INSTANT UI + BACKGROUND OPTIMIZATION)
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -6,53 +6,107 @@ from django.utils.text import slugify
 from datetime import date
 import uuid
 import os
+import threading
+from PIL import Image as PILImage
+from io import BytesIO
+from django.core.files.base import ContentFile
 
-# NEW: For trigram (typo tolerance) and full-text search
+# For search
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 
-# ======================= HELPER: SAFE FILENAME =======================
+
+# ======================= SAFE FILENAME =======================
 def safe_filename(filename):
     name, ext = os.path.splitext(filename)
-    ext = ext.lower()
-    return f"{slugify(name)[:50]}{ext}"
+    return f"{slugify(name)[:50]}{ext.lower()}"
 
-# ======================= UPLOAD PATHS =======================
+
+# ======================= UPLOAD PATHS (FORCE .WEBP) =======================
 def store_logo_path(instance, filename):
-    ext = os.path.splitext(filename)[1].lower()
-    return f"{instance.slug}/logos/logo{ext}"
+    name = os.path.splitext(safe_filename(filename))[0]
+    return f"{instance.slug}/logos/{name}.webp"
 
 def category_image_path(instance, filename):
-    ext = os.path.splitext(filename)[1].lower()
-    safe_name = safe_filename(filename)
-    return f"{instance.store.slug}/categories/{safe_name}"
+    name = os.path.splitext(safe_filename(filename))[0]
+    return f"{instance.store.slug}/categories/{name}.webp"
 
 def product_video_path(instance, filename):
-    ext = os.path.splitext(filename)[1].lower()
-    safe_name = safe_filename(filename)
-    return f"{instance.store.slug}/products/{instance.slug}/videos/{safe_name}"
+    return f"{instance.store.slug}/products/{instance.slug}/videos/{safe_filename(filename)}"
 
 def product_image_path(instance, filename):
-    ext = os.path.splitext(filename)[1].lower()
-    safe_name = safe_filename(filename)
-    return f"{instance.product.store.slug}/products/{instance.product.slug}/{safe_name}"
+    name = os.path.splitext(safe_filename(filename))[0]
+    return f"{instance.product.store.slug}/products/{instance.product.slug}/{name}.webp"
 
 def banner_desktop_path(instance, filename):
-    ext = os.path.splitext(filename)[1].lower()
-    safe_name = safe_filename(filename)
-    return f"{instance.store.slug}/banners/desktop/{safe_name}"
+    name = os.path.splitext(safe_filename(filename))[0]
+    return f"{instance.store.slug}/banners/desktop/{name}.webp"
 
 def banner_tablet_path(instance, filename):
-    ext = os.path.splitext(filename)[1].lower()
-    safe_name = safe_filename(filename)
-    return f"{instance.store.slug}/banners/tablet/{safe_name}"
+    name = os.path.splitext(safe_filename(filename))[0]
+    return f"{instance.store.slug}/banners/tablet/{name}.webp"
 
 def banner_mobile_path(instance, filename):
-    ext = os.path.splitext(filename)[1].lower()
-    safe_name = safe_filename(filename)
-    return f"{instance.store.slug}/banners/mobile/{safe_name}"
+    name = os.path.splitext(safe_filename(filename))[0]
+    return f"{instance.store.slug}/banners/mobile/{name}.webp"
 
 
+# ======================= WEBP CONVERSION =======================
+def convert_to_webp_and_compress(image_field):
+    if not image_field:
+        return image_field
+
+    try:
+        pil_image = PILImage.open(image_field)
+
+        # Handle transparency
+        if pil_image.mode in ('RGBA', 'LA', 'P'):
+            background = PILImage.new('RGB', pil_image.size, (255, 255, 255))
+            if pil_image.mode == 'P':
+                pil_image = pil_image.convert('RGBA')
+            background.paste(pil_image, mask=pil_image.split()[-1] if pil_image.mode == 'RGBA' else None)
+            pil_image = background
+        elif pil_image.mode != 'RGB':
+            pil_image = pil_image.convert('RGB')
+
+        buffer = BytesIO()
+        pil_image.save(buffer, format='WEBP', quality=85, method=6, lossless=False)
+
+        new_filename = os.path.splitext(image_field.name)[0] + '.webp'
+        return ContentFile(buffer.getvalue(), name=new_filename)
+
+    except Exception as e:
+        print(f"WebP conversion failed: {e}")
+        return image_field  # Fallback: keep original
+
+
+# ======================= BACKGROUND CONVERSION (INSTANT UI) =======================
+from django.db import transaction  # ← Add this import at the top if not already there
+
+# ======================= BACKGROUND CONVERSION (PRODUCTION-SAFE) =======================
+def async_webp_convert(instance, field_names):
+    """Convert images in background thread — SAFE for production (Gunicorn/uWSGI)"""
+    def _convert():
+        try:
+            updated_fields = []
+            for field_name in field_names:
+                image_field = getattr(instance, field_name)
+                if image_field and image_field.name and not image_field.name.lower().endswith('.webp'):
+                    new_image = convert_to_webp_and_compress(image_field)
+                    if new_image and new_image != image_field:
+                        # Delete old raw file safely
+                        if image_field.storage.exists(image_field.name):
+                            image_field.storage.delete(image_field.name)
+                        setattr(instance, field_name, new_image)
+                        updated_fields.append(field_name)
+            if updated_fields:
+                instance.save(update_fields=updated_fields)
+        except Exception as e:
+            print(f"Async WebP conversion failed: {e}")
+
+    # Critical fix: Run only after DB transaction commits
+    transaction.on_commit(lambda: threading.Thread(target=_convert, daemon=True).start())
+    
 # ======================= MODELS =======================
 class Store(models.Model):
     name = models.CharField(max_length=200)
@@ -81,7 +135,11 @@ class Store(models.Model):
                 slug = f"{base}-{i}"
                 i += 1
             self.slug = slug
+
         super().save(*args, **kwargs)
+
+        if self.logo:
+            async_webp_convert(self, ['logo'])
 
     def __str__(self):
         return self.name
@@ -90,10 +148,10 @@ class Store(models.Model):
 class StoreAdmin(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='store_admins')
-    is_active = models.BooleanField(default=True)  # ← NEW: For enable/disable
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.user.username} → {self.store.name} ({'Active' if self.is_active else 'Disabled'})"
+        return f"{self.user.username} → {self.store.name}"
 
 
 class Category(models.Model):
@@ -111,7 +169,11 @@ class Category(models.Model):
                 slug = f"{base}-{i}"
                 i += 1
             self.slug = slug
+
         super().save(*args, **kwargs)
+
+        if self.image:
+            async_webp_convert(self, ['image'])
 
     def __str__(self):
         return f"{self.store.name} - {self.name}"
@@ -139,18 +201,19 @@ class Product(models.Model):
     views_count = models.PositiveIntegerField(default=0)
     enquiry_count = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
-
-    # NEW: For full-text search (optional future upgrade)
     search_vector = SearchVectorField(null=True, blank=True)
 
     class Meta:
         indexes = [
-            # Trigram indexes for typo tolerance (soofa → sofa)
             GinIndex(name='name_trgm_idx', fields=['name'], opclasses=['gin_trgm_ops']),
             GinIndex(name='short_desc_trgm_idx', fields=['short_desc'], opclasses=['gin_trgm_ops']),
-            # Full-text GIN index (when you enable search_vector)
             GinIndex(fields=['search_vector'], name='product_search_gin'),
-            models.Index(fields=['store']),
+            models.Index(fields=['store', 'is_featured', 'is_best_seller']),
+            models.Index(fields=['store', 'deal_end_date']),
+            models.Index(fields=['store', 'created_at']),
+            models.Index(fields=['store', 'category']),
+            models.Index(fields=['store', 'in_stock', 'is_featured']),
+            models.Index(fields=['store', 'created_at', 'is_new_arrival']),
         ]
 
     def save(self, *args, **kwargs):
@@ -162,45 +225,49 @@ class Product(models.Model):
                 slug = f"{base}-{i}"
                 i += 1
             self.slug = slug
+
         if self.regular_price and self.offer_price and self.offer_price < self.regular_price:
             discount = ((self.regular_price - self.offer_price) / self.regular_price) * 100
-            self.discount_percent = int(discount)
+            self.discount_percent = max(0, int(discount))
         else:
             self.discount_percent = None
+
         super().save(*args, **kwargs)
-
-    def is_deal_active(self):
-        return self.deal_end_date and self.deal_end_date >= date.today()
-
-    def get_price_display(self):
-        if self.offer_price:
-            prefix = "Deal Price: " if self.is_deal_active() else ""
-            return f"{prefix}₹{self.offer_price:,.0f}"
-        return "Call for Best Price"
 
     def __str__(self):
         return f"{self.name} - {self.store.name}"
 
 
-# Rest of models unchanged (ProductSpecification, ProductImage, etc.)
 class ProductSpecification(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='specifications')
     name = models.CharField(max_length=200)
     value = models.CharField(max_length=500)
+
     def __str__(self):
         return f"{self.name}: {self.value}"
+
     class Meta:
         ordering = ['id']
+
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to=product_image_path)
     is_main = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if self.image:
+            async_webp_convert(self, ['image'])
+
     class Meta:
         ordering = ['sort_order', 'id']
+
     def __str__(self):
         return f"Image - {self.product.name}"
+
 
 class StoreBanner(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='banners')
@@ -212,10 +279,26 @@ class StoreBanner(models.Model):
     is_active = models.BooleanField(default=True)
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        fields_to_convert = []
+        for field in ['image_desktop', 'image_tablet', 'image_mobile']:
+            image = getattr(self, field)
+            if image:
+                fields_to_convert.append(field)
+
+        if fields_to_convert:
+            async_webp_convert(self, fields_to_convert)
+
     class Meta:
         ordering = ['order', '-created_at']
+        indexes = [models.Index(fields=['store', 'is_active', 'order'])]
+
     def __str__(self):
         return f"{self.store.name} - Banner"
+
 
 class Lead(models.Model):
     STATUS_CHOICES = [('new','New Enquiry'),('contacted','Contacted'),('Converted','Converted'),('Just Enquiry','Just Enquiry')]
@@ -229,22 +312,19 @@ class Lead(models.Model):
     source = models.CharField(max_length=20, default='form')
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
         return f"{self.customer_name} → {self.store.name}"
-    
+
     def get_status_display(self):
-        for val, label in self.STATUS_CHOICES:
-            if val == self.status:
-                return label
-        return self.status
-    
+        return dict(self.STATUS_CHOICES).get(self.status, self.status)
+
     class Meta:
         indexes = [
             models.Index(fields=['-created_at']),
-            models.Index(fields=['status']),
-            models.Index(fields=['store']),
+            models.Index(fields=['status', 'store']),
         ]
-    
+
 
 class SiteSettings(models.Model):
     SOCIAL_CHOICES = [('facebook','Facebook'),('instagram','Instagram'),('youtube','YouTube'),('twitter','Twitter'),('whatsapp','WhatsApp'),('linkedin','LinkedIn'),('tiktok','TikTok')]
@@ -255,20 +335,36 @@ class SiteSettings(models.Model):
     email = models.EmailField(default="info@tmsfurnitures.com")
     address = models.TextField(default="Tamil Nadu's Most Trusted and Premium Brand")
     copyright_text = models.CharField(max_length=200, default="TMS Furniture | All rights reserved")
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        fields = []
+        if self.logo: fields.append('logo')
+        if self.favicon: fields.append('favicon')
+
+        if fields:
+            async_webp_convert(self, fields)
+
     def __str__(self):
         return "Site Settings"
+
     class Meta:
         verbose_name_plural = "Site Settings"
+
 
 class SocialLink(models.Model):
     settings = models.ForeignKey(SiteSettings, on_delete=models.CASCADE, related_name='social_links')
     platform = models.CharField(max_length=20, choices=SiteSettings.SOCIAL_CHOICES)
     url = models.URLField(max_length=500)
     order = models.PositiveIntegerField(default=0)
+
     class Meta:
         ordering = ['order']
+
     def __str__(self):
-        return f"{self.get_platform_display()}"
+        return self.get_platform_display()
+
     def get_icon_class(self):
         icons = {
             'facebook': 'fab fa-facebook-f', 'instagram': 'fab fa-instagram',

@@ -4,134 +4,203 @@
 {% block title %}Dashboard - {{ store.name }}{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
+<div class="container-fluid py-3">
 
-    <!-- STATS CARDS -->
-    <div class="row g-4 mb-5">
+    <!-- Page Header -->
+    <div class="row mb-2">
+        <div class="col-12">
+            <h1 class="h3 fw-bold text-dark mb-1">Welcome back, {{ request.user.username }}!</h1>
+            <p class="text-muted">Here's what's happening with your store today.</p>
+        </div>
+    </div>
+
+    <!-- KPI Stats Cards – Modern & Clean -->
+    <div class="row g-3 mb-3">
         <div class="col-6 col-md-3">
-            <div class="card border-0 shadow-lg rounded-4 text-white" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-users fa-3x mb-3 opacity-75"></i>
-                    <h2 class="fw-bold mb-0">{{ total_leads }}</h2>
-                    <p class="mb-0 fs-5">Total Leads</p>
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted small mb-1 text-uppercase fw-semibold">Total Leads</p>
+                            <h3 class="fw-bold mb-0">{{ total_leads }}</h3>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-4 p-3">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
         <div class="col-6 col-md-3">
-            <div class="card border-0 shadow-lg rounded-4 text-white" style="background: linear-gradient(135deg, #10b981, #059669);">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-calendar-day fa-3x mb-3 opacity-75"></i>
-                    <h2 class="fw-bold mb-0">{{ today_leads }}</h2>
-                    <p class="mb-0 fs-5">Today's Leads</p>
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted small mb-1 text-uppercase fw-semibold">Today's Leads</p>
+                            <h3 class="fw-bold mb-0">{{ today_leads }}</h3>
+                        </div>
+                        <div class="bg-success bg-opacity-10 text-success rounded-4 p-3">
+                            <i class="fas fa-calendar-day fa-2x"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
         <div class="col-6 col-md-3">
-            <div class="card border-0 shadow-lg rounded-4 text-white" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-bell fa-3x mb-3 opacity-75"></i>
-                    <h2 class="fw-bold mb-0">{{ new_leads }}</h2>
-                    <p class="mb-0 fs-5">New Leads</p>
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted small mb-1 text-uppercase fw-semibold">Pending Leads</p>
+                            <h3 class="fw-bold mb-0">{{ new_leads }}</h3>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 text-warning rounded-4 p-3">
+                            <i class="fas fa-bell fa-2x"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
         <div class="col-6 col-md-3">
-            <div class="card border-0 shadow-lg rounded-4 text-white" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-check-circle fa-3x mb-3 opacity-75"></i>
-                    <h2 class="fw-bold mb-0">{{ converted }}</h2>
-                    <p class="mb-0 fs-5">Converted</p>
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted small mb-1 text-uppercase fw-semibold">Converted</p>
+                            <h3 class="fw-bold mb-0">{{ converted }}</h3>
+                        </div>
+                        <div class="bg-info bg-opacity-10 text-info rounded-4 p-3">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- QUICK ACTIONS -->
-    <div class="row g-4 mb-5 ">
-        <div class="col-md-4">
+  
+    <!-- Quick Actions -->
+    <div class="row g-4 mb-3">
+        <div class="col-md-6 col-lg-4">
             <a href="{% url 'store_products' %}" class="text-decoration-none">
-                <div class="card border-0 shadow hover-lift rounded-4 text-center p-4 bg-white">
-                    <i class="fas fa-couch fa-4x text-success mb-3"></i>
-                    <h5 class="fw-bold">Manage Products</h5>
-                    <small class="text-muted">{{ store.products.count }} products live</small>
+                <div class="card border-0 shadow-sm rounded-4 h-100 hover-lift bg-white">
+                    <div class="card-body text-center p-5">
+                        <i class="fas fa-couch fa-4x text-primary mb-4 opacity-75"></i>
+                        <h5 class="fw-bold text-dark">Manage Products</h5>
+                        <p class="text-muted">{{ store.products.count }} products active</p>
+                    </div>
                 </div>
             </a>
         </div>
-        <div class="col-md-4">
+
+        <div class="col-md-6 col-lg-4">
             <a href="{% url 'store_leads' %}" class="text-decoration-none">
-                <div class="card border-0 shadow hover-lift rounded-4 text-center p-4 bg-white">
-                    <i class="fas fa-headphones fa-4x text-primary mb-3"></i>
-                    <h5 class="fw-bold">View All Leads</h5>
-                    <small class="text-muted">Click to filter & export</small>
+                <div class="card border-0 shadow-sm rounded-4 h-100 hover-lift bg-white">
+                    <div class="card-body text-center p-5">
+                        <i class="fas fa-headphones fa-4x text-success mb-4 opacity-75"></i>
+                        <h5 class="fw-bold text-dark">View All Leads</h5>
+                        <p class="text-muted">Filter, export & manage enquiries</p>
+                    </div>
                 </div>
             </a>
         </div>
-      
+
+        <div class="col-md-12 col-lg-4">
+            <a href="{% url 'store_banners' %}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm rounded-4 h-100 hover-lift bg-white">
+                    <div class="card-body text-center p-5">
+                        <i class="fas fa-images fa-4x text-info mb-4 opacity-75"></i>
+                        <h5 class="fw-bold text-dark">Manage Banners</h5>
+                        <p class="text-muted">Update homepage sliders</p>
+                    </div>
+                </div>
+            </a>
+        </div>
     </div>
 
-    <!-- RECENT LEADS TABLE -->
-    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-        <div class="card-header bg-success text-white py-4">
-            <h4 class="mb-0 fw-bold"><i class="fas fa-clock"></i> Recent Leads (Last 10)</h4>
+    <!-- Recent Leads Table -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-white border-0 py-4 d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="fw-bold mb-0">Recent Leads</h5>
+                <small class="text-muted">Last 10 enquiries</small>
+            </div>
+            <a href="{% url 'store_leads' %}" class="btn btn-outline-primary btn-sm rounded-pill">
+                View All →
+            </a>
         </div>
         <div class="table-responsive">
             <table class="table table-hover mb-0 align-middle">
-                <thead class="table-light">
+                <thead class="bg-light">
                     <tr>
-                        <th>Date & Time</th>
+                        <th class="ps-4">Date</th>
                         <th>Customer</th>
                         <th>Phone</th>
+                        <th>Place</th>
                         <th>Product</th>
                         <th>Status</th>
-                        <th>Action</th>
+                        <th class="text-end pe-4">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                 {% for lead in recent_leads %}
                 <tr>
-                    <td><small>{{ lead.created_at|date:"d M" }}</small><br>{{ lead.created_at|time:"h:i A" }}</td>
-                    <td><strong>{{ lead.customer_name }}</strong></td>
+                    <td class="ps-4">
+                        <div class="small fw-semibold">{{ lead.created_at|date:"d M" }}</div>
+                        <small class="text-muted">{{ lead.created_at|time:"h:i A" }}</small>
+                    </td>
+                    <td class="fw-semibold">{{ lead.customer_name }}</td>
                     <td>
                         <a href="tel:{{ lead.phone }}" class="text-decoration-none">{{ lead.phone }}</a>
                     </td>
-                    <td>{{ lead.product.name|default:"<em>General Enquiry</em>"|safe }}</td>
+                    <td >{{ lead.city}}</td>
+                    <td>{{ lead.product.name|default:"General Enquiry" }}</td>
                     <td>
-                        <span class="badge 
-                            {% if lead.status == 'new' %}bg-danger
+                        <span class="badge rounded-pill px-3 py-2
+                            {% if lead.status == 'new' %}bg-danger text-white
                             {% elif lead.status == 'contacted' %}bg-warning text-dark
-                            {% elif lead.status == 'converted' %}bg-success
-                            {% else %}bg-secondary{% endif %} px-3 py-2">
+                            {% elif lead.status == 'converted' %}bg-success text-white
+                            {% else %}bg-secondary text-white{% endif %}">
                             {{ lead.get_status_display }}
                         </span>
                     </td>
-                    <td>
-                        <a href="https://wa.me/91{{ lead.phone }}?text=Hi {{ lead.customer_name|urlencode }}! Thanks for your enquiry about {{ lead.product.name|default:'our products'|urlencode }}. How can we help you today?" 
-                           target="_blank" class="btn btn-success btn-sm px-3">
-                            <i class="fab fa-whatsapp"></i> Chat
+                    <td class="text-end pe-4">
+                        <a href="https://wa.me/91{{ lead.phone }}?text=Hi {{ lead.customer_name|urlencode }}! Thanks for your enquiry." 
+                           target="_blank" class="btn btn-success btn-sm rounded-pill px-3">
+                            <i class="fab fa-whatsapp me-1"></i> Chat
                         </a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
                     <td colspan="6" class="text-center py-5 text-muted">
-                        <i class="fas fa-inbox fa-3x mb-3"></i><br>
-                        No leads yet. Share your store link!
+                        <i class="fas fa-inbox fa-3x mb-3 opacity-50"></i><br>
+                        No leads yet — promote your store!
                     </td>
                 </tr>
                 {% endfor %}
                 </tbody>
             </table>
         </div>
-        <div class="card-footer bg-light text-center">
-            <a href="{% url 'store_leads' %}" class="btn btn-outline-success btn-lg px-5 fw-bold">
-                View All Leads →
-            </a>
-        </div>
     </div>
 </div>
 
+
 <style>
-    .hover-lift { transition: all 0.3s ease; }
-    .hover-lift:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.15)!important; }
+    /* Subtle hover lift */
+    .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .hover-lift:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.12) !important;
+    }
+    /* Clean card styling */
+    .card {
+        transition: all 0.3s ease;
+    }
 </style>
 {% endblock %}

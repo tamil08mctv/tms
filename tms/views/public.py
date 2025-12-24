@@ -1,12 +1,11 @@
 # tms/views/public.py → FINAL: FLIPKART/AMAZON LEVEL TYPO TOLERANCE + 10 LAKH+ READY
-
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q, F, Exists, OuterRef
 from ..models import Store, Product, Category, Lead, StoreBanner, SiteSettings, ProductSpecification
 from ..forms import EnquiryForm
-import urllib.parse
 from datetime import date
+from datetime import date, timedelta
 from django.db.models import Count
 from django.utils import timezone
 from django.db.models.functions import Coalesce
@@ -32,8 +31,7 @@ def get_common_context():
 
 def home(request):
     client_ip = request.META.get('REMOTE_ADDR', 'unknown')
-    user = request.user.username if request.user.is_authenticated else 'Anonymous'
-    public_logger.info(f"Home page accessed | IP: {client_ip} | User: {user}")
+   
 
     context = get_common_context()
     today = date.today()
@@ -264,7 +262,7 @@ def store_list(request):
         stores = stores.filter(city__iexact=city)
     
     context.update({
-        'stores': Paginator(stores, 12).get_page(request.GET.get('page')),
+        'stores': Paginator(stores, 20).get_page(request.GET.get('page')),
         'cities': Store.objects.values_list('city', flat=True).distinct(),
         'query': query,
         'selected_city': city
@@ -389,7 +387,16 @@ def product_detail(request, store_slug, product_slug):
             request.session[session_key] = True
             request.session.modified = True
 
-            public_logger.info(f"NEW LEAD | Name: {name} | Phone: {phone_input} | Product: {product.name} | Store: {product.store.name} | IP: {client_ip}")
+           # NEW:
+            public_logger.info("NEW LEAD", extra={
+                'client_ip': client_ip,
+                'user': user,
+                'name': name,
+                'phone': phone_input,
+                'product': product.name,
+                'store': product.store.name
+            })
+                    
             return JsonResponse({
                 'success': True,
                 'name': name,

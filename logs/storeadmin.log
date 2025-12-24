@@ -1,105 +1,284 @@
-INFO 2025-12-18 19:22:22,485 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-18 19:22:56,864 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-18 19:23:07,739 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-18 19:23:18,642 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-18 19:23:22,211 storeadmin Leads CSV exported | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-18 19:23:36,685 storeadmin Leads CSV exported | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-18 19:23:46,648 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-18 19:23:48,166 storeadmin Leads CSV exported | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-18 19:30:03,804 storeadmin Leads CSV exported | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-18 19:37:32,326 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-18 19:37:36,439 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-18 19:37:40,360 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 11:21:59,668 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 11:22:30,221 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 11:22:42,293 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 11:59:15,710 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 12:28:11,651 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 12:28:15,236 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 12:28:19,720 storeadmin Edit product accessed: 'Kids Bed' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 12:28:43,201 storeadmin Edit product accessed: 'Kids Bed' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 12:28:43,346 storeadmin Product UPDATED: 'Kids Bed' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 12:28:43,499 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 14:55:40,135 storeadmin Edit product accessed: 'Work Desk' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 14:55:50,901 storeadmin Edit product accessed: 'Work Desk' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 14:55:50,983 storeadmin Product UPDATED: 'Work Desk' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 14:55:51,156 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 14:55:56,085 storeadmin Edit product accessed: 'Wardrobe' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 14:56:10,826 storeadmin Edit product accessed: 'Wardrobe' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 14:56:10,846 storeadmin Product UPDATED: 'Wardrobe' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 14:56:10,992 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 14:56:19,895 storeadmin Edit product accessed: 'Loveseat' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 14:56:29,591 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 14:56:32,555 storeadmin Edit product accessed: 'Filing' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 14:56:39,815 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 14:56:43,121 storeadmin Edit product accessed: 'lampet' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 14:56:53,152 storeadmin Edit product accessed: 'lampet' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 14:56:53,178 storeadmin Product UPDATED: 'lampet' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 14:56:53,319 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 14:57:16,199 storeadmin Edit product accessed: 'Storage Bench' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 14:57:25,527 storeadmin Edit product accessed: 'Storage Bench' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 14:57:25,549 storeadmin Product UPDATED: 'Storage Bench' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 14:57:25,704 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 14:57:30,295 storeadmin Edit product accessed: 'sofa 7 seater' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 14:57:37,539 storeadmin Edit product accessed: 'sofa 7 seater' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 14:57:37,565 storeadmin Product UPDATED: 'sofa 7 seater' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 14:57:37,773 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 14:58:26,835 storeadmin Edit product accessed: 'Bench' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 14:58:32,136 storeadmin Edit product accessed: '6 Seater Sofa' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 14:58:37,827 storeadmin Edit product accessed: 'tv' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 14:58:46,333 storeadmin Edit product accessed: 'tv' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 14:58:46,354 storeadmin Product UPDATED: 'tv' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 14:58:46,487 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 14:59:37,707 storeadmin Edit product accessed: 'Loveseat' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 14:59:50,495 storeadmin Edit product accessed: 'Loveseat' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 14:59:50,520 storeadmin Product UPDATED: 'Loveseat' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 14:59:50,682 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 14:59:54,032 storeadmin Edit product accessed: 'hubdhab' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 15:00:08,513 storeadmin Edit product accessed: '4 seater' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 15:00:15,132 storeadmin Edit product accessed: '4 seater' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 15:00:15,153 storeadmin Product UPDATED: '4 seater' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 15:00:15,319 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 15:00:19,137 storeadmin Edit product accessed: 'bedcover' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 15:00:23,712 storeadmin Edit product accessed: '4 seater' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 15:00:29,562 storeadmin Edit product accessed: '4 seat table with chair' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 15:00:34,942 storeadmin Edit product accessed: 'tv' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 15:00:40,386 storeadmin Edit product accessed: 'tv' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 15:00:40,409 storeadmin Product UPDATED: 'tv' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 15:00:40,557 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 15:00:45,097 storeadmin Edit product accessed: 'Single chair' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 15:00:51,752 storeadmin Edit product accessed: 'Single chair' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 15:00:51,776 storeadmin Product UPDATED: 'Single chair' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 15:00:51,938 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 15:00:58,583 storeadmin Edit product accessed: 'Cot' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 15:01:03,821 storeadmin Edit product accessed: 'Sideboard' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 15:01:09,167 storeadmin Edit product accessed: '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 15:01:15,344 storeadmin Edit product accessed: '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 15:01:15,369 storeadmin Product UPDATED: '2 Seater Sofa' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 15:01:15,526 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 15:01:21,608 storeadmin Edit product accessed: '5 seater' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 15:01:28,760 storeadmin Edit product accessed: 'hbbkb' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 15:01:37,759 storeadmin Edit product accessed: 'hbbkb' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 15:01:37,785 storeadmin Product UPDATED: 'hbbkb' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 15:01:37,921 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 15:03:07,069 storeadmin Edit product accessed: 'Futton' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 15:03:18,291 storeadmin Edit product accessed: 'Futton' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-19 15:03:18,329 storeadmin Product UPDATED: 'Futton' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 15:03:18,475 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 18:03:21,371 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 18:03:26,711 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 18:03:29,891 storeadmin Leads CSV exported | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 18:11:24,942 storeadmin Leads CSV exported | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 18:29:17,216 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 18:29:25,372 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-19 19:19:09,704 storeadmin Dashboard accessed | Store: TMS ELECT | User: tamilmctv | IP: 127.0.0.1
-INFO 2025-12-20 10:23:02,140 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
-INFO 2025-12-20 16:13:28,424 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-20 16:13:36,011 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-20 16:13:45,034 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-20 16:14:18,219 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-20 16:14:28,526 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-20 16:15:41,879 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-20 16:15:56,072 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-20 16:15:57,354 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-20 16:16:16,048 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-20 16:16:39,905 storeadmin Dashboard accessed | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-23 18:32:09,346 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 18:34:36,753 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 18:36:48,145 storeadmin Dashboard accessed
+INFO 2025-12-23 18:36:55,705 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 18:37:07,210 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 18:37:53,287 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 18:38:08,959 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 18:38:28,373 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 18:40:04,211 storeadmin Banners page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 18:40:08,613 storeadmin Dashboard accessed (cache hit)
+INFO 2025-12-23 18:40:08,613 storeadmin Dashboard accessed
+INFO 2025-12-23 18:40:11,713 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 18:41:38,698 storeadmin Dashboard accessed (cache hit)
+INFO 2025-12-23 18:41:38,699 storeadmin Dashboard accessed
+INFO 2025-12-23 18:42:13,616 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 18:42:26,722 storeadmin Dashboard accessed
+INFO 2025-12-23 19:04:42,894 storeadmin Dashboard accessed
+INFO 2025-12-23 19:05:19,183 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 19:06:07,903 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 19:23:20,149 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 19:24:15,684 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 19:24:33,258 storeadmin Banners page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 19:24:36,024 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 19:24:42,042 storeadmin Dashboard accessed
+INFO 2025-12-23 19:24:56,554 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 19:25:39,628 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 19:26:48,942 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 19:27:10,401 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 19:27:30,965 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-23 19:27:42,593 storeadmin Dashboard accessed (cache hit)
+INFO 2025-12-23 19:27:42,594 storeadmin Dashboard accessed
+INFO 2025-12-23 19:37:45,219 storeadmin Dashboard accessed
+INFO 2025-12-24 10:26:53,100 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:30:24,190 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:30:24,866 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:30:31,802 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:30:33,891 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:30:36,237 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:35:56,812 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:35:59,651 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:36:03,991 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:36:04,307 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:36:06,460 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:36:08,578 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:36:14,513 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:36:14,727 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:37:04,924 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:37:05,593 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:37:54,975 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:42:27,002 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:42:27,300 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:42:36,503 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:42:39,221 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:42:39,415 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:42:42,478 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:42:44,012 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:42:48,199 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:42:48,393 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:42:49,930 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:42:51,463 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:43:16,600 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:43:18,522 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:43:22,445 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:43:24,576 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:43:27,471 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:43:29,217 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:43:31,358 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:43:34,342 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:43:36,035 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:45:07,841 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:45:10,033 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:45:13,885 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:45:15,557 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:45:42,744 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:45:44,403 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:46:26,915 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:46:30,757 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:46:32,473 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:46:35,207 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:48:46,824 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:48:48,959 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:48:50,316 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:50:48,660 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:50:52,298 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:50:55,529 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:51:00,426 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:51:37,314 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:51:40,384 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:51:42,095 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:51:49,696 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:51:51,436 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:54:25,298 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:54:27,986 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:54:31,697 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:54:37,065 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:56:18,260 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:56:20,595 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:56:22,293 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:56:31,602 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:56:37,555 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:56:42,032 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:56:46,930 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:56:50,643 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:56:52,776 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:56:56,180 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:56:59,707 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:57:08,019 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 10:57:09,915 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:01:28,251 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:01:30,218 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:01:33,925 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:01:40,658 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:01:42,726 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:01:46,029 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:01:59,561 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:02:06,059 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:02:08,465 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:04:10,415 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:04:14,183 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:04:21,307 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:04:28,513 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:04:30,483 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:04:50,139 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:04:56,790 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:04:59,525 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:05:01,083 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:05:05,114 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:05:05,652 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:05:05,875 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:05:08,545 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:10:02,350 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:10:04,357 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:10:05,315 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:13:09,069 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:13:15,223 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:13:25,710 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:16:35,779 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:16:38,091 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:16:39,773 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:16:41,399 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:16:42,923 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:16:45,973 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:16:47,609 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:16:51,235 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:16:56,195 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:16:57,621 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:16:58,598 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:17:00,772 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:17:02,811 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:17:05,666 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:17:12,037 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:17:16,423 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:17:19,216 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:17:27,164 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:17:52,486 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:18:13,806 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:18:23,355 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:26:20,012 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:26:22,452 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:26:26,488 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:26:26,741 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:26:29,285 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:26:35,379 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:26:43,736 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:26:43,971 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:26:46,737 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:26:49,027 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:26:52,816 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:27:06,990 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:27:07,274 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:27:13,993 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:29:49,352 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:29:53,102 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:31:32,434 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:31:32,917 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:31:41,802 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:31:43,937 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:31:45,374 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:31:48,251 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:31:50,769 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:31:52,435 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:31:55,892 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:31:56,084 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:31:57,796 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:32:00,329 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:32:03,651 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:32:03,877 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:32:05,314 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:32:06,721 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:33:33,960 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:36:35,173 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:36:38,513 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:36:41,465 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:36:45,590 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:36:53,027 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:37:31,126 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:37:37,288 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:37:48,496 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:37:55,151 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:37:58,180 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:38:06,333 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:38:08,159 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:38:11,578 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:38:17,692 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:41:22,860 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:41:24,977 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:41:27,824 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:41:29,055 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:41:34,151 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:41:35,209 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:41:36,477 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:41:39,987 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:41:56,893 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:41:57,936 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 11:42:29,442 storeadmin Dashboard accessed
+INFO 2025-12-24 11:43:20,656 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:43:33,495 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:43:42,585 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:44:02,969 storeadmin Banners page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:44:05,537 storeadmin Banners page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:44:10,416 storeadmin Banners page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:44:11,463 storeadmin Banners page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:44:13,704 storeadmin Banners page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:44:23,436 storeadmin Banners page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:44:26,431 storeadmin Banners page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:44:27,470 storeadmin Banners page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:44:29,588 storeadmin Banners page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:44:39,137 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:44:51,168 storeadmin Dashboard accessed (cache hit)
+INFO 2025-12-24 11:44:51,169 storeadmin Dashboard accessed
+INFO 2025-12-24 11:44:53,629 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:44:57,957 storeadmin Banners page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:45:27,617 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:45:51,059 storeadmin Banners page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:45:56,037 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:46:07,233 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:46:13,293 storeadmin Dashboard accessed (cache hit)
+INFO 2025-12-24 11:46:13,294 storeadmin Dashboard accessed
+INFO 2025-12-24 11:46:16,973 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:46:20,853 storeadmin Banners page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:46:24,883 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:46:35,878 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:46:50,722 storeadmin Dashboard accessed (cache hit)
+INFO 2025-12-24 11:46:50,723 storeadmin Dashboard accessed
+INFO 2025-12-24 11:47:03,525 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:47:07,016 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:47:09,966 storeadmin Dashboard accessed (cache hit)
+INFO 2025-12-24 11:47:09,968 storeadmin Dashboard accessed
+INFO 2025-12-24 11:47:20,258 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:47:22,565 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:47:26,389 storeadmin Banners page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:47:28,806 storeadmin Dashboard accessed (cache hit)
+INFO 2025-12-24 11:47:28,807 storeadmin Dashboard accessed
+INFO 2025-12-24 11:47:38,387 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:47:45,580 storeadmin Banners page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:48:13,837 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:48:17,354 storeadmin Banners page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:49:17,314 storeadmin Dashboard accessed
+INFO 2025-12-24 11:49:23,827 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:49:33,756 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:49:38,396 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 11:49:43,795 storeadmin Dashboard accessed (cache hit)
+INFO 2025-12-24 11:49:43,796 storeadmin Dashboard accessed
+INFO 2025-12-24 11:50:22,981 storeadmin Dashboard accessed (cache hit)
+INFO 2025-12-24 11:50:22,983 storeadmin Dashboard accessed
+INFO 2025-12-24 11:50:28,477 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 12:01:05,377 storeadmin Banners page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 12:01:07,661 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 12:06:46,830 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 12:06:57,319 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 12:07:26,507 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 12:08:04,215 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 12:08:07,175 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 12:08:12,178 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 12:08:25,535 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 12:09:14,622 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 12:09:27,374 storeadmin Edit product accessed: '4 seat table with chair' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 12:09:36,581 storeadmin Edit product accessed: '4 seat table with chair' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 12:09:36,640 storeadmin Product UPDATED: '4 seat table with chair' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 12:09:36,845 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 12:09:42,909 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 12:11:44,957 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 12:11:45,900 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 12:11:47,454 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms

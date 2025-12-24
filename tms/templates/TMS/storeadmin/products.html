@@ -4,13 +4,13 @@
 {% block title %}Products - {{ store.name }}{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
+<div class="container-fluid py-4 px-3">
     <!-- Success Messages -->
     {% if messages %}
-        <div class="position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+        <div class="position-fixed top-0 end-0 p-4" style="z-index: 1100;">
             {% for message in messages %}
-            <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm mb-2" role="alert">
-                <strong>Success!</strong> {{ message }}
+            <div class="alert alert-success alert-dismissible fade show rounded-pill shadow-lg border-0" role="alert">
+                <i class="fas fa-check-circle me-2"></i> <strong>{{ message }}</strong>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
             {% endfor %}
@@ -18,83 +18,99 @@
     {% endif %}
 
     <!-- Header -->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4 px-3">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
-            <h2 class="mb-1 text-success fw-bold">Manage Products</h2>
-            <p class="text-muted mb-0">Total: <strong id="productCount">{{ products.paginator.count }}</strong> products</p>
+            <h2 class="fw-bold text-dark mb-1">Manage Products</h2>
+            <p class="text-muted mb-0">Total: <strong class="text-success fs-4">{{ total_count }}</strong> products</p>
+            {% if applied_filters %}
+                <small class="text-success fw-bold d-block mt-1">Filters: {{ applied_filters|join:" • " }}</small>
+            {% endif %}
         </div>
-        <button type="button" class="btn btn-success rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#addProductModal">
+        <button class="btn btn-success rounded-pill px-5 py-3 shadow-lg fw-bold" data-bs-toggle="modal" data-bs-target="#addProductModal">
             <i class="fas fa-plus me-2"></i> Add Product
         </button>
     </div>
 
-    <!-- SEARCH + CATEGORY FILTER BAR -->
-    <div class="card border-0 rounded-4 mx-3 mb-4 shadow-sm">
-        <div class="card-body p-3">
-            <div class="row g-2 align-items-center">
-                <div class="col-12 col-md-7">
-                    <input type="text" id="searchInput" class="form-control rounded-pill border-0 bg-light" 
-                           placeholder="Search by product name..." autocomplete="off">
-                </div>
-                <div class="col-12 col-md-5">
-                    <select id="categoryFilter" class="form-select rounded-pill border-0 bg-light">
-                        <option value="">All Categories</option>
-                        {% for cat in categories %}
-                            <option value="{{ cat.name|lower }}">{{ cat.name }}</option>
-                        {% endfor %}
-                    </select>
+    <!-- Search & Filter -->
+    <form method="get" id="searchForm" class="mb-4">
+        <div class="card border-0 rounded-4 shadow-sm overflow-hidden">
+            <div class="card-body p-4">
+                <div class="row g-3 align-items-center">
+                    <div class="col-12 col-lg-8">
+                        <input type="text" name="search" id="searchInput" class="form-control form-control-lg rounded-pill border-0 bg-light shadow-sm"
+                               placeholder="Search: best seller, new, deal, limited, name..." value="{{ current_search }}" autocomplete="off">
+                    </div>
+                    <div class="col-12 col-lg-3">
+                        <select name="category" class="form-select form-select-lg rounded-pill border-0 bg-light shadow-sm">
+                            <option value="">All Categories</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.name }}" {% if current_category == cat.name %}selected{% endif %}>{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12 col-lg-1 d-grid">
+                        <button type="submit" class="btn btn-success rounded-pill h-100 shadow-lg">
+                            <i class="fas fa-search fs-5"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </form>
 
-    <!-- No Products Message -->
-    <div id="noProducts" class="text-center py-5 d-none mx-3">
-        <h4 class="text-muted">No products match your search or category</h4>
-    </div>
-
-    <!-- PRODUCTS GRID - 6 PER ROW + ULTRA FAST -->
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-2 mx-3" id="productsGrid">
+    <!-- Products Grid — Optimized for Speed -->
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-4">
         {% for p in products %}
-        <div class="col product-card" 
-             data-name="{{ p.name|lower }}" 
-             data-category="{{ p.category.name|default:'uncategorized'|lower }}">
-            <div class="bg-white rounded-3 overflow-hidden" style="box-shadow: 0 1px 6px rgba(0,0,0,0.1);">
-                <!-- Square Image -->
+        <div class="col">
+            <div class="card h-100 border-0 rounded-4 overflow-hidden shadow-sm hover-lift transition-all">
                 <div class="ratio ratio-1x1 bg-light">
                     {% if p.images.first %}
-                        <img src="{{ p.images.first.image.url }}" loading="lazy" class="w-100 h-100 object-fit-cover" alt="{{ p.name }}">
+                        <img src="{{ p.images.first.image.url }}" 
+                             loading="lazy" decoding="async" 
+                             class="object-fit-cover w-100 h-100" alt="{{ p.name }}">
                     {% else %}
                         <div class="d-flex align-items-center justify-content-center h-100">
-                            <i class="fas fa-image text-muted fs-4"></i>
+                            <i class="fas fa-image text-muted opacity-50" style="font-size: 3rem;"></i>
                         </div>
                     {% endif %}
+
+                    <!-- Ribbon Badge -->
+                    <div class="position-absolute top-0 start-0 m-3 z-index-10">
+                        {% if p.is_best_seller %}
+                            <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow">BEST SELLER</span>
+                        {% elif p.is_limited_deal %}
+                            <span class="badge bg-danger text-white px-3 py-2 rounded-pill shadow">LIMITED</span>
+                        {% elif p.is_special_offer %}
+                            <span class="badge bg-purple text-white px-3 py-2 rounded-pill shadow">SPECIAL</span>
+                        {% elif p.is_new_arrival %}
+                            <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow">NEW</span>
+                        {% elif p.is_featured %}
+                            <span class="badge bg-gold text-dark px-3 py-2 rounded-pill shadow">★ FEATURED</span>
+                        {% endif %}
+                    </div>
                 </div>
 
-                <!-- Card Body -->
-                <div class="p-2 text-center">
-                    <h6 class="fw-bold mb-1 small lh-sm text-dark">{{ p.name|truncatechars:32 }}</h6>
-                    <p class="text-success fw-bold mb-1 fs-6">
+                <div class="card-body p-3 text-center">
+                    <h6 class="fw-bold mb-2 small lh-sm text-dark">{{ p.name|truncatechars:35 }}</h6>
+                    <p class="mb-2">
                         {% if p.call_for_price %}
-                            Call for Price
+                            <span class="text-primary fw-bold">Call for Price</span>
                         {% else %}
-                            {{ p.get_price_display }}
+                            {% if p.offer_price and p.offer_price < p.regular_price %}
+                                <span class="text-success fw-bold fs-5">₹{{ p.offer_price|floatformat:0 }}</span>
+                                <small class="text-muted text-decoration-line-through ms-1">₹{{ p.regular_price|floatformat:0 }}</small>
+                            {% else %}
+                                <span class="text-success fw-bold fs-5">₹{{ p.regular_price|floatformat:0 }}</span>
+                            {% endif %}
                         {% endif %}
                     </p>
-                    {% if p.offer_price and p.offer_price < p.regular_price %}
-                        <small class="text-danger fw-bold d-block mb-1">{{ p.discount_percent }}% OFF</small>
-                    {% endif %}
-                    <small class="text-muted d-block small">{{ p.category.name|default:"No Category" }}</small>
-
-                    <!-- Buttons -->
-                    <div class="d-grid gap-1 mt-2">
-                        <a href="{% url 'edit_product' p.pk %}" class="btn btn-primary btn-sm py-1">Edit</a>
-                        <form method="post" action="{% url 'delete_product' p.pk %}" class="d-inline m-0">
+                    <small class="text-muted d-block mb-3">{{ p.category.name|default:"Uncategorized" }}</small>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'edit_product' p.pk %}" class="btn btn-primary btn-sm rounded-pill">Edit</a>
+                        <form method="post" action="{% url 'delete_product' p.pk %}" class="d-inline">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm py-1 w-100" 
-                                    onclick="return confirm('Delete {{ p.name|escapejs }}?')">
-                                Delete
-                            </button>
+                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill w-100"
+                                    onclick="return confirm('Delete {{ p.name|escapejs }}?')">Delete</button>
                         </form>
                     </div>
                 </div>
@@ -103,183 +119,198 @@
         {% endfor %}
     </div>
 
+    <!-- No Results -->
+    {% if not products %}
+    <div class="text-center py-5 my-5">
+        <i class="fas fa-search text-muted mb-4" style="font-size: 5rem; opacity: 0.3;"></i>
+        <h3 class="text-muted fw-bold">No products found</h3>
+        <p class="text-muted lead">Try searching "best seller", "new", "deal", or product name.</p>
+        <a href="{% url 'store_products' %}" class="btn btn-outline-success rounded-pill px-5">Clear Filters</a>
+    </div>
+    {% endif %}
+
     <!-- Pagination -->
     {% if products.has_other_pages %}
-    <nav class="mt-4 pb-4">
-        <ul class="pagination justify-content-center flex-wrap gap-1">
+    <nav class="mt-5 d-flex justify-content-center">
+        <ul class="pagination pagination-lg">
             {% if products.has_previous %}
-                <li class="page-item"><a class="page-link rounded-pill px-3" href="?page=1">First</a></li>
-                <li class="page-item"><a class="page-link rounded-pill px-3" href="?page={{ products.previous_page_number }}">‹</a></li>
+                <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">First</a></li>
+                <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ products.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}">‹</a></li>
             {% endif %}
+
             {% for num in products.paginator.page_range %}
                 {% if products.number == num %}
-                    <li class="page-item active"><span class="page-link rounded-pill bg-success border-success px-3">{{ num }}</span></li>
-                {% elif num > products.number|add:'-3' and num < products.number|add:'4' %}
-                    <li class="page-item"><a class="page-link rounded-pill px-3" href="?page={{ num }}">{{ num }}</a></li>
+                    <li class="page-item active"><span class="page-link rounded-pill mx-1 bg-success border-success">{{ num }}</span></li>
+                {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                    <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ num }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|slice:": -5" }}{% endif %}">{{ num }}</a></li>
                 {% endif %}
             {% endfor %}
+
             {% if products.has_next %}
-                <li class="page-item"><a class="page-link rounded-pill px-3" href="?page={{ products.next_page_number }}">›</a></li>
-                <li class="page-item"><a class="page-link rounded-pill px-3" href="?page={{ products.paginator.num_pages }}">Last</a></li>
+                <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ products.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}">›</a></li>
+                <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ products.paginator.num_pages }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}">Last</a></li>
             {% endif %}
         </ul>
     </nav>
     {% endif %}
 </div>
 
-<!-- ADD PRODUCT MODAL - FULLY PRESERVED -->
-<div class="modal fade" id="addProductModal" tabindex="-1">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable">
-        <div class="modal-content rounded-4 border-0 shadow-lg">
-            <div class="modal-header bg-success text-white py-4">
-                <h4 class="modal-title fw-bold">Add New Product</h4>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+
+    <!-- ULTRA PREMIUM & COMPACT ADD PRODUCT MODAL -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+        <div class="modal-content overflow-hidden border-0" style="border-radius: 28px; box-shadow: 0 25px 80px rgba(0,0,0,0.18);">
+            <!-- Premium Header -->
+            <div class="modal-header position-relative border-0 " style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 28px 28px 0 0;">
+                <div class="text-center w-100">
+                    <h4 class="modal-title text-white mb-0">
+                        <i class="fas fa-plus-circle me-1"></i>Add New Product
+                    </h4>
+                </div>
+                <button type="button" class="btn-close btn-close-white position-absolute end-0 top-50 translate-middle-y me-5" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body p-4 p-lg-5">
+
+            <div class="modal-body p-4 p-lg-5 bg-gradient-light" style="background: linear-gradient(to bottom, #f8f9fa, #ffffff);">
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <!-- YOUR FULL ADD FORM HERE (same as before) -->
-                    <div class="text-center mt-4">                   
-                    <!-- PRODUCT INFORMATION -->
-                        <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
-                            <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Product Information</h5>
-                            <div class="row g-4">
-                                <div class="col-6">
-                                    <label class="form-label fw-bold">Product Name</label>
+
+                    <!-- Main Grid -->
+                    <div class="row g-4">
+                        <!-- Left: Core Info -->
+                        <div class="col-lg-8">
+                            <div class="bg-white shadow-sm p-3 p-md-4">
+                                <h5 class="fw-bold text-primary mb-4"><i class="fas fa-edit me-2"></i>Product Details</h5>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Product Name <span class="text-danger">*</span></label>
                                     {{ form.name }}
                                 </div>
-                                <div class="col-12 col-md-6">
+
+                                <div class="mb-4">
                                     <label class="form-label fw-bold">Category</label>
                                     {{ form.category }}
                                 </div>
-                                <div class="col-12">
-                                    <label class="form-label fw-bold">Short Description</label>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Short Description <small class="text-muted">(shown in listings)</small></label>
                                     {{ form.short_desc }}
                                 </div>
-                                <div class="col-12">
-                                    <label class="form-label fw-bold">Full Description</label>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Full Description <small class="text-muted">(detailed info)</small></label>
                                     {{ form.description }}
                                 </div>
                             </div>
                         </div>
 
-                    <!-- PRICE & OFFER + STATUS -->
-                    <div class="row g-4 mb-4">
-                        <div class="col-12 col-lg-6">
+                        <!-- Right: Price & Badges -->
+                        <div class="col-lg-4">
                             <div class="bg-white rounded-4 shadow-sm p-4 h-100">
-                                <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Price & Offer</h5>
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Regular Price</label>
+                                <h5 class="fw-bold text-primary mb-4"><i class="fas fa-tags me-2"></i>Pricing</h5>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Regular Price (₹)</label>
                                     {{ form.regular_price }}
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Offer Price</label>
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Offer Price (₹) <small class="text-muted">optional</small></label>
                                     {{ form.offer_price }}
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Deal End Date</label>
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Deal End Date <small class="text-muted">for limited offers</small></label>
                                     {{ form.deal_end_date }}
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-lg-6">
-                            <div class="bg-white rounded-4 shadow-sm p-4 h-100">
-                                <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Status & Badges</h5>
-                                
-                                <div class="form-check form-switch mb-3">
-                                    {{ form.is_featured }}
-                                    <label class="form-check-label ms-3">{{ form.is_featured.label }}</label>
+                                <div class="form-check form-switch mb-4">
+                                    <input class="form-check-input" type="checkbox" name="call_for_price" id="call_for_price">
+                                    <label class="form-check-label fw-bold text-info" for="call_for_price">Call for Best Price</label>
                                 </div>
-                                <div class="form-check form-switch mb-3">
-                                    {{ form.in_stock }}
-                                    <label class="form-check-label ms-3">{{ form.in_stock.label }}</label>
-                                </div>
-
-                                <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" name="call_for_price" id="add_call_for_price">
-                                    <label class="form-check-label ms-3 fw-bold text-info" for="add_call_for_price">
-                                        Call for Best Price
-                                    </label>
-                                </div>
-                               
 
                                 <hr class="my-4">
-                                <h6 class="fw-bold text-primary mb-3">Special Badges</h6>
-                                
-                                <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" name="is_best_seller" id="add_best_seller">
-                                    <label class="form-check-label ms-3 fw-bold text-warning" for="add_best_seller">
-                                        BEST SELLER
-                                    </label>
-                                </div>
-                                <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" name="is_limited_deal" id="add_limited_deal">
-                                    <label class="form-check-label ms-3 fw-bold text-danger" for="add_limited_deal">
-                                        LIMITED DEAL
-                                    </label>
-                                </div>
-                                <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" name="is_special_offer" id="add_special_offer">
-                                    <label class="form-check-label ms-3 fw-bold" style="color: purple;" for="add_special_offer">
-                                        SPECIAL OFFER
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- SPECIFICATIONS — LABELS VISIBLE -->
-                    <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
-                        <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Specifications</h5>
-                        {{ spec_formset.management_form }}
-                        <div id="spec-forms">
-                            {% for form in spec_formset %}
-                            <div class="row g-3 mb-3 spec-form align-items-end">
-                                {% if form.instance.pk %}
-                                    {{ form.id }}
-                                {% endif %}
-                                <div class="col-md-5">
-                                    <label class="form-label fw-bold">Specification Name</label>
-                                    {{ form.name }}
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Value</label>
-                                    {{ form.value }}
-                                </div>
-                                <div class="col-md-1">
-                                    <button type="button" class="btn btn-danger btn-sm rounded-pill remove-spec w-100 mt-4">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    <div class="form-check mt-2">
-                                        {{ form.DELETE }}
-                                        <label class="form-check-label small text-danger" for="{{ form.DELETE.id_for_label }}">Delete</label>
+                                <h6 class="fw-bold text-primary mb-3"><i class="fas fa-medal me-2"></i>Special Badges</h6>
+                                <div class="d-grid gap-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="is_best_seller" id="is_best_seller">
+                                        <label class="form-check-label fw-bold text-warning" for="is_best_seller">Best Seller</label>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="is_limited_deal" id="is_limited_deal">
+                                        <label class="form-check-label fw-bold text-danger" for="is_limited_deal">Limited Deal</label>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="is_special_offer" id="is_special_offer">
+                                        <label class="form-check-label fw-bold" style="color:#9c27b0" for="is_special_offer">Special Offer</label>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="is_new_arrival" id="is_new_arrival">
+                                        <label class="form-check-label fw-bold text-success" for="is_new_arrival">New Arrival</label>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        {{ form.is_featured }}
+                                        <label class="form-check-label fw-bold text-primary" for="{{ form.is_featured.id_for_label }}">Featured</label>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        {{ form.in_stock }}
+                                        <label class="form-check-label fw-bold" for="{{ form.in_stock.id_for_label }}">In Stock</label>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Specifications - PREMIUM & CLEAN -->
+                    <div class="bg-white rounded-4 shadow-sm p-4 mt-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="fw-bold text-primary mb-0"><i class="fas fa-th-list me-2"></i>Specifications</h5>
+                            <button type="button" class="btn btn-outline-success rounded-pill px-4 py-2" id="add-spec">
+                                <i class="fas fa-plus me-2"></i>Add Specification
+                            </button>
+                        </div>
+
+                        {{ spec_formset.management_form }}
+                        <div id="spec-container">
+                            {% for form in spec_formset %}
+                            <div class="row g-3 mb-3 align-items-end spec-row">
+                                <div class="col-12 col-md-5">
+                                    <input type="text" class="form-control rounded-pill" placeholder="e.g. Material" name="{{ form.name.html_name }}" value="{{ form.name.value|default:'' }}" {% if form.name.field.required %}required{% endif %}>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <input type="text" class="form-control rounded-pill" placeholder="e.g. Solid Teak Wood" name="{{ form.value.html_name }}" value="{{ form.value.value|default:'' }}" {% if form.value.field.required %}required{% endif %}>
+                                </div>
+                                <div class="col-12 col-md-1 text-md-end">
+                                    <button type="button" class="btn btn-outline-danger rounded-pill px-3 remove-spec">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                                {% if form.instance.pk %}
+                                    {{ form.id }}
+                                    <div class="form-check mt-2">
+                                        {{ form.DELETE }}
+                                        <label class="form-check-label small text-danger">Delete</label>
+                                    </div>
+                                {% endif %}
+                            </div>
                             {% endfor %}
                         </div>
-                        <button type="button" class="btn btn-outline-success rounded-pill px-4 mt-3" id="add-spec">
-                            <i class="fas fa-plus me-2"></i> Add Specification
-                        </button>
                     </div>
 
-                    <!-- VIDEO & IMAGES -->
-                    <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
-                        <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Product Video</h5>
-                        <label class="form-label fw-bold">Upload Video</label>
-                        <input type="file" name="video" accept="video/*" class="form-control form-control-lg">
+                    <!-- Media Upload -->
+                    <div class="row g-4 mt-4">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-bold text-primary">Product Video <small class="text-muted">(optional)</small></label>
+                            <input type="file" name="video" accept="video/*" class="form-control form-control-lg rounded-pill">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-bold text-primary">Product Images</label>
+                            <input type="file" name="extra_images" multiple accept="image/*" class="form-control form-control-lg rounded-pill">
+                            <small class="text-muted d-block mt-2">First image = main display. Select multiple.</small>
+                        </div>
                     </div>
 
-                    <div class="bg-white rounded-4 shadow-sm p-4 mb-5">
-                        <h5 class="text-success fw-bold mb-4 border-bottom pb-3">Product Images</h5>
-                        <label class="form-label fw-bold">Upload Images</label>
-                        <input type="file" name="extra_images" multiple accept="image/*" class="form-control form-control-lg">
-                    </div>
-
-
-                        <button type="submit" class="btn btn-success btn-lg rounded-pill px-5 py-3 fw-bold shadow">
-                            Add Product
+                    <!-- Submit -->
+                    <div class="text-center mt-5">
+                        <button type="submit" class="btn btn-success btn-lg rounded-pill px-5 py-4 shadow-lg fw-bold" style="font-size: 1.1rem; min-width: 280px;">
+                            <i class="fas fa-check-circle me-3"></i> Save Product
                         </button>
                     </div>
                 </form>
@@ -288,56 +319,47 @@
     </div>
 </div>
 
+
 <style>
-    /* Light hover - no lag */
-    .bg-white:hover {
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    .hover-lift {
+        transition: all 0.3s ease;
     }
-    
-    /* Remove heavy transitions */
-    * {
-        transition: none !important;
+    .hover-lift:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.2) !important;
+    }
+
+    .bg-purple { background: linear-gradient(45deg, #9c27b0, #e91e63); }
+    .bg-gold { background: linear-gradient(45deg, #ffd700, #ffb800); }
+
+    img {
+        transition: transform 0.4s ease;
+    }
+    .card:hover img {
+        transform: scale(1.08);
+    }
+
+    .badge {
+        font-weight: 700;
+        letter-spacing: 0.5px;
     }
 </style>
 
 <script>
-    // Instant Search + Category Filter (SUPER FAST)
-    let timeout;
+document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
-    const categoryFilter = document.getElementById('categoryFilter');
-    const productCards = document.querySelectorAll('.product-card');
-    const productCount = document.getElementById('productCount');
-    const noProducts = document.getElementById('noProducts');
+    let timeout;
 
-    function filterProducts() {
-        const search = searchInput.value.toLowerCase().trim();
-        const category = categoryFilter.value.toLowerCase();
-        let visible = 0;
-
-        productCards.forEach(card => {
-            const name = card.dataset.name;
-            const cat = card.dataset.category;
-            const matches = name.includes(search) && (category === '' || cat.includes(category));
-            if (matches) {
-                card.style.display = '';
-                visible++;
-            } else {
-                card.style.display = 'none';
-            }
-        });
-
-        productCount.textContent = visible;
-        noProducts.classList.toggle('d-none', visible > 0);
-    }
-
-    searchInput.addEventListener('input', () => {
+    searchInput.addEventListener('input', function() {
         clearTimeout(timeout);
-        timeout = setTimeout(filterProducts, 150);
+        timeout = setTimeout(() => {
+            document.getElementById('searchForm').submit();
+        }, 600);
     });
 
-    categoryFilter.addEventListener('change', filterProducts);
-
-    // Initial filter
-    filterProducts();
+    document.querySelector('select[name="category"]')?.addEventListener('change', () => {
+        document.getElementById('searchForm').submit();
+    });
+});
 </script>
 {% endblock %}
