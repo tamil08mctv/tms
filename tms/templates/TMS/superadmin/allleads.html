@@ -10,7 +10,6 @@
             <h3 class="mb-1">All Leads</h3>
         </div>
         <div class="d-flex gap-2 mt-2 mt-md-0 flex-wrap">
-            <!-- Filters Button with Active Indicator -->
             <button class="btn btn-outline-secondary btn-sm rounded-pill position-relative" onclick="toggleFilter()">
                 <i class="fas fa-filter"></i> Filters
                 {% if request.GET.store or request.GET.from or request.GET.to or request.GET.status %}
@@ -20,12 +19,10 @@
                 {% endif %}
             </button>
 
-            <!-- Export Button -->
             <a href="{% url 'export_all_leads' %}?{{ request.GET.urlencode }}" class="btn btn-success btn-sm rounded-pill">
                 <i class="fas fa-download"></i> Export
             </a>
 
-            <!-- Clear Filters Button – Only when filters are active -->
             {% if request.GET.store or request.GET.from or request.GET.to or request.GET.status %}
             <a href="{% url 'all_leads' %}" class="btn btn-outline-danger btn-sm rounded-pill">
                 <i class="fas fa-times me-1"></i> Clear Filters
@@ -79,19 +76,19 @@
                placeholder="Search leads by name, phone, product or store…">
     </div>
 
-    <!-- TABLE – Fixed Last Column Breaking -->
+    <!-- TABLE – FULL TEXT VISIBLE, NO TRUNCATION, NO HORIZONTAL SCROLL ON DESKTOP -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
         <div class="table-responsive">
-            <table class="table align-middle mb-0" id="leadsTable">
+            <table class="table table-hover align-middle mb-0" id="leadsTable">
                 <thead class="table-light">
                     <tr>
-                        <th>Date</th>
-                        <th>Store</th>
-                        <th>Customer</th>
-                        <th>Phone</th>
-                        <th>Place</th>
-                        <th>Product</th>
-                        <th class="text-center" style="width: 100px;">Status</th> <!-- Fixed width + center -->
+                        <th class="text-nowrap">Date</th>
+                        <th class="text-nowrap">Store</th>
+                        <th class="text-nowrap">Customer</th>
+                        <th class="text-nowrap">Phone</th>
+                        <th class="text-nowrap">Place</th>
+                        <th class="text-nowrap">Product</th>
+                        <th class="text-center text-nowrap" style="width: 110px;">Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -101,21 +98,29 @@
                     data-phone="{{ lead.phone }}"
                     data-product="{{ lead.product.name|default:''|lower }}"
                     data-store="{{ lead.store.name|lower }}">
-                    <td class="text-nowrap">
+                    <td class="text-nowrap align-top">
                         <div class="fw-semibold">{{ lead.created_at|date:"d M Y" }}</div>
                         <small class="text-muted">{{ lead.created_at|time:"h:i A" }}</small>
                     </td>
-                    <td>{{ lead.store.name }}</td>
-                    <td class="fw-semibold">{{ lead.customer_name }}</td>
-                    <td>
+                    <td class="align-top" style="min-width: 140px;">
+                        <div class="text-wrap">{{ lead.store.name }}</div>
+                    </td>
+                    <td class="align-top" style="min-width: 150px;">
+                        <div class="fw-semibold text-wrap">{{ lead.customer_name }}</div>
+                    </td>
+                    <td class="text-nowrap align-top">
                         <a href="tel:{{ lead.phone }}" class="text-decoration-none fw-semibold">
                             {{ lead.phone }}
                         </a>
                     </td>
-                    <td>{{ lead.city|default:"—" }}</td>
-                    <td>{{ lead.product.name|default:"General" }}</td>
-                    <td class="text-center">
-                        <span class="status-pill status-{{ lead.status }} text-nowrap">
+                    <td class="align-top" style="min-width: 100px;">
+                        <div class="text-wrap">{{ lead.city|default:"—" }}</div>
+                    </td>
+                    <td class="align-top" style="min-width: 180px;">
+                        <div class="text-wrap">{{ lead.product.name|default:"General Enquiry" }}</div>
+                    </td>
+                    <td class="text-center align-top">
+                        <span class="status-pill status-{{ lead.status }} px-3 py-1 small text-nowrap">
                             {{ lead.get_status_display }}
                         </span>
                     </td>
@@ -178,62 +183,73 @@ document.getElementById('searchInput').addEventListener('input', function () {
 </script>
 
 <style>
-/* Table polish */
-.table tbody tr {
-    border-bottom: 1px solid #f1f1f1;
-}
-.table tbody tr:hover {
-    background: #f9fbff;
+/* Table polish - full text visible */
+.table thead th {
+    white-space: nowrap;
+    font-weight: 600;
+    font-size: 0.9rem;
+    vertical-align: middle;
 }
 
-/* Status Pills – Fixed & Compact */
+.table tbody td {
+    vertical-align: top;
+    font-size: 0.9rem;
+    padding: 0.75rem 0.5rem;
+}
+
+/* Allow wrapping in important columns */
+.text-wrap {
+    word-break: break-word;
+    hyphens: auto;
+}
+
+/* Hover effect */
+.table tbody tr:hover {
+    background: #f8fbff !important;
+}
+
+/* Status Pills */
 .status-pill {
     display: inline-block;
-    padding: 4px 10px;
+    padding: 5px 14px;
     border-radius: 20px;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    min-width: 80px;
-    max-width: 110px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    min-width: 95px;
+    text-align: center;
 }
-.status-new {
-    background: #fff3cd;
-    color: #856404;
-}
-.status-contacted {
-    background: #e7f1ff;
-    color: #084298;
-}
-.status-converted {
-    background: #e6f4ea;
-    color: #0f5132;
-}
-.status-just_enquiry {
-    background: #f8f9fa;
-    color: #495057;
+.status-new { background: #fff3cd; color: #856404; }
+.status-contacted { background: #e7f1ff; color: #084298; }
+.status-converted { background: #d4edda; color: #155724; }
+.status-just_enquiry { background: #f8f9fa; color: #495057; }
+
+/* No horizontal scroll on desktop */
+@media (min-width: 992px) {
+    .table-responsive {
+        overflow-x: hidden !important;
+    }
+    
+    /* Extra space for long content */
+    td:nth-child(2), td:nth-child(3), td:nth-child(6) {
+        min-width: 160px;
+    }
 }
 
-/* Prevent column breaking */
-.table td, .table th {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-.table td.text-center {
-    white-space: nowrap;
+/* Mobile: allow natural horizontal scroll */
+@media (max-width: 991px) {
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 }
 
-/* Active filters indicator */
+/* Pulse animation */
 .position-relative .bg-danger {
     animation: pulse 2s infinite;
 }
 @keyframes pulse {
     0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
-    70% { box-shadow: 0 0 0 6px rgba(220, 53, 69, 0); }
+    70% { box-shadow: 0 0 0 8px rgba(220, 53, 69, 0); }
     100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
 }
 </style>

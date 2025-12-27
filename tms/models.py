@@ -10,6 +10,8 @@ import threading
 from PIL import Image as PILImage
 from io import BytesIO
 from django.core.files.base import ContentFile
+from django.utils import timezone as dj_timezone
+from django.utils.timezone import localtime
 
 # For search
 from django.contrib.postgres.indexes import GinIndex
@@ -35,8 +37,8 @@ def product_video_path(instance, filename):
     return f"{instance.store.slug}/products/{instance.slug}/videos/{safe_filename(filename)}"
 
 def product_image_path(instance, filename):
-    name = os.path.splitext(safe_filename(filename))[0]
-    return f"{instance.product.store.slug}/products/{instance.product.slug}/{name}.webp"
+    return f"{instance.product.store.slug}/products/{instance.product.slug}/{safe_filename(filename)}"
+
 
 def banner_desktop_path(instance, filename):
     name = os.path.splitext(safe_filename(filename))[0]
@@ -55,6 +57,9 @@ def banner_mobile_path(instance, filename):
 def convert_to_webp_and_compress(image_field):
     if not image_field:
         return image_field
+    
+    if image_field.name.lower().endswith('.webp'):
+        return image_field
 
     try:
         pil_image = PILImage.open(image_field)
@@ -70,9 +75,11 @@ def convert_to_webp_and_compress(image_field):
             pil_image = pil_image.convert('RGB')
 
         buffer = BytesIO()
-        pil_image.save(buffer, format='WEBP', quality=85, method=6, lossless=False)
+        pil_image.save(buffer, format='WEBP', quality=85, method=6)
 
-        new_filename = os.path.splitext(image_field.name)[0] + '.webp'
+        base_name = os.path.splitext(os.path.basename(image_field.name))[0]
+        new_filename = f"{base_name}.webp"
+
         return ContentFile(buffer.getvalue(), name=new_filename)
 
     except Exception as e:
@@ -203,18 +210,37 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     search_vector = SearchVectorField(null=True, blank=True)
 
+
     class Meta:
+        ordering = ['name']  # ← Default alphabetical order A → Z
+        
         indexes = [
             GinIndex(name='name_trgm_idx', fields=['name'], opclasses=['gin_trgm_ops']),
             GinIndex(name='short_desc_trgm_idx', fields=['short_desc'], opclasses=['gin_trgm_ops']),
             GinIndex(fields=['search_vector'], name='product_search_gin'),
+            
             models.Index(fields=['store', 'is_featured', 'is_best_seller']),
             models.Index(fields=['store', 'deal_end_date']),
             models.Index(fields=['store', 'created_at']),
             models.Index(fields=['store', 'category']),
             models.Index(fields=['store', 'in_stock', 'is_featured']),
             models.Index(fields=['store', 'created_at', 'is_new_arrival']),
-        ]
+            
+            models.Index(fields=['-created_at', '-id'], name='idx_created_at_desc_id_desc'),
+            models.Index(fields=['created_at', 'id'], name='idx_created_at_asc_id_asc'),
+            
+            models.Index(fields=['-offer_price', '-id'], name='idx_offer_price_desc_id_desc', condition=models.Q(offer_price__isnull=False)),
+            models.Index(fields=['offer_price', 'id'], name='idx_offer_price_asc_id_asc', condition=models.Q(offer_price__isnull=False)),
+            models.Index(fields=['-regular_price', '-id'], name='idx_regular_price_desc_id_desc', condition=models.Q(offer_price__isnull=True)),
+            models.Index(fields=['regular_price', 'id'], name='idx_regular_price_asc_id_asc', condition=models.Q(offer_price__isnull=True)),
+            
+            models.Index(fields=['store', 'offer_price', 'regular_price'], name='idx_store_effective_price'),
+            models.Index(fields=['store', '-created_at', '-id'], name='idx_store_created_desc'),
+            models.Index(fields=['store', '-created_at'], name='idx_store_created_search', condition=models.Q(is_active=True)),
+            
+            # CRITICAL FOR ALPHABETICAL SPEED
+            models.Index(fields=['name'], name='idx_product_name'),
+    ]
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -301,7 +327,7 @@ class StoreBanner(models.Model):
 
 
 class Lead(models.Model):
-    STATUS_CHOICES = [('new','New Enquiry'),('contacted','Contacted'),('Converted','Converted'),('Just Enquiry','Just Enquiry')]
+    STATUS_CHOICES = [('new','New Enquiry'),('contacted','Contacted'),('converted','Converted'),('just enquiry','just enquiry')]
     uid = models.UUIDField(default=uuid.uuid4, editable=False)
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='leads')
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
@@ -312,6 +338,15 @@ class Lead(models.Model):
     source = models.CharField(max_length=20, default='form')
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def created_at_ist(self):
+        """Returns created_at in Indian Standard Time"""
+        return localtime(self.created_at).strftime('%d %b %Y, %I:%M %p')
+
+    created_at_ist.short_description = 'Enquiry Time (IST)'
+
+    def __str__(self):
+        return f"{self.customer_name} → {self.store.name} ({self.created_at_ist()})"
 
     def __str__(self):
         return f"{self.customer_name} → {self.store.name}"

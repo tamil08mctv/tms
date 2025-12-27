@@ -7,6 +7,8 @@ from pathlib import Path
 from decouple import config, Csv  # pip install python-decouple
 from logging import Filter, LogRecord
 
+from datetime import timedelta
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY
@@ -59,6 +61,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'tmsgroups.wsgi.application'
+
+USE_TZ = True
+TIME_ZONE = 'Asia/Kolkata'
 
 # Database - from .env
 DATABASES = {

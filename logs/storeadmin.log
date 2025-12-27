@@ -282,3 +282,307 @@ INFO 2025-12-24 12:09:42,909 storeadmin Products page accessed | Store: TMS FURN
 INFO 2025-12-24 12:11:44,957 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
 INFO 2025-12-24 12:11:45,900 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
 INFO 2025-12-24 12:11:47,454 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:45:09,180 storeadmin Edit product accessed: '2 Seater Sofa' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:45:14,568 storeadmin Edit product accessed: '2 Seater Sofa' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:45:14,608 storeadmin Main image updated for '2 Seater Sofa' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:45:14,702 storeadmin Product UPDATED: '2 Seater Sofa' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 14:45:14,910 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:45:27,776 storeadmin Edit product accessed: '4 seat table with chair' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:45:31,147 storeadmin Edit product accessed: '4 seat table with chair' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:45:31,159 storeadmin Main image updated for '4 seat table with chair' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:45:31,174 storeadmin Product UPDATED: '4 seat table with chair' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 14:45:31,319 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:48:31,573 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:48:36,007 storeadmin Edit product accessed: '4 seater' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:48:39,798 storeadmin Edit product accessed: '4 seater' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:48:39,812 storeadmin Main image updated for '4 seater' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:48:39,833 storeadmin Product UPDATED: '4 seater' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 14:48:39,971 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:48:44,022 storeadmin Edit product accessed: '5 seater' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:48:47,249 storeadmin Edit product accessed: '5 seater' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:48:47,258 storeadmin Main image updated for '5 seater' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:48:47,270 storeadmin Product UPDATED: '5 seater' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 14:48:47,443 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:48:53,551 storeadmin Edit product accessed: '5 seater' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:49:03,439 storeadmin Edit product accessed: '6 Seater Sofa' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:49:06,768 storeadmin Edit product accessed: '6 Seater Sofa' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:49:06,782 storeadmin Main image updated for '6 Seater Sofa' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:49:06,797 storeadmin Product UPDATED: '6 Seater Sofa' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 14:49:06,932 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:51:58,789 storeadmin Edit product accessed: '5 seater' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:03,985 storeadmin Edit product accessed: '5 seater' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:04,010 storeadmin Product UPDATED: '5 seater' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 14:52:04,242 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:07,626 storeadmin Edit product accessed: '6 Seater Sofa' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:11,121 storeadmin Edit product accessed: '6 Seater Sofa' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:11,131 storeadmin Main image updated for '6 Seater Sofa' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:11,144 storeadmin Product UPDATED: '6 Seater Sofa' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 14:52:11,288 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:14,313 storeadmin Edit product accessed: 'aknfmk knakf' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:17,551 storeadmin Edit product accessed: 'aknfmk knakf' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:17,564 storeadmin Main image updated for 'aknfmk knakf' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:17,580 storeadmin Product UPDATED: 'aknfmk knakf' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 14:52:17,705 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:20,288 storeadmin Edit product accessed: 'aknfmk knakf' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:23,192 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:25,572 storeadmin Edit product accessed: 'Bar Counter' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:28,377 storeadmin Edit product accessed: 'Bar Counter' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:28,387 storeadmin Main image updated for 'Bar Counter' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:28,403 storeadmin Product UPDATED: 'Bar Counter' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 14:52:28,563 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:31,155 storeadmin Edit product accessed: 'Bar Stools' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:33,987 storeadmin Edit product accessed: 'Bar Stools' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:33,999 storeadmin Main image updated for 'Bar Stools' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:34,013 storeadmin Product UPDATED: 'Bar Stools' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 14:52:34,173 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:39,150 storeadmin Edit product accessed: 'bedcover' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:41,390 storeadmin Edit product accessed: 'bedcover' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:41,400 storeadmin Main image updated for 'bedcover' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:41,412 storeadmin Product UPDATED: 'bedcover' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 14:52:41,573 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:44,368 storeadmin Edit product accessed: 'Bench' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:49,067 storeadmin Edit product accessed: 'Bench' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:49,080 storeadmin Main image updated for 'Bench' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:49,098 storeadmin Product UPDATED: 'Bench' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 14:52:49,288 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:52,537 storeadmin Edit product accessed: 'Console Table' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:55,828 storeadmin Edit product accessed: 'Console Table' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:55,840 storeadmin Main image updated for 'Console Table' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:55,857 storeadmin Product UPDATED: 'Console Table' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 14:52:55,982 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:52:59,880 storeadmin Edit product accessed: 'Cot' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:53:02,956 storeadmin Edit product accessed: 'Cot' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:53:02,973 storeadmin Main image updated for 'Cot' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:53:02,993 storeadmin Product UPDATED: 'Cot' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 14:53:03,158 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:53:08,738 storeadmin Edit product accessed: 'Desk Mon' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:53:11,593 storeadmin Edit product accessed: 'Desk Mon' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:53:11,610 storeadmin Main image updated for 'Desk Mon' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:53:11,627 storeadmin Product UPDATED: 'Desk Mon' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 14:53:11,857 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:53:25,616 storeadmin Edit product accessed: 'Filing' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:53:29,686 storeadmin Edit product accessed: 'Filing' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:53:29,699 storeadmin Main image updated for 'Filing' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:53:29,716 storeadmin Product UPDATED: 'Filing' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 14:53:29,871 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:53:38,035 storeadmin Edit product accessed: 'Shoe rack' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:53:41,583 storeadmin Edit product accessed: 'Shoe rack' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:53:41,596 storeadmin Main image updated for 'Shoe rack' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:53:41,610 storeadmin Product UPDATED: 'Shoe rack' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 14:53:41,771 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:59:35,030 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:59:38,050 storeadmin Edit product accessed: 'Work Desk' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:59:42,913 storeadmin Edit product accessed: 'Work Desk' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:59:42,939 storeadmin Main image updated for 'Work Desk' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:59:42,959 storeadmin Product UPDATED: 'Work Desk' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 14:59:43,143 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:59:46,104 storeadmin Edit product accessed: 'Wardrobe' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:59:48,541 storeadmin Edit product accessed: 'Wardrobe' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:59:48,552 storeadmin Main image updated for 'Wardrobe' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:59:48,567 storeadmin Product UPDATED: 'Wardrobe' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 14:59:48,728 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:59:52,054 storeadmin Edit product accessed: 'tv' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:59:54,483 storeadmin Edit product accessed: 'tv' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:59:54,493 storeadmin Main image updated for 'tv' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:59:54,504 storeadmin Product UPDATED: 'tv' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 14:59:54,711 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 14:59:59,254 storeadmin Edit product accessed: 'Storage Bench' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:01,696 storeadmin Edit product accessed: 'Storage Bench' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:01,706 storeadmin Main image updated for 'Storage Bench' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:01,718 storeadmin Product UPDATED: 'Storage Bench' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 15:00:01,869 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:05,436 storeadmin Edit product accessed: 'sofa 7 seater' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:10,411 storeadmin Edit product accessed: 'sofa 7 seater' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:10,429 storeadmin Main image updated for 'sofa 7 seater' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:10,445 storeadmin Product UPDATED: 'sofa 7 seater' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 15:00:10,630 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:35,188 storeadmin Edit product accessed: 'Single chair' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:37,985 storeadmin Edit product accessed: 'Single chair' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:38,000 storeadmin Main image updated for 'Single chair' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:38,018 storeadmin Product UPDATED: 'Single chair' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 15:00:38,173 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:41,539 storeadmin Edit product accessed: 'Sideboard' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:44,224 storeadmin Edit product accessed: 'Sideboard' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:44,236 storeadmin Main image updated for 'Sideboard' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:44,251 storeadmin Product UPDATED: 'Sideboard' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 15:00:44,465 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:48,414 storeadmin Edit product accessed: 'Shoe rack' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:51,269 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:55,231 storeadmin Edit product accessed: 'Sectional Sofa' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:58,789 storeadmin Edit product accessed: 'Sectional Sofa' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:58,804 storeadmin Main image updated for 'Sectional Sofa' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:00:58,824 storeadmin Product UPDATED: 'Sectional Sofa' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 15:00:58,970 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:03,818 storeadmin Edit product accessed: 'Rolling Chair with Headrest' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:07,466 storeadmin Edit product accessed: 'Rolling Chair with Headrest' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:07,477 storeadmin Main image updated for 'Rolling Chair with Headrest' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:07,515 storeadmin Product UPDATED: 'Rolling Chair with Headrest' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 15:01:07,661 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:13,468 storeadmin Edit product accessed: 'reclainer 353543' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:16,239 storeadmin Edit product accessed: 'reclainer 353543' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:16,254 storeadmin Main image updated for 'reclainer 353543' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:16,267 storeadmin Product UPDATED: 'reclainer 353543' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 15:01:16,428 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:21,704 storeadmin Edit product accessed: 'Peps Matresss' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:24,660 storeadmin Edit product accessed: 'Peps Matresss' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:24,718 storeadmin Main image updated for 'Peps Matresss' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:24,755 storeadmin Product UPDATED: 'Peps Matresss' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 15:01:24,912 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:28,530 storeadmin Edit product accessed: 'hbbkb' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:32,468 storeadmin Edit product accessed: 'hbbkb' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:32,478 storeadmin Main image updated for 'hbbkb' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:32,493 storeadmin Product UPDATED: 'hbbkb' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 15:01:32,636 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:35,425 storeadmin Edit product accessed: 'Ottaman' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:38,319 storeadmin Edit product accessed: 'Ottaman' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:38,333 storeadmin Main image updated for 'Ottaman' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:38,347 storeadmin Product UPDATED: 'Ottaman' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 15:01:38,530 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:43,438 storeadmin Edit product accessed: 'Filing' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:49,247 storeadmin Edit product accessed: 'Desk Mon' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:54,486 storeadmin Edit product accessed: 'lampet' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:57,133 storeadmin Edit product accessed: 'lampet' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:57,150 storeadmin Main image updated for 'lampet' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:01:57,166 storeadmin Product UPDATED: 'lampet' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 15:01:57,317 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:02:01,981 storeadmin Edit product accessed: 'Loveseat' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:02:04,952 storeadmin Edit product accessed: 'Loveseat' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:02:04,963 storeadmin Main image updated for 'Loveseat' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:02:04,977 storeadmin Product UPDATED: 'Loveseat' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 15:02:05,147 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:02:39,097 storeadmin Edit product accessed: 'Ottaman' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:02:41,647 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:02:47,436 storeadmin Edit product accessed: 'Shoe rack' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:02:50,292 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:03:13,526 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:03:17,874 storeadmin Edit product accessed: 'Storage Bench' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:03:20,994 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:03:32,059 storeadmin Edit product accessed: 'Futton' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:03:34,301 storeadmin Edit product accessed: 'Futton' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:03:34,314 storeadmin Main image updated for 'Futton' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:03:34,329 storeadmin Product UPDATED: 'Futton' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 15:03:34,502 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:03:40,755 storeadmin Edit product accessed: 'hbbkb' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:03:44,205 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:03:48,837 storeadmin Edit product accessed: 'hubdhab' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:03:51,964 storeadmin Edit product accessed: 'hubdhab' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:03:51,980 storeadmin Main image updated for 'hubdhab' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:03:52,003 storeadmin Product UPDATED: 'hubdhab' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 15:03:52,158 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:03:55,880 storeadmin Edit product accessed: 'Kids Bed' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:04:00,422 storeadmin Edit product accessed: 'Kids Bed' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:04:00,437 storeadmin Main image updated for 'Kids Bed' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:04:00,463 storeadmin Product UPDATED: 'Kids Bed' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 15:04:00,644 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:04:07,119 storeadmin Edit product accessed: 'Outdoor bench' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:04:10,263 storeadmin Edit product accessed: 'Outdoor bench' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:04:10,280 storeadmin Main image updated for 'Outdoor bench' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:04:10,310 storeadmin Product UPDATED: 'Outdoor bench' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 15:04:10,474 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:04:15,557 storeadmin Edit product accessed: 'Peps Matresss' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:04:18,023 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:04:21,907 storeadmin Edit product accessed: 'reclainer 353543' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:04:27,269 storeadmin Edit product accessed: 'reclainer 353543' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:04:27,280 storeadmin Main image updated for 'reclainer 353543' | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 15:04:27,293 storeadmin Product UPDATED: 'reclainer 353543' | Store: TMS FURNITURES | User: admin@tms | IP: 127.0.0.1
+INFO 2025-12-24 15:04:27,438 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 16:33:58,713 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 16:36:29,144 storeadmin Products page accessed | Store: TMS FURNITURES | User: admin@tms
+INFO 2025-12-24 19:21:22,924 storeadmin Dashboard accessed
+INFO 2025-12-24 19:21:28,321 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 19:21:40,897 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 19:26:08,154 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 19:30:03,311 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 19:30:08,141 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 19:30:58,599 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-24 19:31:04,483 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 10:41:50,849 storeadmin Dashboard accessed
+INFO 2025-12-25 10:42:04,739 storeadmin Dashboard accessed (cache hit)
+INFO 2025-12-25 10:42:04,740 storeadmin Dashboard accessed
+INFO 2025-12-25 10:42:13,463 storeadmin Dashboard accessed (cache hit)
+INFO 2025-12-25 10:42:13,464 storeadmin Dashboard accessed
+INFO 2025-12-25 11:02:44,150 storeadmin Dashboard accessed
+INFO 2025-12-25 11:02:49,190 storeadmin Dashboard accessed (cache hit)
+INFO 2025-12-25 11:02:49,193 storeadmin Dashboard accessed
+INFO 2025-12-25 11:02:50,350 storeadmin Dashboard accessed (cache hit)
+INFO 2025-12-25 11:02:50,351 storeadmin Dashboard accessed
+INFO 2025-12-25 11:02:50,748 storeadmin Dashboard accessed (cache hit)
+INFO 2025-12-25 11:02:50,750 storeadmin Dashboard accessed
+INFO 2025-12-25 11:02:51,124 storeadmin Dashboard accessed (cache hit)
+INFO 2025-12-25 11:02:51,126 storeadmin Dashboard accessed
+INFO 2025-12-25 11:17:15,233 storeadmin Dashboard accessed
+INFO 2025-12-25 15:49:30,725 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 15:49:31,637 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 15:49:37,129 storeadmin Banners page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 15:49:42,671 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:52:06,691 storeadmin Edit product accessed: '4 seater' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:52:20,957 storeadmin Edit product accessed: '4 seater' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:52:21,087 storeadmin Product UPDATED: '4 seater' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-25 16:52:21,271 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:52:24,480 storeadmin Edit product accessed: '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:52:31,828 storeadmin Edit product accessed: '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:52:31,856 storeadmin Product UPDATED: '2 Seater Sofa' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-25 16:52:32,015 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:52:35,256 storeadmin Edit product accessed: 'Cot' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:52:43,045 storeadmin Edit product accessed: 'Cot' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:52:43,064 storeadmin Product UPDATED: 'Cot' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-25 16:52:43,231 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:53:11,422 storeadmin Edit product accessed: 'tv' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:53:18,112 storeadmin Edit product accessed: 'tv' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:53:18,133 storeadmin Product UPDATED: 'tv' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-25 16:53:18,296 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:53:21,747 storeadmin Edit product accessed: 'hbbkb' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:53:27,612 storeadmin Edit product accessed: 'hbbkb' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:53:27,635 storeadmin Product UPDATED: 'hbbkb' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-25 16:53:27,806 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:53:42,667 storeadmin Edit product accessed: 'Loveseat' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:53:51,741 storeadmin Edit product accessed: 'Loveseat' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:53:51,780 storeadmin Product UPDATED: 'Loveseat' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-25 16:53:51,921 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:53:58,116 storeadmin Edit product accessed: 'Single chair' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:54:04,049 storeadmin Edit product accessed: 'Single chair' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 16:54:04,074 storeadmin Product UPDATED: 'Single chair' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-25 16:54:04,223 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 18:07:46,445 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 18:07:49,529 storeadmin Edit product accessed: 'sofa 7 seater' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 18:07:53,119 storeadmin Edit product accessed: 'sofa 7 seater' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 18:07:53,144 storeadmin Main image updated for 'sofa 7 seater' | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 18:07:53,170 storeadmin Product UPDATED: 'sofa 7 seater' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-25 18:07:53,290 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-25 19:50:08,252 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 16:12:35,357 storeadmin Dashboard accessed
+INFO 2025-12-26 16:12:49,477 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 16:13:01,457 storeadmin Banners page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 16:13:05,570 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 16:43:42,433 storeadmin Dashboard accessed
+INFO 2025-12-26 17:36:00,770 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 17:39:22,934 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 17:39:22,927 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 17:39:23,816 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 17:39:42,471 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 17:40:02,849 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 17:40:37,976 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 17:40:46,355 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 17:42:01,300 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 17:45:56,915 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 17:45:59,657 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 17:47:28,850 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 17:47:30,329 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 17:47:39,901 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 17:48:03,865 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 17:48:09,570 storeadmin Leads page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 17:48:16,642 storeadmin Dashboard accessed
+INFO 2025-12-26 17:48:37,636 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 17:48:40,722 storeadmin Dashboard accessed (cache hit)
+INFO 2025-12-26 17:48:40,723 storeadmin Dashboard accessed
+INFO 2025-12-26 17:50:54,027 storeadmin Dashboard accessed (cache hit)
+INFO 2025-12-26 17:50:54,029 storeadmin Dashboard accessed
+INFO 2025-12-26 17:51:18,507 storeadmin Dashboard accessed (cache hit)
+INFO 2025-12-26 17:51:18,509 storeadmin Dashboard accessed
+INFO 2025-12-26 17:51:23,654 storeadmin Dashboard accessed (cache hit)
+INFO 2025-12-26 17:51:23,656 storeadmin Dashboard accessed
+INFO 2025-12-26 18:39:28,518 storeadmin Products page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 18:39:42,197 storeadmin Categories page accessed | Store: TMS FURNITURES | User: vd
+INFO 2025-12-26 18:39:48,045 storeadmin Dashboard accessed
+INFO 2025-12-27 14:45:03,270 storeadmin Product UPDATED: 'Bar Stools' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2025-12-27 14:45:30,647 storeadmin Product UPDATED: 'Wardrobe' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1

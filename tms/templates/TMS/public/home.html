@@ -29,7 +29,7 @@
 <meta property="og:url" content="{{ request.build_absolute_uri }}">
 
 
-<style>
+<!-- <style>
     .hover-card { 
         transition: all 0.4s ease; 
         cursor: pointer; 
@@ -56,7 +56,69 @@
         content: ''; position: absolute; right: 0; bottom: -10px;
         border-right: 10px solid transparent; border-top: 10px solid #e68900;
     }
+
+    /* RIBBON BADGES — LIGHTER */
+    .ribbon-deal, .ribbon-featured {
+        font-size: 0.85rem;
+        padding: 5px 16px;
+    }
     
+</style> -->
+
+
+<style>
+    /* OPTIMIZED HOVER — SMOOTH & LIGHTWEIGHT */
+    .hover-card {
+        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.35s ease;
+        will-change: transform;
+        overflow: hidden;
+    }
+    .hover-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
+    }
+
+    /* RIBBON BADGES — LIGHTER */
+    .ribbon-deal, .ribbon-featured {
+        font-size: 0.85rem;
+        padding: 5px 16px;
+    }
+
+    /* SWIPER ARROWS — LIGHTER */
+    .swiper-button-next,
+    .swiper-button-prev {
+        width: 40px !important;
+        height: 40px !important;
+        background: rgba(255,255,255,0.9);
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        color: #333 !important;
+        opacity: 0.8;
+    }
+    .swiper-button-next:hover,
+    .swiper-button-prev:hover {
+        background: #25D366;
+        color: white !important;
+        opacity: 1;
+        transform: scale(1.1);
+    }
+
+    /* HERO ARROWS — ONLY SHOW ON HOVER */
+    .hero-swiper .arrow-btn {
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+    .hero-swiper:hover .arrow-btn {
+        opacity: 0.9;
+    }
+
+    /* CATEGORY CARDS — LIGHTER HOVER */
+    .category-card {
+        transition: transform 0.3s ease;
+    }
+    .category-card:hover {
+        transform: translateY(-6px);
+    }
 </style>
 {% endblock %}
 
@@ -72,14 +134,14 @@
                 {% if banner.link %}
                 <a href="{{ banner.link }}" class="d-block w-100 h-100 ripple">
                 {% endif %}
-                    <img src="{{ banner.image_desktop.url }}" loading="lazy"
-                         class="d-none d-lg-block w-100 h-100" style="object-fit: cover;" alt="{{ banner.caption }}">
+                    <img src="{{ banner.image_desktop.url }}" fetchpriority="high" loading="lazy"
+                         class="d-none d-lg-block w-100 h-100" style="object-fit: contain;" alt="{{ banner.caption }}">
                     {% if banner.image_tablet %}
-                    <img src="{{ banner.image_tablet.url }}" loading="lazy"
-                         class="d-none d-md-block d-lg-none w-100 h-100" style="object-fit: cover;" alt="{{ banner.caption }}">
+                    <img src="{{ banner.image_tablet.url }}" fetchpriority="high" loading="lazy"
+                         class="d-none d-md-block d-lg-none w-100 h-100" style="object-fit: contain;" alt="{{ banner.caption }}">
                     {% endif %}
-                    <img src="{{ banner.image_mobile.url }}" loading="lazy"
-                         class="d-block d-md-none w-100 h-100" style="object-fit: cover;" alt="{{ banner.caption }}">
+                    <img src="{{ banner.image_mobile.url }}" fetchpriority="high" loading="lazy"
+                         class="d-block d-md-none w-100 h-100" style="object-fit: contain;" alt="{{ banner.caption }}">
                 {% if banner.link %}</a>{% endif %}
             </div>
             {% endfor %}
@@ -100,7 +162,7 @@
                     <a href="{% url 'all_products' %}" class="btn btn-warning btn-lg rounded-pill fw-bold shadow-lg border-0 px-5 mt-2 ripple">
                         SHOP NOW
                     </a>
-                    <a href="/stores/" class="btn btn-outline-warning btn-lg rounded-pill fw-bold border-3 shadow-lg px-5 mt-2 ripple" style="color: #FFD700; border-color: #FFD700;">
+                    <a href="/stores/" class="btn btn-outline-secondary btn-lg rounded-pill fw-bold border-3 shadow-lg px-5 mt-2 ripple" style="color: #FFD700; border-color: #FFD700;">
                         Visit Stores
                     </a>
                 </div>
@@ -119,7 +181,7 @@
         color: white !important; opacity: 0; transition: all 0.5s ease;
     }
     .hero-swiper:hover .arrow-btn { opacity: 1 !important; }
-    .arrow-btn:hover { background: white !important; color: #000 !important; transform: scale(1.15); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .arrow-btn:hover { color: #000 !important; transform: scale(1.15); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     .arrow-btn:after { font-size: 22px !important; font-weight: bold; }
     .swiper-pagination-bullet { width: 11px; height: 11px; background: rgba(255,255,255,0.5); margin: 0 6px !important; transition: all 0.4s; }
     .swiper-pagination-bullet-active { background: #FFD700; transform: scale(1.5); box-shadow: 0 0 20px rgba(255,215,0,0.8); }
@@ -139,31 +201,48 @@
     });
 </script>
 
-<!-- DEALS OF THE DAY -->
+<!-- FLASH DEALS -->
 {% if has_deals %}
-<section class="py-3" style="background-color:rgb(21, 47, 70)">
-    <div class="container-fluid px-4">
-           <h2 class="text-center text-white mb-3 fw-bold fs-1" data-aos="zoom-in">DEALS OF THE DAY</h2>
-        <div class="swiper mySwiper deals-swiper">
-            <div class="swiper-wrapper">
-                {% for p in deals_of_day|slice:":20" %}
-                <div class="swiper-slide">
-                    <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
-                        <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
-                            <div class="position-absolute top-0 end-0 p-2">
-                                <span class="badge bg-warning text-white px-3 py-2 rounded-pill shadow-lg fw-bold">DEAL</span>
-                            </div>
-                            <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" 
-                                 class="card-img-top" style="height:230px;object-fit:cover;" loading="lazy" alt="{{ p.name }}">
-                            <div class="card-body text-center p-3 d-flex flex-column">
-                                <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ p.name }}</h6>
+<section class="py-3" style="background: rgb(21, 47, 70)">
+  <div class="container-fluid px-4 py-2">
+
+    <h2 class="text-center text-white mb-3 fw-bold fs-1">
+      FLASH DEALS
+    </h2>
+
+    <div class="position-relative">
+
+      <div class="product-scroll">
+        {% for p in deals_of_day|slice:":20" %}
+        <div class="product-card">
+          <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/"
+             class="text-decoration-none text-dark">
+
+            <div class="card h-100 shadow hover-card border-0 position-relative">
+
+              <div class="position-absolute top-0 end-0 p-2" style="z-index:10;">
+                <span class="badge fw-bold text-white px-3 py-2 rounded-pill"
+                      style="background: orangered;">
+                  DEAL
+                </span>
+              </div>
+
+              <img
+                src="{{ p.main_image.0.image.url|default:'https://via.placeholder.com/300' }}"
+                class="card-img-top"
+                style="height:230px;object-fit:cover;"
+                loading="lazy"
+                alt="{{ p.name }}">
+
+              <div class="card-body text-center d-flex flex-column">
+              <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ p.name }}</h6>
                                 {% if p.short_desc %}<p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>{% endif %}
                                 <div class="mt-auto text-center">
                                     {% if p.offer_price and p.offer_price < p.regular_price %}
                                     <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
                                         <span class="text-success fs-5 fw-medium">₹{{ p.offer_price }}</span>
-                                        <span style=" font-size: 14px;color: #878787;text-decoration: line-through;">₹{{ p.regular_price }}</span>
-                                        <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
+                                       <span style=" font-size: 14px;color: #878787;text-decoration: line-through;">₹{{ p.regular_price }}</span>
+                                         <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
                                     </div>
                                     {% else %}
                                     <span class="text-success fs-5 fw-bold">₹{{ p.regular_price }}</span>
@@ -172,23 +251,27 @@
                                 <div class="mt-auto text-center pt-2">
                                     <small class="text-muted d-block fw-medium">{{ p.store.name }} • {{ p.store.city }}</small>
                                 </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                {% endfor %}
+                                </div>
+
             </div>
-            <div class="swiper-button-next text-danger"></div>
-            <div class="swiper-button-prev text-danger"></div>
-            <div class="text-center mt-3">
-            <a href="{% url 'all_products' %}?filter=deals" class="btn btn-light btn-lg px-5 py-2 rounded-pill shadow-lg text-dark fw-bold ripple">
-                View All Deals
-            </a>
+          </a>
         </div>
-        </div>
+        {% endfor %}
+      </div>
+
     </div>
+
+    <div class="text-center mt-3">
+      <a href="{% url 'all_products' %}?filter=deals"
+         class="btn btn-light btn-lg px-5 py-2 rounded-pill shadow fw-bold">
+        View All Deals
+      </a>
+    </div>
+
+  </div>
 </section>
 {% endif %}
+
 
 <!-- BEST SELLERS -->
 {% if has_best_sellers %}
@@ -203,9 +286,9 @@
                         <div class="position-absolute top-0 start-0 p-2">
                             <span class="badge bg-warning text-dark px-4 py-2 rounded-pill shadow-lg fw-bold">BEST SELLER</span>
                         </div>
-                        <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" 
-                             class="card-img-top" style="height:230px;object-fit:cover;" loading="lazy" alt="{{ p.name }}">
-                        <div class="card-body text-center p-3 d-flex flex-column">
+                       <img src="{{ p.main_image.0.image.url|default:'https://via.placeholder.com/300' }}" 
+     class="card-img-top" style="height:230px;object-fit:cover;" loading="lazy" fetchpriority="high" alt="{{ p.name }}">
+      <div class="card-body text-center p-3 d-flex flex-column">
                             <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ p.name }}</h6>
                             {% if p.short_desc %}<p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>{% endif %}
                             <div class="mt-auto text-center">
@@ -237,58 +320,84 @@
 </section>
 {% endif %}
 
-<!-- LIMITED DEAL -->
+
+<!-- LIMITED DEALS -->
 {% if has_limited_deals %}
 <section class="py-3" style="background: rgb(21, 47, 70)">
-    <div class="container-fluid px-4">
-        <h2 class="text-center text-white mb-3 fw-bold fs-1" data-aos="zoom-in">LIMITED DEALS - ENDS SOON</h2>
-        <div class="swiper mySwiper limited-swiper">
-            <div class="swiper-wrapper ">
-                {% for p in limited_deals|slice:":20" %}
-                <div class="swiper-slide">
-                    <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none text-white">
-                        <div class="card h-100 shadow hover-card border-0 bg-white text-dark">
-                            <div class="position-absolute top-0 start-0 p-2">
-                                <span class="badge bg-danger text-white px-4 py-2 rounded-pill shadow-lg fw-bold">LIMITED DEAL</span>
-                            </div>
-                            <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" 
-                                 class="card-img-top" style="height:230px;object-fit:cover;" loading="lazy" alt="{{ p.name }}">
-                            <div class="card-body text-center p-3 d-flex flex-column">
-                                <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ p.name }}</h6>
-                                {% if p.short_desc %}<p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>{% endif %}
-                                <div class="mt-auto text-center">
-                                    {% if p.offer_price and p.offer_price < p.regular_price %}
-                                    <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                                        <span class="text-success fs-5 fw-medium">₹{{ p.offer_price }}</span>
-                                        <span style=" font-size: 14px;color: #878787;text-decoration: line-through;">₹{{ p.regular_price }}</span>
-                                        <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
-                                    </div>
-                                    {% else %}
-                                    <span class="text-success fs-5 fw-bold">₹{{ p.regular_price }}</span>
-                                    {% endif %}
-                                </div>
-                                <div class="mt-auto text-center pt-2">
-                                    <small class="text-muted d-block fw-medium">{{ p.store.name }} • {{ p.store.city }}</small>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                {% endfor %}
-            </div>
-                
-            <div class="swiper-button-next text-danger"></div>
-            <div class="swiper-button-prev text-danger"></div>
+  <div class="container-fluid px-4 py-2">
 
-             <div class="text-center mt-3">
-            <a href="{% url 'all_products' %}?filter=limited" class="btn btn-outline-danger rounded-pill px-5 py-2 fw-bold ripple">
-                View All Limited Deals
-            </a>
+    <h2 class="text-center text-white mb-3 fw-bold fs-1">
+      LIMITED DEALS – ENDS SOON
+    </h2>
+
+    <div class="position-relative">
+
+      <div class="product-scroll">
+        {% for p in limited_deals|slice:":20" %}
+        <div class="product-card">
+          <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/"
+             class="text-decoration-none text-dark">
+
+            <div class="card h-100 shadow hover-card border-0 position-relative">
+
+              <div class="position-absolute top-0 start-0 p-2" style="z-index:10;">
+                <span class="badge bg-danger px-4 py-2 rounded-pill fw-bold">
+                  LIMITED DEAL
+                </span>
+              </div>
+
+              <img
+                src="{{ p.main_image.0.image.url|default:'https://via.placeholder.com/300' }}"
+                class="card-img-top"
+                style="height:230px;object-fit:cover;"
+                loading="lazy"
+                alt="{{ p.name }}">
+
+              <div class="card-body text-center d-flex flex-column">
+                <h6 class="fw-bold mb-2 line-clamp-2 fs-6">{{ p.name }}</h6>
+
+                {% if p.short_desc %}
+                <p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>
+                {% endif %}
+
+                <div class="mt-auto">
+                  {% if p.offer_price and p.offer_price < p.regular_price %}
+                  <div class="d-flex justify-content-center gap-2 flex-wrap">
+                    <span class="text-success fs-5 fw-medium">₹{{ p.offer_price }}</span>
+                    <span class="text-muted text-decoration-line-through fs-6">
+                      ₹{{ p.regular_price }}
+                    </span>
+                    <span class="badge bg-danger">{{ p.discount_percent }}% OFF</span>
+                  </div>
+                  {% else %}
+                  <span class="text-success fs-5 fw-bold">₹{{ p.regular_price }}</span>
+                  {% endif %}
+                </div>
+
+                <small class="text-muted pt-2">
+                  {{ p.store.name }} • {{ p.store.city }}
+                </small>
+              </div>
+
+            </div>
+          </a>
         </div>
-        </div>
+        {% endfor %}
+      </div>
+
     </div>
+
+    <div class="text-center mt-3">
+      <a href="{% url 'all_products' %}?filter=limited"
+         class="btn btn-outline-danger rounded-pill px-5 py-2 fw-bold">
+        View All Limited Deals
+      </a>
+    </div>
+
+  </div>
 </section>
 {% endif %}
+
 
 <!-- SPECIAL OFFERS -->
 {% if has_special_offers %}
@@ -303,9 +412,9 @@
                         <div class="position-absolute top-0 start-0 p-2 z-10">
                             <span class="badge text-white px-4 py-2 rounded-pill shadow-lg fw-bold" style="background: linear-gradient(45deg, #9C27B0, #E91E63);">SPECIAL OFFER</span>
                         </div>
-                        <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" 
-                             class="card-img-top" style="height:230px;object-fit:cover;" loading="lazy" alt="{{ p.name }}">
-                        <div class="card-body text-center p-3 d-flex flex-column">
+                        <img src="{{ p.main_image.0.image.url|default:'https://via.placeholder.com/300' }}" 
+     class="card-img-top" style="height:230px;object-fit:cover;" loading="lazy" fetchpriority="high" alt="{{ p.name }}">
+     <div class="card-body text-center p-3 d-flex flex-column">
                             <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ p.name }}</h6>
                             {% if p.short_desc %}<p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>{% endif %}
                             <div class="mt-auto text-center">
@@ -347,14 +456,12 @@
             <div class="col-6 col-sm-4 col-md-3 col-lg-2-4" data-aos="fade-up">
                 <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none text-white ">
                     <div class="card h-100 shadow hover-card border-0 bg-white text-dark">
-                        {% if p.is_new_arrival %}
-                        <div class="position-absolute top-0 end-0 p-2">
-                            <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow-lg fw-bold">NEW</span>
-                        </div>
-                        {% endif %}
-                        <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" 
-                             class="card-img-top" style="height:230px;object-fit:cover;" loading="lazy" alt="{{ p.name }}">
-                        <div class="card-body text-center p-3 d-flex flex-column">
+                       {% if p.is_new_arrival %}
+<div class="position-absolute top-0 end-0 p-2">
+    <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow-lg fw-bold">NEW</span>
+</div>
+{% endif %}
+                       <img src="{{ p.main_image.0.image.url|default:'https://via.placeholder.com/300' }}"  class="card-img-top" style="height:230px;object-fit:cover;" loading="lazy"  fetchpriority="high" alt="{{ p.name }}"> <div class="card-body text-center p-3 d-flex flex-column">
                             <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ p.name }}</h6>
                             {% if p.short_desc %}<p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>{% endif %}
                             <div class="mt-auto text-center">
@@ -389,23 +496,35 @@
 <!-- FEATURED PRODUCTS -->
 {% if featured_products %}
 <section class="py-3 bg-white">
-    <div class="container-fluid px-4 py-2">
-       
-             <h2 class="text-center mb-3 fw-bold fs-1" data-aos="zoom-in">FEATURED PRODUCTS</h2>
-            
-        <div class="swiper mySwiper featured-swiper">
-            <div class="swiper-wrapper">
-                {% for p in featured_products|slice:":20" %}
-                <div class="swiper-slide">
-                    <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none ">
-                        <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
-                            {% if p.discount_percent > 0 %}
-                            <div class="position-absolute bg-warning text-dark fw-bold px-3 py-1" style="top:20px;left:-10px;z-index:10;">-{{ p.discount_percent }}%</div>
-                            {% endif %}
-                            <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" 
-                                 class="card-img-top" style="height:230px;object-fit:cover;" loading="lazy" alt="{{ p.name }}">
-                            <div class="card-body text-center p-3 d-flex flex-column">
-                                <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ p.name }}</h6>
+  <div class="container-fluid px-4 py-2">
+
+    <h2 class="text-center mb-3 fw-bold fs-1">FEATURED PRODUCTS</h2>
+
+    <div class="position-relative">
+
+      <!-- REMOVE d-flex COMPLETELY -->
+      <div class="product-scroll">
+        {% for p in featured_products|slice:":20" %}
+        <div class="product-card">
+          <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
+            <div class="card h-100 shadow hover-card border-0 position-relative">
+
+              {% if p.discount_percent > 0 %}
+              <div class="position-absolute bg-warning fw-bold px-3 py-1"
+                   style="top:15px;left:-10px;z-index:10;">
+                -{{ p.discount_percent }}%
+              </div>
+              {% endif %}
+
+              <img
+                src="{{ p.main_image.0.image.url|default:'https://via.placeholder.com/300' }}"
+                class="card-img-top"
+                style="height:220px;object-fit:cover;"
+                loading="lazy"
+                alt="{{ p.name }}">
+
+              <div class="card-body text-center d-flex flex-column">
+                 <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ p.name }}</h6>
                                 {% if p.short_desc %}<p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>{% endif %}
                                 <div class="mt-auto text-center">
                                     {% if p.offer_price and p.offer_price < p.regular_price %}
@@ -421,102 +540,197 @@
                                 <div class="mt-auto text-center pt-2">
                                     <small class="text-muted d-block fw-medium">{{ p.store.name }} • {{ p.store.city }}</small>
                                 </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                {% endfor %}
+                                </div>
+
             </div>
-            <div class="swiper-button-next text-success"></div>
-            <div class="swiper-button-prev text-success"></div>
-       <div class="text-center mt-3">
-            <a href="{% url 'all_products' %}?filter=limited" class="btn btn-light btn-lg px-5 py-2 rounded-pill shadow-lg text-dark fw-bold ripple">
-                View All Featured
-            </a>
+          </a>
         </div>
-       
-        </div>
+        {% endfor %}
+      </div>
+
     </div>
+
+    <div class="text-center mt-3">
+      <a href="{% url 'all_products' %}?filter=featured"
+         class="btn btn-light btn-lg px-5 rounded-pill shadow fw-bold">
+        View All Featured
+      </a>
+    </div>
+
+  </div>
 </section>
 {% endif %}
 
-<style>
-    .hover-card { transition: all 0.35s ease; overflow: hidden; }
-    .hover-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important; }
-    .swiper-button-next, .swiper-button-prev {
-        width: 40px !important; height: 40px !important;top: var(--swiper-navigation-top-offset, 40%);
-        background: white; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        color: #333 !important;
-    }
-    .swiper-button-next:hover, .swiper-button-prev:hover { background: #25D366; color: white !important; }
-    .swiper-button-next:after, .swiper-button-prev:after { font-size: 18px !important; font-weight: bold; }
+
+<style>/* EXACT 5 CARDS — NO PARTIAL EVER */
+.product-scroll {
+  display: grid;
+  grid-auto-flow: column;
+
+  /* Reduced gap for tighter look */
+  gap: 20px;
+
+  /* EXACT 5 cards math */
+  grid-auto-columns: calc((100% - (4 * 20px)) / 5);
+
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding-bottom: 8px;
+}
+
+.product-card {
+  scroll-snap-align: start;
+}
+
+/* Scrollbar */
+.product-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+.product-scroll::-webkit-scrollbar-thumb {
+  background: #d1d1d1;
+  border-radius: 5px;
+}
+
+/* Hover effect */
+.hover-card {
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.hover-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 28px rgba(0,0,0,.14);
+}
+
+/* RESPONSIVE TUNING */
+@media (max-width: 1200px) {
+  .product-scroll {
+    gap: 12px;
+    grid-auto-columns: calc((100% - (3 * 12px)) / 4);
+  }
+}
+
+@media (max-width: 768px) {
+  .product-scroll {
+    gap: 12px;
+    grid-auto-columns: calc((100% - (1 * 12px)) / 2);
+  }
+}
+
 </style>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        new Swiper('.featured-swiper', { slidesPerView: 2, spaceBetween: 20, loop: true, autoplay: { delay: 4000 }, navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }, breakpoints: { 576: { slidesPerView: 2 }, 768: { slidesPerView: 3 }, 992: { slidesPerView: 4 }, 1200: { slidesPerView: 5 } } });
-        new Swiper('.limited-swiper', { slidesPerView: 2, spaceBetween: 20, loop: true, autoplay: { delay: 3500 }, navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }, breakpoints: { 576: { slidesPerView: 2 }, 768: { slidesPerView: 3 }, 992: { slidesPerView: 4 }, 1200: { slidesPerView: 5 } } });
-        new Swiper('.deals-swiper', { slidesPerView: 2, spaceBetween: 20, loop: true, autoplay: { delay: 3000 }, navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }, breakpoints: { 576: { slidesPerView: 2 }, 768: { slidesPerView: 3 }, 992: { slidesPerView: 4 }, 1200: { slidesPerView: 5 } } });
-    });
-</script>
 
 <!-- CATEGORIES -->
 <section class="py-3" style="background-color: rgb(21, 47, 70);">
-    <div class="container-fluid px-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="text-white fw-bold fs-2 mb-0">Shop by Category</h2>
-            <a href="{% url 'categories_page' %}" class="btn btn-outline-danger fw-bold rounded-pill px-4 ripple">View All</a>
-        </div>
-        <div class="swiper mySwiper category-swiper">
-            <div class="swiper-wrapper py-1">
-                {% for cat in categories_all %}
-                <div class="swiper-slide">
-                    <a href="{% url 'all_products' %}?category={{ cat.slug }}" class="d-block text-center ripple">
-                        <div class="category-card position-relative mb-3 mx-auto" style="width: 110px;">
-                            {% if cat.image %}
-                            <img src="{{ cat.image.url }}" loading="lazy" class="rounded-circle shadow-lg border border-5 border-white" style="width: 100px; height: 100px; object-fit: cover; z-index: 2; position: relative;" alt="{{ cat.name }}">
-                            {% else %}
-                            <div class="d-flex align-items-center justify-content-center rounded-circle shadow-lg border border-5 border-white" style="width: 100px; height: 100px; background: linear-gradient(135deg, #ec4899, #f43f5e); z-index: 2; position: relative;">
-                                <i class="fas fa-chair text-white fs-2"></i>
-                            </div>
-                            {% endif %}
-                        </div>
-                        <h6 class="fw-bold text-white mt-3 mb-0">{{ cat.name }}</h6>
-                    </a>
-                </div>
-                {% endfor %}
-            </div>
-            <div class="swiper-button-next text-primary"></div>
-            <div class="swiper-button-prev text-primary"></div>
-        </div>
+  <div class="container-fluid px-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="text-white fw-bold fs-2 mb-0">Shop by Category</h2>
+      <a href="{% url 'categories_page' %}"
+         class="btn btn-outline-danger fw-bold rounded-pill px-4 ripple">
+        View All
+      </a>
     </div>
+
+    <div class="position-relative">
+
+      <!-- SAME STRUCTURE AS FEATURED -->
+      <div class="category-scroll">
+        {% for cat in categories_all %}
+        <div class="category-card">
+          <a href="{% url 'all_products' %}?category={{ cat.slug }}"
+             class="d-flex flex-column align-items-center text-decoration-none">
+
+            {% if cat.image %}
+            <img
+              src="{{ cat.image.url }}"
+              loading="lazy"
+              class="rounded-circle shadow-lg border border-4 border-white"
+              alt="{{ cat.name }}">
+            {% else %}
+            <div class="fallback-circle d-flex align-items-center justify-content-center rounded-circle shadow-lg border border-4 border-white">
+              <i class="fas fa-tags text-white fs-3"></i>
+            </div>
+            {% endif %}
+
+            <h6 class="fw-bold text-white mt-3 text-center">{{ cat.name }}</h6>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+
+    </div>
+
+  </div>
 </section>
 
-<style>
-    .category-card { transition: all 0.3s ease; }
-    .category-card:hover { transform: translateY(-5px) scale(1.00); }
-    .category-card:hover h6 { color: #e91e63 !important; }
-    .category-swiper { padding: 20px 0; overflow: hidden; }
-   
+<style>/* CATEGORY SCROLL — NO PARTIAL EVER */
+.category-scroll {
+  display: grid;
+  grid-auto-flow: column;
+
+  /* tighter than products */
+  gap: 24px;
+
+  /* EXACT 8 categories visible */
+  grid-auto-columns: calc((100% - (7 * 24px)) / 8);
+
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding-bottom: 10px;
+}
+
+.category-card {
+  scroll-snap-align: start;
+  text-align: center;
+}
+
+/* Category image size */
+.category-card img,
+.fallback-circle {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
+
+/* Fallback gradient */
+.fallback-circle {
+  background: linear-gradient(135deg, #ec4899, #f43f5e);
+}
+
+/* Scrollbar */
+.category-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+.category-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.4);
+  border-radius: 5px;
+}
+
+/* Hover */
+.category-card a:hover img {
+  transform: scale(1.06);
+}
+.category-card img {
+  transition: transform .25s ease;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1200px) {
+  .category-scroll {
+    grid-auto-columns: calc((100% - (5 * 20px)) / 6);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .category-scroll {
+    grid-auto-columns: calc((100% - (3 * 16px)) / 3);
+    gap: 16px;
+  }
+}
 </style>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        new Swiper('.category-swiper', {
-            slidesPerView: 3,
-            spaceBetween: 20,
-            loop: true,
-            autoplay: { delay: 3000, disableOnInteraction: false },
-            navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-            breakpoints: {
-                576: { slidesPerView: 4 },
-                768: { slidesPerView: 5 },
-                992: { slidesPerView: 6 },
-                1200: { slidesPerView: 8 }
-            }
-        });
-    });
-</script>
 
 <!-- OUR STORES -->
 <section class="py-3 bg-light">
@@ -527,7 +741,7 @@
             <div class="col-lg-3 col-md-4 col-6" data-aos="flip-left">
                 <div class="card h-100 text-center shadow-sm border-0 hover-card ripple">
                     {% if store.logo %}
-                    <img src="{{ store.logo.url }}" class="card-img-top p-3" style="height:160px;object-fit:contain;" loading="lazy" alt="{{ store.name }}">
+                    <img src="{{ store.logo.url }}" class="card-img-top p-3" style="height:160px;object-fit:contain;" loading="lazy" fetchpriority="high" alt="{{ store.name }}">
                     {% endif %}
                     <div class="card-body">
                         <h5 class="fw-bold text-primary">{{ store.name }}</h5>
@@ -552,10 +766,3 @@
 
 {% endblock %}
 
-{% block extra_js %}
-<script>
-    if (window.innerWidth > 768) {
-        AOS.init({ duration: 500, once: true });
-    }
-</script>
-{% endblock %}

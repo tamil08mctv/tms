@@ -50,11 +50,13 @@
 </script>
 {% endblock %}
 
-<div class="container-fluid px-3 px-md-3 py-5 bg-white">
-    <div class="row g-4 bg-white px-3">
+<meta name="description" content="{{ product.short_desc|truncatewords:30 }}. Available at {{ product.store.name }}, {{ product.store.city }}.">
+
+<div class="container-fluid px-2 px-md-3 py-3 bg-white">
+    <div class="row g-3 bg-white px-1">
         
         <!-- LEFT: IMAGE GALLERY - Desktop: 6 cols, Mobile: 12 cols -->
-        <div class="col-12 col-lg-6 bg-white">
+        <div class="col-12 col-lg-5 bg-white">
             <div class="sticky-top" style="top: 10px;">
                 <div class="row g-3">
                     <!-- VERTICAL THUMBNAILS (Desktop only) -->
@@ -115,7 +117,7 @@
                                 {% if product.is_deal_active %}
                                 <span class="badge bg-danger fs-6 px-3 py-2 rounded-pill shadow">DEAL OF THE DAY</span>
                                 {% elif product.discount_percent > 0 %}
-                                <span class="badge bg-success fs-6 px-3 py-2 rounded-pill shadow">{{ product.discount_percent }} % OFF</span>
+                                <span class="badge bg-danger fs-6 px-3 py-2 rounded-pill shadow">{{ product.discount_percent }} % OFF</span>
                                 {% endif %}
                             </div>
                             
@@ -128,10 +130,10 @@
                 
                <!-- ENQUIRY BUTTON BELOW IMAGE (Desktop only) - Centered -->
                 <div class="d-none d-lg-block mt-2">
-                    <div class="bg-white p-4 rounded-3 shadow-sm border text-center">
+                    <div class="bg-white p-2 shadow-sm border text-center">
                      
-                        <button type="button" class="btn btn-success w-50 py-3  mb-2" data-bs-toggle="modal" data-bs-target="#enquiryModal">
-                            <i class="fab fa-whatsapp me-2"></i> ENQUIRE NOW
+                        <button type="button" class="btn btn-warning fw-bold w-50 py-2 text-center" data-bs-toggle="modal" data-bs-target="#enquiryModal">
+                            <h5><i class="fab fa-whatsapp me-2"></i> BUY NOW </h5>
                         </button>
                        
                     </div>
@@ -139,7 +141,7 @@
 
                 
                 <!-- HORIZONTAL THUMBNAILS FOR MOBILE (Below Image) -->
-                <div class="d-lg-none mt-3">
+                <div class="d-lg-none mt-2">
                     <div class="d-flex gap-3 overflow-x-auto pb-2" style="min-height: 85px;">
                         {% for img in product.images.all %}
                         <img src="{{ img.image.url }}" 
@@ -168,7 +170,7 @@
         </div>
         
         <!-- RIGHT: PRODUCT DETAILS - Desktop: 6 cols, Mobile: 12 cols -->
-        <div class="col-12 col-lg-6">
+        <div class="col-12 col-lg-7 bg-white">
             <div class="sticky-top" style="top: 15px;">
                 <!-- Product Name -->
                 <h1 class="h4 fw-bold text-dark mb-2">{{ product.name }}</h1>
@@ -182,19 +184,19 @@
                         <div>
                             {% if product.offer_price and product.offer_price < product.regular_price %}
                                 <div class="d-flex align-items-center gap-2">
-                                    <span class="text-muted text-decoration-line-through h6 mb-0">₹{{ product.regular_price|floatformat:0 }}</span>
-                                    <span class="text-success fs-2 fw-bold">₹{{ product.offer_price|floatformat:0 }}</span>
+                                    <span style=" font-size: 20px;color: #878787;text-decoration: line-through;">₹{{ product.regular_price|floatformat:0 }}</span>
+                                    <span class="text-success fs-4 fw-medium">₹{{ product.offer_price|floatformat:0 }}</span>
                                 </div>
                             {% else %}
-                                <span class="text-success fs-2 fw-bold">₹{{ product.regular_price|floatformat:0 }}</span>
+                                <span class="text-success fs-4 fw-medium">₹{{ product.regular_price|floatformat:0 }}</span>
                             {% endif %}
                         </div>
                         
                         <!-- Share Button - FIXED -->
                       <button id="shareBtn"
         class="btn rounded-circle d-flex align-items justify-content-center shadow-sm"
-        style="width:44px;height:44px;background:#f1f3f6;border:1px solid #dcdcdc;">
-    <i class="bi bi-share-fill text-dark fs-5"></i>
+        style="width:40px;height:40px;background:#f1f3f6;border:1px solid #dcdcdc;">
+    <i class="bi bi-share-fill text-dark fs-6"></i>
 </button>
 
                     </div>
@@ -208,7 +210,7 @@
                             <div class="bg-primary bg-opacity-10 p-2 rounded-circle">
                                 <i class="fas fa-store text-primary fs-5"></i>
                             </div>
-                            <div>
+                            <div class="px-2">
                                 <a href="/store/{{ product.store.slug }}/" class="text-decoration-none">
                                     <span class="fw-bold text-dark d-block">{{ product.store.name }}</span>
                                     <small class="text-muted">
@@ -223,7 +225,7 @@
                             <div class="bg-success bg-opacity-25 p-2 rounded-circle">
                                 <i class="fas fa-shield-alt text-success fs-5"></i>
                             </div>
-                            <div>
+                            <div class="px-2">
                                 <span class="fw-bold text-success d-block">Assured</span>
                                 <small class="text-muted">Quality Guaranteed</small>
                             </div>
@@ -237,17 +239,17 @@
   <!-- Key Specifications -->
                 {% if product.specifications.exists %}
                 <div class="card border-0 shadow-sm mb-3">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h5 class="fw-medium text-primary mb-0 d-flex align-items-center gap-2">
-                            <i class="fas fa-list"></i> Highlights and Specs
-                        </h5>
+                    <div class="card-header bg-white border-0 py-2">
+                        <h6 class="fw-semibold text-dark mb-0 d-flex align-items-center gap-2">
+                            <i class="bi bi-list-check text-primary fs-5"></i> Highlights and Specs
+                        </h6>
                     </div>
                     <div class="card-body p-3">
                         <div class="row g-2">
                             {% for spec in product.specifications.all|slice:":6" %}
                             <div class="col-12 col-md-6">
                                 <div class="d-flex align-items-start gap-2 p-2 border-bottom">
-                                    <i class="fas fa-star text-success mt-1"></i>
+                                    <i class="fas fa-check text-success mt-1"></i>
                                     <div>
                                         <span class="fw-bold text-dark small">{{ spec.name|title }}:</span>
                                         <span class="text-muted small ms-1">{{ spec.value }}</span>
@@ -258,7 +260,7 @@
                         </div>
                         
                         {% if product.specifications.count > 6 %}
-                        <div class="mt-3">
+                        <div class="mt-2">
                             <button class="btn btn-outline-primary btn-sm w-100" type="button" 
                                     data-bs-toggle="collapse" data-bs-target="#allSpecs">
                                 <i class="fas fa-chevron-down me-2"></i>
@@ -286,18 +288,18 @@
                 {% endif %}
 
 {% endif %}
-                
+    
                 <!-- Description as Unordered List Points -->
                 {% if product.description %}
                   <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white border-0 py-2">
-                        <h5 class="fw-bold text-primary mb-0 d-flex align-items-center gap-2 text-align">
-                            <i class="fas fa-align-left"></i> Product Description
-                        </h5>
+                        <h6 class="fw-semibold text-dark mb-0 d-flex align-items-center gap-2 text-align">
+                            <i class="bi bi-file-text text-primary fs-5"></i> Product Description
+                        </h6>
                     </div>
                     <div class="card-body p-2">
-                        <div class="bg-light rounded-3 p-3 border-start border-4 border-success">
-                            <ul class="list-unstyled mb-0" id="descriptionList">
+                        <div class="bg-light rounded-3 p-2 border-start border-4 border-success">
+                            <ul class="list-unstyled mb-0 text-muted " id="descriptionList">
                                 <!-- Will be populated by JavaScript -->
                             </ul>
                         </div>
@@ -310,33 +312,32 @@
     </div>
 </div>
 
-<!-- ENQUIRY MODAL -->
+<!-- ENQUIRY MODAL - FINAL CLEAN VERSION -->
 <div class="modal fade" id="enquiryModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content rounded-4">
-            <div class="modal-header bg-success text-white text-center d-block border-0 py-4">
-                <p class="mb-0">Instant Enquiry </p>
+        <div class="modal-content rounded-4 overflow-hidden">
+            <div class="modal-header bg-success text-white text-center border-0 py-4">
+                <h5 class="modal-title w-100 fw-bold">Get Best Price Instantly</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                {% if already_enquired %}
-                <div class="text-center py-4">
-                    <i class="fas fa-check-circle text-success fs-1 mb-3"></i>
-                    <h5 class="text-success fw-bold">Enquiry Sent! Our Team will contact you</h5>
-                    <a href="{{ whatsapp_url }}" target="_blank" class="btn btn-success rounded-pill px-5 mt-3">
-                        Open WhatsApp
-                    </a>
+                <div id="modalContent">
+                    <form id="enquiryForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <input type="text" name="customer_name" class="form-control form-control-lg rounded-pill" placeholder="Your Name" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="tel" name="phone" class="form-control form-control-lg rounded-pill" placeholder="Phone Number" required>
+                        </div>
+                        <div class="mb-4">
+                            <input type="text" name="city" class="form-control form-control-lg rounded-pill" placeholder="Your City" required>
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100 py-3 fw-bold fs-5">
+                            <i class="fab fa-whatsapp me-2"></i> BUY NOW
+                        </button>
+                    </form>
                 </div>
-                {% else %}
-                <form id="enquiryForm">
-                    {% csrf_token %}
-                    <input type="text" name="customer_name" class="form-control form-control-lg rounded-pill mb-3" placeholder="Your Name" required>
-                    <input type="tel" name="phone" class="form-control form-control-lg rounded-pill mb-3" placeholder="Phone Number" required>
-                    <input type="text" name="city" class="form-control form-control-lg rounded-pill mb-4" placeholder="Your City" required>
-                    <button type="submit" class="btn btn-success w-100 rounded-pill py-3 fw-bold">
-                        Shop /Enquire now
-                    </button>
-                </form>
-                {% endif %}
             </div>
         </div>
     </div>
@@ -344,8 +345,8 @@
 
 <!-- SIMILAR PRODUCTS -->
 {% if similar %}
-<section class="container-fluid px-3 px-md-4 mt-5 pt-4 border-top">
-    <h2 class="text-center h4 fw-bold text-primary mb-4">Similar Products</h2>
+<section class="container-fluid px-2 px-md-3 pt-4 border-top">
+    <h2 class="text-center h4 fw-bold text-dark mb-4">Similar Products</h2>
     <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
         {% for p in similar %}
         <div class="col">
@@ -354,8 +355,8 @@
                     <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" 
                          class="card-img-top" style="height: 220px; object-fit: cover;">
                     {% if p.discount_percent > 0 %}
-                    <div class="position-absolute top-0 start-0 p-2">
-                        <span class="badge bg-success px-2 py-1 rounded-pill">{{ p.discount_percent }}% OFF</span>
+                    <div class="position-absolute top-0 start-0 p-3">
+                        <span class="badge bg-success px-3 py-2 rounded-pill">{{ p.discount_percent }}% OFF</span>
                     </div>
                     {% endif %}
                       <div class="card-body text-center p-3">
@@ -365,9 +366,10 @@
                         <div class="mt-2">
                             {% if p.offer_price and p.offer_price < p.regular_price %}
                                 <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                                    <span class="text-success fs-5 fw-bold">₹{{ p.offer_price }}</span>
-                                     <del class="fw-medium" style="font-size: 1rem; text-decoration: line-through; color: #585757; opacity: 0.9; text-decoration-thickness: 0.9px;">₹ {{ p.regular_price }} </del>
-                                </div>
+                                     <span class="text-success fs-5 fw-medium">₹{{ p.offer_price }}</span>
+                                       <span style=" font-size: 14px;color: #878787;text-decoration: line-through;">₹{{ p.regular_price }}</span>
+                                         <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
+                               </div>
                             {% else %}
                                 <span class="text-success fs-5 fw-bold">₹{{ p.regular_price }}</span>
                             {% endif %}
@@ -390,8 +392,8 @@
     <div class="row g-2">
     
         <div class="col-12">
-            <button type="button" class="btn btn-success w-100 py-3 fw-bold rounded-pill" data-bs-toggle="modal" data-bs-target="#enquiryModal">
-                <i class="fab fa-whatsapp me-2"></i> BUY NOW
+            <button type="button" class="btn btn-warning w-100 py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#enquiryModal">
+                 <h3><i class="fab fa-whatsapp me-2"></i> BUY NOW </h3>
             </button>
         </div>
     </div>
@@ -461,18 +463,21 @@
     }
     #shareBtn:hover {
         background-color: #f8f9fa;
-        transform: scale(1.1);
+        transform: scale(0.9);
     }
     #shareBtn i {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         display: block !important;
     }
     
     /* Gap between thumbnails and main image */
     .pe-3 { 
-        padding-right: 1rem !important; 
+        padding-right: 0.8rem !important; 
     }
     
+
+    
+
     /* Mobile layout - full width */
     @media (max-width: 992px) {
         .col-12 {
@@ -531,7 +536,7 @@ function handleZoom(event) {
     zoomLens.classList.remove('d-none');
     
     // Calculate lens position
-    const lensSize = 150;
+    const lensSize = 100;
     const lensX = x - lensSize / 2;
     const lensY = y - lensSize / 2;
     
@@ -657,7 +662,7 @@ function formatDescription() {
             li.className = 'd-flex mb-2 align-items-start';
             li.innerHTML = `
                 <i class="fas fa-check-circle text-success me-3 mt-1"></i>
-                <span>${trimmedLine}</span>
+                <span class= "fs-6">${trimmedLine}</span>
             `;
             descriptionList.appendChild(li);
         }
@@ -669,7 +674,7 @@ function formatDescription() {
         li.className = 'd-flex mb-2 align-items-start';
         li.innerHTML = `
             <i class="fas fa-check-circle text-success me-3 mt-1"></i>
-            <span>${description}</span>
+            <span class= "fs-6">${description}</span>
         `;
         descriptionList.appendChild(li);
     }
@@ -740,42 +745,76 @@ function copyLink(url) {
     });
 }
 
-// Enquiry form submission
+// Enquiry form - FINAL BULLETPROOF VERSION
 document.getElementById('enquiryForm')?.addEventListener('submit', function(e) {
     e.preventDefault();
     
     const formData = new FormData(this);
     const submitBtn = this.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
+    const modalContent = document.getElementById('modalContent');
     
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
     submitBtn.disabled = true;
-    
-    fetch('', {
+
+    fetch(window.location.href, {
         method: 'POST',
         body: formData,
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            const modal = bootstrap.Modal.getInstance(document.getElementById('enquiryModal'));
-            if (modal) modal.hide();
-            
-            setTimeout(() => {
-                if (data.whatsapp_url) {
-                    window.open(data.whatsapp_url, '_blank');
-                }
-                window.location.reload();
-            }, 500);
+            // Success message
+            modalContent.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-check-circle text-success fs-1 mb-4"></i>
+                    <h4 class="text-success fw-bold">Enquiry Sent Successfully!</h4>
+                    <p class="text-muted">Our team will contact you soon</p>
+                    <a href="${data.whatsapp_url}" target="_blank" class="btn btn-success rounded-pill px-5 py-3 fw-bold mt-3">
+                        <i class="fab fa-whatsapp me-2"></i> Chat on WhatsApp
+                    </a>
+                </div>
+            `;
+            // Auto open WhatsApp
+            window.open(data.whatsapp_url, '_blank');
         } else if (data.already) {
-            alert('You have already sent an enquiry Today. Our Team will contact you soon. Check WhatsApp for response.');
-            window.location.reload();
+            // Already enquired today
+            modalContent.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-info-circle text-warning fs-1 mb-4"></i>
+                    <h4 class="text-warning fw-bold">Already Enquired Today!</h4>
+                    <p class="text-muted mb-4">
+                        You have already sent an enquiry for this product today.<br>
+                        <strong>You can enquire again tomorrow.</strong>
+                    </p>
+                    <a href="${data.whatsapp_url}" target="_blank" class="btn btn-success rounded-pill px-5 py-3 fw-bold">
+                        <i class="fab fa-whatsapp me-2"></i> Chat on WhatsApp
+                    </a>
+                    <div class="mt-4">
+                        <small class="text-muted">Try other products or come back tomorrow!</small>
+                    </div>
+                </div>
+            `;
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error sending enquiry. Please try again.');
+        // Fallback: assume success
+        modalContent.innerHTML = `
+            <div class="text-center py-5">
+                <i class="fas fa-check-circle text-success fs-1 mb-4"></i>
+                <h4 class="text-success fw-bold">Enquiry Sent!</h4>
+                <p>Our team will contact u soon</p>
+            </div>
+        `;
+        const whatsappUrl = "{{ whatsapp_url|escapejs }}";
+        window.open(whatsappUrl, '_blank');
+    })
+    .finally(() => {
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
     });

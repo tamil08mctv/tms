@@ -6,7 +6,7 @@ from django.contrib.auth import views as auth_views
 # Import all views properly
 from .views.public import (
     home, all_products, store_list, store_detail, 
-    product_list, product_detail,
+    product_detail,
     categories_page,search_suggestions
 )
 from .views.storeadmin import (
@@ -27,7 +27,7 @@ urlpatterns = [
     path('products/', all_products, name='all_products'),
     path('stores/', store_list, name='store_list'),
     path('store/<slug:slug>/', store_detail, name='store_detail'),
-    path('store/<slug:store_slug>/products/', product_list, name='product_list'),
+  
     path('store/<slug:store_slug>/product/<slug:product_slug>/', product_detail, name='product_detail'),
     path('categories/', categories_page, name='categories_page'),
  

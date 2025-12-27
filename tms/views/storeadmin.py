@@ -72,8 +72,7 @@ def store_products(request):
         return redirect('login')
     
     store = request.user.storeadmin.store
-    storeadmin_logger.info(f"Products page accessed | Store: {store.name} | User: {request.user.username}")
-
+    
     categories = Category.objects.filter(store=store).order_by('name')
 
     ProductSpecFormSet = inlineformset_factory(
@@ -202,7 +201,7 @@ def store_products(request):
         products_qs = products_qs.filter(category__name__iexact=category_name)
 
     # PAGINATION — 120 per page (smooth)
-    paginator = Paginator(products_qs, 120)
+    paginator = Paginator(products_qs, 102)
     page_number = request.GET.get('page', 1)
     products = paginator.get_page(page_number)
 
@@ -232,8 +231,7 @@ def edit_product(request, pk):
     product = get_object_or_404(Product, pk=pk, store=store)
     client_ip = request.META.get('REMOTE_ADDR', 'unknown')
     
-    storeadmin_logger.info(f"Edit product accessed: '{product.name}' | Store: {store.name} | User: {request.user.username}")
-
+    
     ProductSpecFormSet = inlineformset_factory(
         Product, ProductSpecification,
         fields=('name', 'value'),
@@ -322,8 +320,7 @@ def store_banners(request):
         return redirect('login')
     
     store = request.user.storeadmin.store
-    storeadmin_logger.info(f"Banners page accessed | Store: {store.name} | User: {request.user.username}")
-
+    
     # AJAX Requests
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         action = request.POST.get('action')
@@ -396,8 +393,7 @@ def store_leads(request):
         return redirect('login')
     
     store = request.user.storeadmin.store
-    storeadmin_logger.info(f"Leads page accessed | Store: {store.name} | User: {request.user.username}")
-
+    
     # Base query with select_related for performance
     leads_qs = Lead.objects.filter(store=store)\
         .select_related('product')\
@@ -492,8 +488,7 @@ def store_categories(request):
     
     store = request.user.storeadmin.store
     client_ip = request.META.get('REMOTE_ADDR', 'unknown')
-    storeadmin_logger.info(f"Categories page accessed | Store: {store.name} | User: {request.user.username}")
-
+    
     # Base query
     categories_qs = Category.objects.filter(store=store).order_by('name')
 
@@ -549,8 +544,7 @@ def edit_category(request, pk):
     category = get_object_or_404(Category, pk=pk, store=request.user.storeadmin.store)
     client_ip = request.META.get('REMOTE_ADDR', 'unknown')
     
-    storeadmin_logger.info(f"Edit category accessed: '{category.name}' | Store: {category.store.name} | User: {request.user.username}")
-
+  
     if request.method == 'POST':
         form = CategoryForm(request.POST, request.FILES, instance=category)
         if form.is_valid():

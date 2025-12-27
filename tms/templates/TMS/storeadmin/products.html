@@ -76,7 +76,9 @@
 
                     <!-- Ribbon Badge -->
                     <div class="position-absolute top-0 start-0 m-3 z-index-10">
-                        {% if p.is_best_seller %}
+                        {% if p.is_deals %}
+                             <span class="badge text-white px-3 py-2 rounded-pill shadow" style="background: orangered;">FLASH DEALS</span>
+                        {% elif p.is_best_seller %}
                             <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow">BEST SELLER</span>
                         {% elif p.is_limited_deal %}
                             <span class="badge bg-danger text-white px-3 py-2 rounded-pill shadow">LIMITED</span>
@@ -85,7 +87,7 @@
                         {% elif p.is_new_arrival %}
                             <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow">NEW</span>
                         {% elif p.is_featured %}
-                            <span class="badge bg-gold text-dark px-3 py-2 rounded-pill shadow">★ FEATURED</span>
+                            <span class="badge text-white px-3 py-2 rounded-pill shadow" style="background: blueviolet;">HOT CHOICE</span>
                         {% endif %}
                     </div>
                 </div>

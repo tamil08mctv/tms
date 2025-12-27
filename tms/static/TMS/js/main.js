@@ -70,13 +70,6 @@ document.addEventListener("DOMContentLoaded", function () {
         videoObserver.observe(video);
     });
 
-    // Add loading animation to WhatsApp buttons
-    document.querySelectorAll('a[href*="wa.me"]').forEach(btn => {
-        btn.addEventListener('click', function () {
-            this.innerHTML = '<i class="fab fa-whatsapp"></i> Opening WhatsApp...';
-            this.style.opacity = '0.8';
-        });
-    });
 
     // Toast notification (optional future use)
     window.showToast = function (message, type = 'success') {

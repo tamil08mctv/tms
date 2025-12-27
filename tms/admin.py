@@ -190,6 +190,10 @@ class LeadAdmin(admin.ModelAdmin):
     search_fields = ('customer_name', 'phone', 'city')
     readonly_fields = ('created_at',)
 
+    def created_at_ist(self, obj):
+        return obj.created_at_ist()
+    created_at_ist.short_description = 'Enquiry Time'
+
 
 # ======================================================
 # PRODUCT SPECIFICATION ADMIN (OPTIONAL)
