@@ -1,0 +1,20 @@
+INFO 2025-12-29 10:44:42,271 [IP: 127.0.0.1] [User: anonymous] NEW LEAD
+INFO 2025-12-29 12:19:14,827 [IP: 127.0.0.1] [User: anonymous] NEW LEAD
+INFO 2025-12-29 12:30:53,403 [IP: 127.0.0.1] [User: guest] PRODUCT VIEW
+INFO 2025-12-29 12:30:58,070 [IP: 127.0.0.1] [User: guest] PRODUCT VIEW
+INFO 2025-12-29 12:31:20,760 [IP: 127.0.0.1] [User: guest] PRODUCT VIEW
+INFO 2025-12-29 12:31:20,810 [IP: 127.0.0.1] [User: guest] NEW LEAD CREATED
+INFO 2025-12-29 12:39:12,679 [IP: 127.0.0.1] [User: guest] PRODUCT VIEW | Product: 6 Seater Sofa (ID: 2) | Store: TMS FURNITURES | Name: - | Phone: - | City: -
+INFO 2025-12-29 12:40:28,945 [IP: 127.0.0.1] [User: guest] PRODUCT VIEW | Product: 6 Seater Sofa (ID: 2) | Store: TMS FURNITURES | Name: - | Phone: - | City: -
+WARNING 2025-12-29 12:40:28,955 [IP: 127.0.0.1] [User: guest] INVALID ENQUIRY FORM | Product: 6 Seater Sofa (ID: -) | Store: TMS FURNITURES | Name: - | Phone: - | City: -
+INFO 2025-12-29 12:42:15,667 [IP: 127.0.0.1] [User: guest] PRODUCT VIEW | Product: 6 Seater Sofa (ID: 2) | Store: TMS FURNITURES | Name: - | Phone: - | City: -
+WARNING 2025-12-29 12:42:15,677 [IP: 127.0.0.1] [User: guest] INVALID ENQUIRY FORM | Product: 6 Seater Sofa (ID: -) | Store: TMS FURNITURES | Name: - | Phone: - | City: -
+INFO 2025-12-29 12:42:44,320 [IP: 127.0.0.1] [User: guest] PRODUCT VIEW | Product: 6 Seater Sofa (ID: 2) | Store: TMS FURNITURES | Name: - | Phone: - | City: -
+INFO 2025-12-29 12:42:44,382 [IP: 127.0.0.1] [User: guest] NEW LEAD CREATED | Product: 6 Seater Sofa (ID: 2) | Store: TMS FURNITURES | Name: Sabari | Phone: +919629828969 | City: Ads
+INFO 2025-12-29 12:57:36,953 [IP: 127.0.0.1] [User: anonymous] NEW LEAD | Product: bedcover (ID: -) | Store: TMS FURNITURES | Name: sam | Phone: +919629828969 | City: -
+INFO 2025-12-29 13:00:38,728 [IP: 127.0.0.1] [User: guest] PRODUCT VIEW | Product: bedcover (ID: 11) | Store: TMS FURNITURES | Name: - | Phone: - | City: -
+INFO 2025-12-29 13:00:49,121 [IP: 127.0.0.1] [User: guest] PRODUCT VIEW | Product: bedcover (ID: 11) | Store: TMS FURNITURES | Name: - | Phone: - | City: -
+INFO 2025-12-29 13:00:49,135 [IP: 127.0.0.1] [User: guest] DUPLICATE ENQUIRY BLOCKED | Product: bedcover (ID: -) | Store: TMS FURNITURES | Name: sam | Phone: +919629828969 | City: -
+INFO 2025-12-29 13:05:30,268 [IP: 127.0.0.1] [User: admin@tmstraders.com] PRODUCT VIEW | Product: 2 Seater Sofa (ID: 4) | Store: TMS FURNITURES | Name: - | Phone: - | City: -
+INFO 2025-12-29 13:06:00,642 [IP: 127.0.0.1] [User: admin@tmstraders.com] PRODUCT VIEW | Product: 2 Seater Sofa (ID: 4) | Store: TMS FURNITURES | Name: - | Phone: - | City: -
+INFO 2025-12-29 13:06:14,461 [IP: 127.0.0.1] [User: admin@tmstraders.com] PRODUCT VIEW | Product: 2 Seater Sofa (ID: 4) | Store: TMS FURNITURES | Name: - | Phone: - | City: -

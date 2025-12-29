@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Allow all static files (images, css, js)
+Allow: /static/
+Allow: /media/
+
+# Block admin and private areas
+Disallow: /admin/
+Disallow: /superadmin/
+Disallow: /storeadmin/
+Disallow: /accounts/
+Disallow: /login/
+Disallow: /logout/
+
+# Sitemap (replace with your real domain when live)
+Sitemap: https://www.tmsfurniture.in/sitemap.xml
+Sitemap: https://tmsfurniture.in/sitemap.xml

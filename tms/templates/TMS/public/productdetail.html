@@ -61,7 +61,7 @@
                 <div class="row g-3">
                     <!-- VERTICAL THUMBNAILS (Desktop only) -->
                     <div class="col-auto d-none d-lg-block pe-2">
-                        <div class="d-flex flex-column gap-2" id="thumbnailStrip" style="height: 400px; overflow-y: auto;">
+                        <div class="d-flex flex-column gap-2" id="thumbnailStrip" style="height: 420px; overflow-y: auto;">
                             {% for img in product.images.all %}
                             <img src="{{ img.image.url }}" 
                                  class="rounded-2 border border-2 flex-shrink-0 {% if forloop.first %}border-success{% else %}border-light{% endif %}"
@@ -89,7 +89,7 @@
                     
                     <!-- MAIN IMAGE WITH ZOOM -->
                     <div class="col">
-                        <div class="position-relative overflow-hidden bg-white shadow" id="mainImageContainer" style="height: 400px;">
+                        <div class="position-relative overflow-hidden bg-white shadow" id="mainImageContainer" style="height: 420px;">
                             <!-- Zoom Area -->
                             <div id="zoomArea" style="width: 100%; height: 100%; overflow: hidden; position: relative;">
                                 <img id="mainImage" 
@@ -204,7 +204,7 @@
                     
                     
                  <!-- Store & Delivery Info -->
-                <div class="row g-3 mb-4">
+                <div class="row g-3 mb-3">
                     <div class="col-12 col-md-6">
                         <div class="d-flex align-items-center gap-2 p-3 bg-light rounded-3">
                             <div class="bg-primary bg-opacity-10 p-2 rounded-circle">
@@ -238,8 +238,8 @@
 {% if product.specifications.exists %}
   <!-- Key Specifications -->
                 {% if product.specifications.exists %}
-                <div class="card border-0 shadow-sm mb-3">
-                    <div class="card-header bg-white border-0 py-2">
+                <div class="card border-0 shadow-sm mb-2">
+                    <div class="card-header bg-white border-0 py-1">
                         <h6 class="fw-semibold text-dark mb-0 d-flex align-items-center gap-2">
                             <i class="bi bi-list-check text-primary fs-5"></i> Highlights and Specs
                         </h6>
@@ -289,24 +289,30 @@
 
 {% endif %}
     
+                
                 <!-- Description as Unordered List Points -->
-                {% if product.description %}
-                  <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white border-0 py-2">
-                        <h6 class="fw-semibold text-dark mb-0 d-flex align-items-center gap-2 text-align">
-                            <i class="bi bi-file-text text-primary fs-5"></i> Product Description
-                        </h6>
-                    </div>
-                    <div class="card-body p-2">
-                        <div class="bg-light rounded-3 p-2 border-start border-4 border-success">
-                            <ul class="list-unstyled mb-0 text-muted " id="descriptionList">
-                                <!-- Will be populated by JavaScript -->
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+{% if product.description %}
+<div class="card border-0 shadow-sm mb-2">
+    <div class="card-header bg-white border-0 py-2">
+        <h6 class="fw-semibold text-dark mb-0 d-flex align-items-center gap-2">
+            <i class="bi bi-file-text text-primary fs-5"></i> Product Description
+        </h6>
+    </div>
+    <div class="card-body p-2">
+        <!-- HIDDEN RAW DESCRIPTION - THIS IS THE KEY FIX -->
+        <div id="raw-description" class="d-none">
+            {{ product.description|safe }}
+        </div>
 
-                {% endif %}
+        <!-- Visible bullet list -->
+        <div class="bg-light rounded-4 p-3 border-start border-5 border-success">
+            <ul class="list-unstyled mb-0 text-muted" id="descriptionList">
+                <!-- Auto-filled by JavaScript -->
+            </ul>
+        </div>
+    </div>
+</div>
+{% endif %}
             </div>
         </div>
     </div>
@@ -317,22 +323,23 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content rounded-4 overflow-hidden">
             <div class="modal-header bg-success text-white text-center border-0 py-4">
-                <h5 class="modal-title w-100 fw-bold">Get Best Price Instantly</h5>
+                <h5 class="modal-title w-100 fw-bold">Get Enquiry Instantly</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <div id="modalContent">
-                    <form id="enquiryForm">
+                    <form id="enquiryForm" autocomplete="off">
                         {% csrf_token %}
                         <div class="mb-3">
-                            <input type="text" name="customer_name" class="form-control form-control-lg rounded-pill" placeholder="Your Name" required>
+                            <input type="text" name="customer_name" class="form-control form-control-lg rounded-pill" autocomplete="off" placeholder="Your Name" required>
                         </div>
                         <div class="mb-3">
-                            <input type="tel" name="phone" class="form-control form-control-lg rounded-pill" placeholder="Phone Number" required>
+                            <input type="tel" name="phone" class="form-control form-control-lg rounded-pill" autocomplete="off" placeholder="Phone Number" required>
                         </div>
-                        <div class="mb-4">
-                            <input type="text" name="city" class="form-control form-control-lg rounded-pill" placeholder="Your City" required>
+                        <div class="mb-3">
+                            <input type="text" name="city" class="form-control form-control-lg rounded-pill" autocomplete="off" placeholder="Your City" required>
                         </div>
+                        <input type="text" name="website" style="display:none;" value="">
                         <button type="submit" class="btn btn-warning w-100 py-3 fw-bold fs-5">
                             <i class="fab fa-whatsapp me-2"></i> BUY NOW
                         </button>
@@ -625,60 +632,58 @@ function closeVideo() {
 // Format description as bullet points
 function formatDescription() {
     const descriptionList = document.getElementById('descriptionList');
-    if (!descriptionList) return;
+    const rawElement = document.getElementById('raw-description');
     
-    // Get description from Django template variable
-    const description = `{{ product.description|escapejs }}`;
-    
+    if (!descriptionList || !rawElement) return;
+
+    const description = rawElement.textContent.trim();
     if (!description) return;
-    
-    // Clear existing content
+
     descriptionList.innerHTML = '';
-    
-    // Split by common line breaks and bullet points
-    let lines = [];
-    
-    // Handle different line break formats
-    if (description.includes('\\n')) {
-        lines = description.split('\\n');
-    } else if (description.includes('<br>')) {
-        lines = description.split('<br>');
-    } else if (description.includes('•')) {
-        lines = description.split('•');
-    } else if (description.includes('- ')) {
-        lines = description.split('- ');
-    } else if (description.includes('* ')) {
-        lines = description.split('* ');
-    } else {
-        // Try to split by sentence endings
-        lines = description.split(/[\.\?\!]\s+/).filter(line => line.trim().length > 0);
+
+    let lines = description
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/&nbsp;/g, ' ')
+        .split('\n')
+        .map(line => line
+            .replace(/^[•\-\*\u2022]\s*/, '')
+            .trim()
+        )
+        .filter(line => line.length > 0);
+
+    // Fallback: split by sentences
+    if (lines.length === 0) {
+        lines = description
+            .split(/[\.\!\?]\s+/)
+            .map(s => s.trim())
+            .filter(s => s.length > 0);
     }
-    
-    // Add each line as a bullet point
+
     lines.forEach(line => {
-        const trimmedLine = line.trim();
-        if (trimmedLine) {
-            const li = document.createElement('li');
-            li.className = 'd-flex mb-2 align-items-start';
-            li.innerHTML = `
-                <i class="fas fa-check-circle text-success me-3 mt-1"></i>
-                <span class= "fs-6">${trimmedLine}</span>
-            `;
-            descriptionList.appendChild(li);
-        }
-    });
-    
-    // If no lines were added, add the whole description as one bullet
-    if (descriptionList.children.length === 0 && description.trim()) {
         const li = document.createElement('li');
         li.className = 'd-flex mb-2 align-items-start';
         li.innerHTML = `
-            <i class="fas fa-check-circle text-success me-3 mt-1"></i>
-            <span class= "fs-6">${description}</span>
+            <i class="fas fa-check-circle text-success me-3 mt-1 flex-shrink-0"></i>
+            <span class="fs-6 text-dark">${line}</span>
+        `;
+        descriptionList.appendChild(li);
+    });
+
+    // Final fallback
+    if (descriptionList.children.length === 0) {
+        const li = document.createElement('li');
+        li.className = 'd-flex mb-2 align-items-start';
+        li.innerHTML = `
+            <i class="fas fa-check-circle text-success me-3 mt-1 flex-shrink-0"></i>
+            <span class="fs-6 text-dark">${description}</span>
         `;
         descriptionList.appendChild(li);
     }
 }
+
+// Call on page load
+document.addEventListener('DOMContentLoaded', formatDescription);
+
 
 // Share functionality - FIXED
 document.getElementById('shareBtn').addEventListener('click', function() {
@@ -694,13 +699,13 @@ document.getElementById('shareBtn').addEventListener('click', function() {
     const modalHTML = `
         <div class="share-modal-overlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:flex-end;justify-content:center;">
             <div class="bg-white rounded-top-4 w-100" style="max-width:500px;">
-                <div class="p-4 text-center border-bottom">
+                <div class="p-3 text-center border-bottom">
                     <h5 class="fw-bold mb-0">Share</h5>
                     <button onclick="this.closest('.share-modal-overlay').remove()" class="btn btn-link position-absolute end-0 top-0 p-3 text-dark">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="p-4">
+                <div class="p-3">
                     <div class="row g-3 text-center">
                         <div class="col-4">
                             <a href="https://wa.me/?text=${text}" target="_blank" class="text-decoration-none text-dark">
@@ -745,80 +750,174 @@ function copyLink(url) {
     });
 }
 
-// Enquiry form - FINAL BULLETPROOF VERSION
-document.getElementById('enquiryForm')?.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    const submitBtn = this.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    const modalContent = document.getElementById('modalContent');
-    
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
-    submitBtn.disabled = true;
 
-    fetch(window.location.href, {
+document.addEventListener('DOMContentLoaded', function () {
+
+  const modal = document.getElementById('enquiryModal');
+  const modalContent = document.getElementById('modalContent');
+
+  if (!modal || !modalContent) return;
+
+  // 🔒 Store original form HTML (CRITICAL)
+  const originalFormHTML = modalContent.innerHTML;
+
+  function attachFormHandler() {
+    const form = document.getElementById('enquiryForm');
+    if (!form) return;
+
+    // 🔥 HARD RESET on load
+    form.reset();
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+
+      form.querySelectorAll('.text-danger').forEach(el => el.remove());
+
+      const nameInput = form.querySelector('[name="customer_name"]');
+      const phoneInput = form.querySelector('[name="phone"]');
+      const cityInput = form.querySelector('[name="city"]');
+
+      const name = nameInput.value.trim();
+      const phoneRaw = phoneInput.value.trim();
+      const city = cityInput.value.trim();
+
+      let hasError = false;
+
+      // NAME
+      if (!name || name.length < 2 || !/^[a-zA-Z\s.\-]+$/.test(name)) {
+        showError(nameInput, "Enter a valid name");
+        hasError = true;
+      }
+
+      // PHONE
+      let phoneClean = phoneRaw.replace(/[\s\-\(\)]/g, '');
+      let phoneError = '';
+
+      if (!phoneClean) phoneError = "Phone number required";
+      else if (!/^\+?\d+$/.test(phoneClean)) phoneError = "Invalid number";
+      else if (phoneClean.length < 8) phoneError = "Number too short";
+      else if (phoneClean.length > 15) phoneError = "Number too long";
+      else if (phoneClean.length <= 11 && !/^[2-9]\d{8,10}$/.test(phoneClean))
+        phoneError = "Invalid Indian number";
+      else if (phoneClean.length > 11 && !phoneClean.startsWith('+'))
+        phoneError = "International must start with +";
+
+      if (phoneError) {
+        showError(phoneInput, phoneError);
+        hasError = true;
+      }
+
+      // CITY
+      if (!city || city.length < 3 || !/^[a-zA-Z\s.\-]+$/.test(city)) {
+        showError(cityInput, "Enter a valid city");
+        hasError = true;
+      }
+
+      if (hasError) return;
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
+
+      const formData = new FormData(form);
+
+      fetch(window.location.href, {
         method: 'POST',
         body: formData,
         headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+          'X-Requested-With': 'XMLHttpRequest'
         }
-    })
-    .then(response => response.json())
-    .then(data => {
+      })
+      .then(res => res.json())
+      .then(data => {
         if (data.success) {
-            // Success message
-            modalContent.innerHTML = `
-                <div class="text-center py-5">
-                    <i class="fas fa-check-circle text-success fs-1 mb-4"></i>
-                    <h4 class="text-success fw-bold">Enquiry Sent Successfully!</h4>
-                    <p class="text-muted">Our team will contact you soon</p>
-                    <a href="${data.whatsapp_url}" target="_blank" class="btn btn-success rounded-pill px-5 py-3 fw-bold mt-3">
-                        <i class="fab fa-whatsapp me-2"></i> Chat on WhatsApp
-                    </a>
-                </div>
-            `;
-            // Auto open WhatsApp
-            window.open(data.whatsapp_url, '_blank');
-        } else if (data.already) {
-            // Already enquired today
-            modalContent.innerHTML = `
-                <div class="text-center py-5">
-                    <i class="fas fa-info-circle text-warning fs-1 mb-4"></i>
-                    <h4 class="text-warning fw-bold">Already Enquired Today!</h4>
-                    <p class="text-muted mb-4">
-                        You have already sent an enquiry for this product today.<br>
-                        <strong>You can enquire again tomorrow.</strong>
-                    </p>
-                    <a href="${data.whatsapp_url}" target="_blank" class="btn btn-success rounded-pill px-5 py-3 fw-bold">
-                        <i class="fab fa-whatsapp me-2"></i> Chat on WhatsApp
-                    </a>
-                    <div class="mt-4">
-                        <small class="text-muted">Try other products or come back tomorrow!</small>
-                    </div>
-                </div>
-            `;
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        // Fallback: assume success
-        modalContent.innerHTML = `
-            <div class="text-center py-5">
-                <i class="fas fa-check-circle text-success fs-1 mb-4"></i>
-                <h4 class="text-success fw-bold">Enquiry Sent!</h4>
-                <p>Our team will contact u soon</p>
+          modalContent.innerHTML = `
+            <div class="text-center py-3">
+              <i class="fas fa-check-circle text-success fs-1 mb-4"></i>
+              <h4 class="fw-bold text-success">Enquiry Sent Successfully!</h4>
+              <p class="text-muted">Thank you, ${escapeHtml(name)}</p>
+              <p> Our team will contact you soon.</p>
+
             </div>
-        `;
-        const whatsappUrl = "{{ whatsapp_url|escapejs }}";
-        window.open(whatsappUrl, '_blank');
-    })
-    .finally(() => {
-        submitBtn.innerHTML = originalText;
+          `;
+          window.open(data.whatsapp_url, '_blank');
+        } else if (data.already) {
+          modalContent.innerHTML = `
+            <div class="text-center py-3">
+              <i class="fas fa-info-circle text-warning fs-1 mb-4"></i>
+              <h4 class="fw-bold text-warning">Already Enquired Today</h4>
+              <p class="text-muted mb-4">
+                        You have already sent an enquiry for this product today.<br>
+                        <strong>Our Team will contact you soon. Explore Other Products!</strong>
+                    </p>
+              <a href="${data.whatsapp_url}" target="_blank"
+                 class="btn btn-success rounded-pill px-5 py-3 fw-bold">
+                <i class="fab fa-whatsapp me-2"></i>Chat on WhatsApp
+              </a>
+            </div>
+          `;
+        } else {
+          alert(data.message || "Something went wrong");
+        }
+      })
+      .catch(() => alert("Network error and Form submission failed"))
+      .finally(() => {
         submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+      });
     });
+  }
+
+  // 🔁 Restore clean form every time modal closes
+  modal.addEventListener('hidden.bs.modal', function () {
+    modalContent.innerHTML = originalFormHTML;
+    attachFormHandler();
+  });
+
+  // 🧹 Extra safety on refresh / back button
+  window.addEventListener('pageshow', function () {
+    const f = document.getElementById('enquiryForm');
+    if (f) f.reset();
+  });
+
+  attachFormHandler();
 });
+
+// Helpers
+function showError(input, msg) {
+  const small = document.createElement('small');
+  small.className = 'text-danger d-block mt-1 ps-3';
+  small.textContent = msg;
+  input.parentNode.appendChild(small);
+  input.focus();
+}
+
+function escapeHtml(text) {
+  const d = document.createElement('div');
+  d.textContent = text;
+  return d.innerHTML;
+}
+
+
+
+// Helpers
+function showError(input, message) {
+  const err = document.createElement('small');
+  err.className = 'text-danger d-block mt-1 ps-3';
+  err.textContent = message;
+  input.parentNode.appendChild(err);
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', function() {

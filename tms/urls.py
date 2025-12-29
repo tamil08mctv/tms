@@ -2,6 +2,8 @@
 
 from django.urls import path
 from django.contrib.auth import views as auth_views
+from django.contrib.sitemaps.views import sitemap
+from .sitemaps import ProductSitemap, StoreSitemap, CategorySitemap, StaticViewSitemap
 
 # Import all views properly
 from .views.public import (
@@ -20,6 +22,13 @@ from .views.superadmin import (
     manage_store_admins, create_store_admin, edit_store_admin, toggle_store_admin, delete_store_admin,delete_store # ← NEW
 )
 from .views.auth import login_redirect
+
+sitemaps = {
+    'products': ProductSitemap,
+    'stores': StoreSitemap,
+    'categories': CategorySitemap,
+    'static': StaticViewSitemap,
+}
 
 urlpatterns = [
     # ==================== PUBLIC PAGES ====================
@@ -72,4 +81,6 @@ urlpatterns = [
     next_page='login'  # ← This forces redirect to /login/ URL
 ), name='logout'),
     path('login-redirect/', login_redirect, name='login_redirect'),
+
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
 ]

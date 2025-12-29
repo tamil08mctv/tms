@@ -4,70 +4,153 @@ C:.
 |   manage.py
 |   tree.txt
 |   
++---logs
+|       errors.log
+|       public.log
+|       storeadmin.log
+|       superadmin.log
+|       
 +---tms
 |   |   admin.py
 |   |   apps.py
 |   |   forms.py
 |   |   models.py
+|   |   sitemaps.py
 |   |   urls.py
 |   |   utils.py
 |   |   __init__.py
 |   |   
 |   +---media
-|   |   +---banners
-|   |   |   +---desktop
-|   |   |   |       dall.webp
-|   |   |   |       dall_MQ3iDvR.webp
+|   |   |           
+|   |   +---site
+|   |   |   +---favicon
+|   |   |   |       sampleerkn.webp
+|   |   |   |       sampleerkn_DKisgRl.webp
 |   |   |   |       
-|   |   |   \---mobile
+|   |   |   \---logo
 |   |   |           sampleerkn.webp
-|   |   |           sampleerkn_XTAS9LS.webp
+|   |   |           sampleerkn_2QpeplR.webp
+|   |   |           ToVatra_Vault_Wordmark_Logo_in_Blues_and_Greens.png
+|   |   |           ToVatra_Vault_Wordmark_Logo_in_Blues_and_Greens_QWbpmln.png
 |   |   |           
-|   |   +---categories
-|   |   |       bedsheet.jpeg
-|   |   |       
-|   |   +---products
-|   |   |  
-|   |   |   +---images
-|   |   |   |       bedsheet.jpeg
-|   |   |   |       
-|   |   |   \---videos
-|   |   |           3969436-uhd_3840_2160_25fps.mp4
-|   |   |           
-|   |   +---stores
-|   |   |   +---banners
-|   |   |   |   |   ChatGPT_Image_Oct_3_2025_06_59_47_PM.png
-|   |   |   |   |   
-|   |   |   |   \---extra
-|   |   |   |           Body3.png
-|   |   |   |           Tovatra_vault_insta.jpg
-|   |   |   |           
+|   |   +---tms-elect
 |   |   |   \---logos
-|   |   |           Contemporary_Logo_Tovatra_Vault_Security.png
+|   |   |           logo.webp
+|   |   |           logo_OLmh3h5.webp
 |   |   |           
-|   |   |       
-|   |   \---tms-furnitures
+|   |   +---tms-furnitures
+|   |   |   +---banners
+|   |   |   |   +---desktop
+|   |   |   |   |       2abe5a2407b5.jpg
+|   |   |   |   |       adf3348b3b28.webp
+|   |   |   |   |       dall.webp
+|   |   |   |   |       error-2.webp
+|   |   |   |   |       f5e6c7d393e0.webp
+|   |   |   |   |       fe7724744701.jpg
+|   |   |   |   |       gemini_generated_image_h2fk6sh2fk6sh2fk.webp
+|   |   |   |   |       
+|   |   |   |   +---mobile
+|   |   |   |   |       37bc6d223ea4.png
+|   |   |   |   |       7dbdf4e9a59f.webp
+|   |   |   |   |       
+|   |   |   |   \---tablet
+|   |   |   |           email.webp
+|   |   |   |           phone.webp
+|   |   |   |           untitled-design-3.webp
+|   |   |   |           
+|   |   |   +---categories
+|   |   |   |       23391f56dd50.png
+|   |   |   |       6f240712e59c.png
+|   |   |   |       port.webp
+|   |   |   |       
+|   |   |   +---logos
+|   |   |   |       storeslogoscontemporary_logo_tovatra_vault_securit.webp
+|   |   |   |       
+|   |   |   \---products
+|   |   |       +---2-seater-sofa
+|   |   |       |       2026.png
+|   |   |       |       final-year-students-fresher-2023-26.png
+|   |   |       |       final-year-students-fresher-2023-261.png
+|   |   |       |       
+|   |   |       +---images
+|   |   |       |       110f1daade76.jpg
+|   |   |       |       
+|   |   |       +---peps-matresss
+|   |   |       |   |   pexels-pixabay-416320.webp
+|   |   |       |   |   
+|   |   |       |   \---videos
+|   |   |       |           3969436-uhd_3840_2160_25fps.mp4
+|   |   |       |           
+|   |   |       +---rolling-chair-pairs
+|   |   |       |   |   living-room.jpeg
+|   |   |       |   |   table.jpeg
+|   |   |       |   |   tv-set.jpeg
+|   |   |       |   |   
+|   |   |       |   \---videos
+|   |   |       |           3969436-uhd_3840_2160_25fps.mp4
+|   |   |       |           
+|   |   |       +---rolling-chair-with-headrest
+|   |   |       |   |   interior-design-house-modern-wooden_iE4P1ie.webp
+|   |   |       |   |   kam-idris-_hqhx3lbn18-unsplash.webp
+|   |   |       |   |   living-room.webp
+|   |   |       |   |   modern-living-room-interior-design.webp
+|   |   |       |   |   table.webp
+|   |   |       |   |   tv-set.webp
+|   |   |       |   |   
+|   |   |       |   \---videos
+|   |   |       |           3969436-uhd_3840_2160_25fps.mp4
+|   |   |       |           
+|   |   |       \---teacot
+|   |   |           |   interior-design-house-modern-wooden-table-chair.webp
+|   |   |           |   kam-idris-_hqhx3lbn18-unsplash.webp
+|   |   |           |   spacejoy-ih7wpsjwomc-unsplash.webp
+|   |   |           |   toa-heftiba-fv3gconvsss-unsplash.webp
+|   |   |           |   
+|   |   |           \---videos
+|   |   |                   3969436-uhd_3840_2160_25fps.mp4
+|   |   |                   
+|   |   \---tms-traders
 |   |       +---banners
 |   |       |   +---desktop
-|   |       |   |       2abe5a2407b5.jpg
+|   |       |   |       pexels-solliefoto-298842.webp
 |   |       |   |       
 |   |       |   \---mobile
-|   |       |           37bc6d223ea4.png
-|   |       |           7dbdf4e9a59f.webp
+|   |       |           phone.webp
 |   |       |           
 |   |       +---categories
-|   |       |       23391f56dd50.png
-|   |       |       6f240712e59c.png
+|   |       |       tv-set.webp
+|   |       |       
+|   |       +---logos
+|   |       |       sampleerkn.webp
 |   |       |       
 |   |       \---products
-|   |           \---images
-|   |                   110f1daade76.jpg
-|   |                   
+|   |           +---desk-with-table
+|   |           |   |   interior-design-house-modern-wooden-table-chair.jpg
+|   |           |   |   modern-living-room-interior-design.jpg
+|   |           |   |   tv-set.jpeg
+|   |           |   |   
+|   |           |   \---videos
+|   |           |           3969436-uhd_3840_2160_25fps.mp4
+|   |           |           
+|   |           \---sofa-with-cuson
+|   |               |   pexels-fotios-photos-1957477.jpg
+|   |               |   pexels-fotios-photos-1957477.webp
+|   |               |   pexels-pixabay-416320.jpg
+|   |               |   pexels-pixabay-416320.webp
+|   |               |   pexels-steve-923192.jpg
+|   |               |   pexels-steve-923192.webp
+|   |               |   
+|   |               \---videos
+|   |                       3969436-uhd_3840_2160_25fps.mp4
+|   |                       
 |   +---migrations
 |   |   |   0001_initial.py
 |   |   |   0002_alter_lead_status.py
 |   |   |   0003_product_call_for_price_productspecification.py
 |   |   |   0004_product_is_new_arrival.py
+|   |   |   0005_sitesettings_sociallink.py
+|   |   |   0006_product_search_vector_alter_product_call_for_price_and_more.py
+|   |   |   0007_storeadmin_is_active_alter_lead_status_and_more.py
 |   |   |   __init__.py
 |   |   |   
 |   |   \---__pycache__
@@ -75,9 +158,14 @@ C:.
 |   |           0002_alter_lead_status.cpython-313.pyc
 |   |           0003_product_call_for_price_productspecification.cpython-313.pyc
 |   |           0004_product_is_new_arrival.cpython-313.pyc
+|   |           0005_sitesettings_sociallink.cpython-313.pyc
+|   |           0006_product_search_vector_alter_product_call_for_price_and_more.cpython-313.pyc
+|   |           0007_storeadmin_is_active_alter_lead_status_and_more.cpython-313.pyc
 |   |           __init__.cpython-313.pyc
 |   |           
 |   +---static
+|   |   |   robots.txt
+|   |   |   
 |   |   \---TMS
 |   |       +---css
 |   |       |       styles.css
@@ -110,10 +198,14 @@ C:.
 |   |       |       products.html
 |   |       |       
 |   |       \---superadmin
+|   |               admin_form.html
 |   |               allleads.html
 |   |               base_superadmin.html
 |   |               createstore.html
 |   |               dashboard.html
+|   |               delete_store_confirm.html
+|   |               manage_admins.html
+|   |               site_settings.html
 |   |               store_list.html
 |   |               
 |   +---views
@@ -133,10 +225,12 @@ C:.
 |           apps.cpython-313.pyc
 |           forms.cpython-313.pyc
 |           models.cpython-313.pyc
+|           sitemaps.cpython-313.pyc
 |           urls.cpython-313.pyc
 |           __init__.cpython-313.pyc
 |           
 \---tmsgroups
+    |   .env
     |   asgi.py
     |   settings.py
     |   urls.py

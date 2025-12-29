@@ -1,7 +1,11 @@
 # tms/forms.py → FINAL: WITH StoreAdminForm
 from django.contrib.auth.models import User
 from django import forms
+import re
+from django.core.exceptions import ValidationError
 from .models import Product, Store, StoreBanner,Category,ProductSpecification,SiteSettings,SocialLink, StoreAdmin
+
+from django import forms
 
 class EnquiryForm(forms.Form):
     customer_name = forms.CharField(
@@ -9,14 +13,66 @@ class EnquiryForm(forms.Form):
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your Name'})
     )
     phone = forms.CharField(
-        max_length=15,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your Phone'})
+        max_length=20,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control form-control-lg rounded-pill',
+            'placeholder': 'Phone (e.g. 9876543210 or +919876543210)',
+            'inputmode': 'numeric'  # Shows numeric keyboard on mobile
+        })
     )
     city = forms.CharField(
-        max_length=100, required=False,
+        max_length=100, 
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your City'})
     )
+    # Honeypot field - hidden from humans
+    website = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput(attrs={'style': 'display:none;'})  # Invisible
+    )
 
+    def clean_phone(self):
+        phone = self.cleaned_data['phone'].strip()
+        phone_clean = re.sub(r'[\s\-\(\)]', '', phone)
+
+        if not phone_clean:
+            raise ValidationError("Phone number is required")
+
+        if not re.match(r'^\+?\d+$', phone_clean):
+            raise ValidationError("Only digits allowed (optional + at start)")
+
+        if len(phone_clean) < 8:
+            raise ValidationError("Number too short")
+
+        if len(phone_clean) > 15:
+            raise ValidationError("Number too long")
+
+        # Indian mobile or landline (10-11 digits)
+        if 10 <= len(phone_clean) <= 11:
+            if not re.match(r'^[2-9]', phone_clean):
+                raise ValidationError("Invalid Indian number format")
+            return '+91' + phone_clean
+
+        # International: must have +
+        if not phone_clean.startswith('+'):
+            raise ValidationError("International numbers must start with +")
+
+        return phone_clean
+
+    def clean_city(self):
+        city = self.cleaned_data['city'].strip()
+        if city:
+            if len(city) < 3:
+                raise ValidationError("City name too short.")
+            if not re.match(r'^[a-zA-Z\s\.\-]+$', city):
+                raise ValidationError("City can only contain letters and spaces.")
+            return city.title()
+        return city  # Allow empty
+
+    def clean_website(self):
+        if self.cleaned_data['website']:
+            raise ValidationError("Spam detected")
+        return ''
+    
 class SiteSettingsForm(forms.ModelForm):
     class Meta:
         model = SiteSettings

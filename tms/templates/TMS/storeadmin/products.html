@@ -261,40 +261,45 @@
                     </div>
 
                     <!-- Specifications - PREMIUM & CLEAN -->
-                    <div class="bg-white rounded-4 shadow-sm p-4 mt-4">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="fw-bold text-primary mb-0"><i class="fas fa-th-list me-2"></i>Specifications</h5>
-                            <button type="button" class="btn btn-outline-success rounded-pill px-4 py-2" id="add-spec">
-                                <i class="fas fa-plus me-2"></i>Add Specification
-                            </button>
+                   <!-- Specifications -->
+                        <div class="bg-white rounded-4 shadow-sm p-3 mt-2">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="fw-bold text-primary mb-0"><i class="fas fa-th-list me-2"></i>Specifications</h5>
+                                <button type="button" class="btn btn-outline-success rounded-pill px-4 py-2" id="add-spec">
+                                    <i class="fas fa-plus me-2"></i>Add Specification
+                                </button>
+                            </div>
+
+                            {{ spec_formset.management_form }}
+                            <div id="spec-container">
+                                {% for form in spec_formset %}
+                                <div class="row g-3 mb-3 align-items-end spec-row">
+                                    {% if form.instance.pk %}
+                                        {{ form.id }}
+                                    {% endif %}
+                                    <div class="col-12 col-md-5">
+                                        <input type="text" class="form-control rounded-pill" placeholder="e.g. Material" name="{{ form.name.html_name }}" value="{{ form.name.value|default:'' }}">
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <input type="text" class="form-control rounded-pill" placeholder="e.g. Solid Teak Wood" name="{{ form.value.html_name }}" value="{{ form.value.value|default:'' }}">
+                                    </div>
+                                    <div class="col-12 col-md-1 text-md-end">
+                                        <button type="button" class="btn btn-outline-danger rounded-pill px-3 remove-spec">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                        {% if form.instance.pk %}
+                                            <div class="form-check mt-2">
+                                                {{ form.DELETE }}
+                                                <label class="form-check-label small text-danger">Delete</label>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
                         </div>
 
-                        {{ spec_formset.management_form }}
-                        <div id="spec-container">
-                            {% for form in spec_formset %}
-                            <div class="row g-3 mb-3 align-items-end spec-row">
-                                <div class="col-12 col-md-5">
-                                    <input type="text" class="form-control rounded-pill" placeholder="e.g. Material" name="{{ form.name.html_name }}" value="{{ form.name.value|default:'' }}" {% if form.name.field.required %}required{% endif %}>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <input type="text" class="form-control rounded-pill" placeholder="e.g. Solid Teak Wood" name="{{ form.value.html_name }}" value="{{ form.value.value|default:'' }}" {% if form.value.field.required %}required{% endif %}>
-                                </div>
-                                <div class="col-12 col-md-1 text-md-end">
-                                    <button type="button" class="btn btn-outline-danger rounded-pill px-3 remove-spec">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </div>
-                                {% if form.instance.pk %}
-                                    {{ form.id }}
-                                    <div class="form-check mt-2">
-                                        {{ form.DELETE }}
-                                        <label class="form-check-label small text-danger">Delete</label>
-                                    </div>
-                                {% endif %}
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
+
 
                     <!-- Media Upload -->
                     <div class="row g-4 mt-4">
@@ -348,6 +353,60 @@
 </style>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const container = document.getElementById('spec-container');
+    const addBtn = document.getElementById('add-spec');
+    const totalForms = document.querySelector('input[name$="-TOTAL_FORMS"]');
+
+    const getEmptyRow = () => {
+        const row = document.createElement('div');
+        row.className = 'row g-3 mb-3 align-items-end spec-row';
+        row.innerHTML = `
+            <div class="col-12 col-md-5">
+                <input type="text" class="form-control rounded-pill" placeholder="e.g. Material" name="">
+            </div>
+            <div class="col-12 col-md-6">
+                <input type="text" class="form-control rounded-pill" placeholder="e.g. Solid Teak Wood" name="">
+            </div>
+            <div class="col-12 col-md-1 text-md-end">
+                <button type="button" class="btn btn-outline-danger rounded-pill px-3 remove-spec">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+        `;
+        return row;
+    };
+
+    addBtn.addEventListener('click', () => {
+        const count = parseInt(totalForms.value);
+        const newRow = getEmptyRow();
+
+        newRow.querySelectorAll('input').forEach((input, i) => {
+            input.name = `form-${count}-${i === 0 ? 'name' : 'value'}`;
+        });
+
+        container.appendChild(newRow);
+        totalForms.value = count + 1;
+    });
+
+    container.addEventListener('click', (e) => {
+        if (e.target.closest('.remove-spec')) {
+            const row = e.target.closest('.spec-row');
+            if (container.children.length > 1) {
+                const deleteCheckbox = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
+                if (deleteCheckbox) {
+                    deleteCheckbox.checked = true;
+                    row.style.display = 'none';
+                } else {
+                    row.remove();
+                }
+                totalForms.value = parseInt(totalForms.value) - 1;
+            }
+        }
+    });
+});
+
+
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
     let timeout;

@@ -58,9 +58,8 @@ def store_dashboard(request):
         }
         cache.set(cache_key, context, 300)  # 5min cache
     else:
-        storeadmin_logger.info("Dashboard accessed (cache hit)", extra={'client_ip': client_ip, 'user': user})
+        print("Dashboard accessed (cache hit)", extra={'client_ip': client_ip, 'user': user})
     
-    storeadmin_logger.info("Dashboard accessed", extra={'client_ip': client_ip, 'user': user})
     return render(request, 'TMS/storeadmin/dashboard.html', context)
 
 
@@ -99,14 +98,25 @@ def store_products(request):
             spec_formset.save()
 
             extra_images = request.FILES.getlist('extra_images')
-            for img in extra_images:
-                ProductImage.objects.create(product=product, image=img)
+            if extra_images:
+                # Clear any existing main image flag
+                ProductImage.objects.filter(product=product).update(is_main=False)
+                
+                # Create images and set first one as main
+                first_image = None
+                for i, img in enumerate(extra_images):
+                    image_obj = ProductImage.objects.create(product=product, image=img)
+                    if i == 0:
+                        image_obj.is_main = True
+                        image_obj.save()
+                        first_image = image_obj
 
             messages.success(request, f"Product '{product.name}' added successfully!")
             return redirect('store_products')
     else:
         form = ProductForm()
         spec_formset = ProductSpecFormSet()
+        form.fields['category'].queryset = Category.objects.filter(store=store)
 
     today = date.today()
 
@@ -221,7 +231,6 @@ def store_products(request):
 
     return render(request, 'TMS/storeadmin/products.html', context)
 
-
 @login_required
 def edit_product(request, pk):
     if not hasattr(request.user, 'storeadmin'):
@@ -286,6 +295,7 @@ def edit_product(request, pk):
 
     else:
         form = ProductForm(instance=product)
+        form.fields['category'].queryset = Category.objects.filter(store=store)
         spec_formset = ProductSpecFormSet(instance=product)
 
     return render(request, 'TMS/storeadmin/edit_product.html', {
@@ -452,7 +462,10 @@ def update_lead_status(request, lead_id):
         if status in [choice[0] for choice in Lead.STATUS_CHOICES]:
             lead.status = status
             lead.save()
-            storeadmin_logger.info(f"Lead status updated: {old_status} → {lead.get_status_display()} | Lead ID: {lead.id} | Customer: {lead.customer_name} | Store: {lead.store.name} | User: {request.user.username}")
+
+            # ← ADD THIS LINE: Clear dashboard cache instantly
+            cache.delete(f"dashboard_{lead.store.id}")
+            storeadmin_logger.info(f"Lead status updated: {old_status} to {lead.get_status_display()} | Lead ID: {lead.id} | Customer: {lead.customer_name} | Store: {lead.store.name} | User: {request.user.username}")
             messages.success(request, f"Lead status updated to {status}!")
     return redirect('store_leads')
 

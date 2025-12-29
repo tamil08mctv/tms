@@ -346,39 +346,26 @@
                 </span>
               </div>
 
-              <img
-                src="{{ p.main_image.0.image.url|default:'https://via.placeholder.com/300' }}"
-                class="card-img-top"
-                style="height:230px;object-fit:cover;"
-                loading="lazy"
-                alt="{{ p.name }}">
-
-              <div class="card-body text-center d-flex flex-column">
-                <h6 class="fw-bold mb-2 line-clamp-2 fs-6">{{ p.name }}</h6>
-
-                {% if p.short_desc %}
-                <p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>
-                {% endif %}
-
-                <div class="mt-auto">
-                  {% if p.offer_price and p.offer_price < p.regular_price %}
-                  <div class="d-flex justify-content-center gap-2 flex-wrap">
-                    <span class="text-success fs-5 fw-medium">₹{{ p.offer_price }}</span>
-                    <span class="text-muted text-decoration-line-through fs-6">
-                      ₹{{ p.regular_price }}
-                    </span>
-                    <span class="badge bg-danger">{{ p.discount_percent }}% OFF</span>
-                  </div>
-                  {% else %}
-                  <span class="text-success fs-5 fw-bold">₹{{ p.regular_price }}</span>
-                  {% endif %}
-                </div>
-
-                <small class="text-muted pt-2">
-                  {{ p.store.name }} • {{ p.store.city }}
-                </small>
-              </div>
-
+                 <img src="{{ p.main_image.0.image.url|default:'https://via.placeholder.com/300' }}" 
+     class="card-img-top" style="height:230px;object-fit:cover;" loading="lazy" fetchpriority="high" alt="{{ p.name }}">
+      <div class="card-body text-center p-3 d-flex flex-column">
+                            <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ p.name }}</h6>
+                            {% if p.short_desc %}<p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>{% endif %}
+                            <div class="mt-auto text-center">
+                                {% if p.offer_price and p.offer_price < p.regular_price %}
+                                <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                                    <span class="text-success fs-5 fw-medium">₹{{ p.offer_price }}</span>
+                                   <span style=" font-size: 14px;color: #878787;text-decoration: line-through;">₹{{ p.regular_price }}</span>
+                                     <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
+                                </div>
+                                {% else %}
+                                <span class="text-success fs-5 fw-bold">₹{{ p.regular_price }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="mt-auto text-center pt-2">
+                                <small class="text-muted d-block fw-medium">{{ p.store.name }} • {{ p.store.city }}</small>
+                            </div>
+                        </div>
             </div>
           </a>
         </div>

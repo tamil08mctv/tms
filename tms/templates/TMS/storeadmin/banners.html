@@ -140,16 +140,19 @@
                 <div class="modal-body p-4">
                     <div class="row g-4">
                         <div class="col-md-4">
+                            <p>Desktop</p>
                             <img src="{{ edit_form.instance.image_desktop.url }}" class="img-fluid rounded mb-2" style="height:150px;object-fit:cover;">
                             {{ edit_form.image_desktop }}
                         </div>
                         <div class="col-md-4">
+                            <p>Tablet</p>
                             {% if edit_form.instance.image_tablet %}
                             <img src="{{ edit_form.instance.image_tablet.url }}" class="img-fluid rounded mb-2" style="height:150px;object-fit:cover;">
                             {% endif %}
                             {{ edit_form.image_tablet }}
                         </div>
                         <div class="col-md-4">
+                            <p>Mobile</p>
                             <img src="{{ edit_form.instance.image_mobile.url }}" class="img-fluid rounded mb-2" style="height:150px;object-fit:cover;">
                             {{ edit_form.image_mobile }}
                         </div>

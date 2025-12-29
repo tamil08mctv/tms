@@ -118,7 +118,7 @@ def toggle_store(request, pk):
     store.is_active = not store.is_active
     store.save()
     
-    superadmin_logger.info(f"Superuser {request.user.username} toggled store: '{store.name}' → {'Active' if store.is_active else 'Inactive'}")
+    superadmin_logger.info(f"Superuser {request.user.username} toggled store: '{store.name}' to {'Active' if store.is_active else 'Inactive'}")
     messages.success(request, f"Store '{store.name}' is now {'activated' if store.is_active else 'deactivated'}")
     return redirect('store_list_super')
 
@@ -311,12 +311,23 @@ def edit_store_admin(request, pk, admin_pk):
 def toggle_store_admin(request, pk, admin_pk):
     store = get_object_or_404(Store, pk=pk)
     store_admin = get_object_or_404(StoreAdmin, pk=admin_pk, store=store)
-    old_status = "Active" if store_admin.is_active else "Inactive"
-    store_admin.is_active = not store_admin.is_active
-    store_admin.save()
     
-    superadmin_logger.info(f"Superuser {request.user.username} toggled admin '{store_admin.user.username}' for store '{store.name}' → {'Active' if store_admin.is_active else 'Inactive'}")
-    messages.success(request, f"Admin '{store_admin.user.username}' is now {'activated' if store_admin.is_active else 'deactivated'}")
+    # Toggle both StoreAdmin and User active status
+    new_status = not store_admin.is_active
+    store_admin.is_active = new_status
+    store_admin.user.is_active = new_status  # ← THIS IS THE KEY FIX
+    store_admin.save()
+    store_admin.user.save()
+    
+    superadmin_logger.info(
+        f"Superuser {request.user.username} toggled admin '{store_admin.user.username}' "
+        f"for store '{store.name}' to {'Active' if new_status else 'Inactive'}"
+    )
+    messages.success(
+        request, 
+        f"Admin '{store_admin.user.username}' is now {'activated' if new_status else 'deactivated'} "
+        f"(login {'enabled' if new_status else 'disabled'})"
+    )
     return redirect('manage_store_admins', pk=store.pk)
 
 @superuser_required

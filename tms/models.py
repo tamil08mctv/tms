@@ -12,10 +12,19 @@ from io import BytesIO
 from django.core.files.base import ContentFile
 from django.utils import timezone as dj_timezone
 from django.utils.timezone import localtime
+from django.db import transaction
 
 # For search
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
+
+from django.core.exceptions import ValidationError
+
+def validate_video_size(value):
+    limit_mb = 30  # ← Change this: 50MB max (recommended)
+    limit_bytes = limit_mb * 1024 * 1024
+    if value.size > limit_bytes:
+        raise ValidationError(f"Video file too large. Maximum size is {limit_mb}MB. Your file is {value.size // (1024*1024)}MB.")
 
 
 # ======================= SAFE FILENAME =======================
@@ -52,16 +61,21 @@ def banner_mobile_path(instance, filename):
     name = os.path.splitext(safe_filename(filename))[0]
     return f"{instance.store.slug}/banners/mobile/{name}.webp"
 
-
-# ======================= WEBP CONVERSION =======================
-def convert_to_webp_and_compress(image_field):
+# ======================= WEBP CONVERSION (WINDOWS-SAFE) =======================
+def convert_to_webp_in_memory(image_field):
+    """
+    Convert image to WebP entirely in memory — NO disk access
+    Avoids Windows file locking issues
+    """
     if not image_field:
         return image_field
-    
+
     if image_field.name.lower().endswith('.webp'):
         return image_field
 
     try:
+        # Seek to start — critical!
+        image_field.seek(0)
         pil_image = PILImage.open(image_field)
 
         # Handle transparency
@@ -75,44 +89,56 @@ def convert_to_webp_and_compress(image_field):
             pil_image = pil_image.convert('RGB')
 
         buffer = BytesIO()
-        pil_image.save(buffer, format='WEBP', quality=85, method=6)
+        pil_image.save(buffer, format='WEBP', quality=85, method=6)  # 85 = great balance
 
+        # Create new filename
         base_name = os.path.splitext(os.path.basename(image_field.name))[0]
         new_filename = f"{base_name}.webp"
 
+        # Return new ContentFile (in memory)
         return ContentFile(buffer.getvalue(), name=new_filename)
 
     except Exception as e:
-        print(f"WebP conversion failed: {e}")
-        return image_field  # Fallback: keep original
+        print(f"WebP in-memory conversion failed: {e}")
+        return image_field  # Fallback
 
 
-# ======================= BACKGROUND CONVERSION (INSTANT UI) =======================
-from django.db import transaction  # ← Add this import at the top if not already there
-
-# ======================= BACKGROUND CONVERSION (PRODUCTION-SAFE) =======================
+# ======================= BACKGROUND CONVERSION (WINDOWS-SAFE) =======================
 def async_webp_convert(instance, field_names):
-    """Convert images in background thread — SAFE for production (Gunicorn/uWSGI)"""
+    """Convert images in background — safe on Windows"""
     def _convert():
         try:
             updated_fields = []
+            needs_save = False
+
             for field_name in field_names:
                 image_field = getattr(instance, field_name)
                 if image_field and image_field.name and not image_field.name.lower().endswith('.webp'):
-                    new_image = convert_to_webp_and_compress(image_field)
+                    new_image = convert_to_webp_in_memory(image_field)
+
                     if new_image and new_image != image_field:
-                        # Delete old raw file safely
-                        if image_field.storage.exists(image_field.name):
-                            image_field.storage.delete(image_field.name)
+                        # Delete old file if exists
+                        old_path = image_field.name
+                        if image_field.storage.exists(old_path):
+                            try:
+                                image_field.storage.delete(old_path)
+                            except Exception as delete_error:
+                                print(f"Could not delete old image {old_path}: {delete_error}")
+
                         setattr(instance, field_name, new_image)
                         updated_fields.append(field_name)
-            if updated_fields:
+                        needs_save = True
+
+            if needs_save:
+                # Save only updated fields
                 instance.save(update_fields=updated_fields)
+
         except Exception as e:
             print(f"Async WebP conversion failed: {e}")
 
-    # Critical fix: Run only after DB transaction commits
+    # Run after transaction commits
     transaction.on_commit(lambda: threading.Thread(target=_convert, daemon=True).start())
+
     
 # ======================= MODELS =======================
 class Store(models.Model):
@@ -160,7 +186,6 @@ class StoreAdmin(models.Model):
     def __str__(self):
         return f"{self.user.username} → {self.store.name}"
 
-
 class Category(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='categories')
     name = models.CharField(max_length=100)
@@ -197,7 +222,13 @@ class Product(models.Model):
     offer_price = models.DecimalField(max_digits=12, decimal_places=0, null=True, blank=True)
     discount_percent = models.PositiveIntegerField(null=True, blank=True)
     deal_end_date = models.DateField(null=True, blank=True)
-    video = models.FileField(upload_to=product_video_path, blank=True, null=True)
+    video = models.FileField(
+    upload_to=product_video_path,
+    blank=True,
+    null=True,
+    validators=[validate_video_size],  # ← ADD THIS
+    help_text="Max 25MB, MP4 recommended (30-60 seconds)"
+)
     in_stock = models.BooleanField(default=True)
     is_new_arrival = models.BooleanField(default=False)
     is_best_seller = models.BooleanField(default=False)
@@ -209,7 +240,6 @@ class Product(models.Model):
     enquiry_count = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     search_vector = SearchVectorField(null=True, blank=True)
-
 
     class Meta:
         ordering = ['name']  # ← Default alphabetical order A → Z
@@ -262,7 +292,6 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.store.name}"
-
 
 class ProductSpecification(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='specifications')
@@ -324,7 +353,6 @@ class StoreBanner(models.Model):
 
     def __str__(self):
         return f"{self.store.name} - Banner"
-
 
 class Lead(models.Model):
     STATUS_CHOICES = [('new','New Enquiry'),('contacted','Contacted'),('converted','Converted'),('just enquiry','just enquiry')]
