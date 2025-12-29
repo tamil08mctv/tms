@@ -83,7 +83,7 @@ STATICFILES_DIRS = [BASE_DIR / 'tms/static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'tms/media'  # Only used when USE_S3=False
+MEDIA_ROOT = BASE_DIR / 'media'  # Only used when USE_S3=False
 
 LOGIN_REDIRECT_URL = '/login-redirect/'
 
