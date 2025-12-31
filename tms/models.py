@@ -1,145 +1,58 @@
-# tms/models.py → FINAL: HYBRID FAST WEBP CONVERSION (INSTANT UI + BACKGROUND OPTIMIZATION)
+# tms/models.py — FINAL: FAST S3 UPLOAD + BACKGROUND WEBP CONVERSION WITH CELERY (FULLY FIXED)
 
+import os
+import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
-from datetime import date
-import uuid
-import os
-import threading
-from PIL import Image as PILImage
-from io import BytesIO
-from django.core.files.base import ContentFile
-from django.utils import timezone as dj_timezone
-from django.utils.timezone import localtime
-from django.db import transaction
-
-# For search
+from django.core.exceptions import ValidationError
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
+from django.utils.timezone import localtime
+from .tasks import convert_image_to_webp
 
-from django.core.exceptions import ValidationError
 
 def validate_video_size(value):
-    limit_mb = 30  # ← Change this: 50MB max (recommended)
+    limit_mb = 50
     limit_bytes = limit_mb * 1024 * 1024
     if value.size > limit_bytes:
         raise ValidationError(f"Video file too large. Maximum size is {limit_mb}MB. Your file is {value.size // (1024*1024)}MB.")
 
 
-# ======================= SAFE FILENAME =======================
 def safe_filename(filename):
     name, ext = os.path.splitext(filename)
     return f"{slugify(name)[:50]}{ext.lower()}"
 
 
-# ======================= UPLOAD PATHS (FORCE .WEBP) =======================
+# Upload paths — keep original extension (no forced .webp)
 def store_logo_path(instance, filename):
-    name = os.path.splitext(safe_filename(filename))[0]
-    return f"{instance.slug}/logos/{name}.webp"
+    return f"{instance.slug}/logos/{safe_filename(filename)}"
+
 
 def category_image_path(instance, filename):
-    name = os.path.splitext(safe_filename(filename))[0]
-    return f"{instance.store.slug}/categories/{name}.webp"
+    return f"{instance.store.slug}/categories/{safe_filename(filename)}"
+
 
 def product_video_path(instance, filename):
     return f"{instance.store.slug}/products/{instance.slug}/videos/{safe_filename(filename)}"
+
 
 def product_image_path(instance, filename):
     return f"{instance.product.store.slug}/products/{instance.product.slug}/{safe_filename(filename)}"
 
 
 def banner_desktop_path(instance, filename):
-    name = os.path.splitext(safe_filename(filename))[0]
-    return f"{instance.store.slug}/banners/desktop/{name}.webp"
+    return f"{instance.store.slug}/banners/desktop/{safe_filename(filename)}"
+
 
 def banner_tablet_path(instance, filename):
-    name = os.path.splitext(safe_filename(filename))[0]
-    return f"{instance.store.slug}/banners/tablet/{name}.webp"
+    return f"{instance.store.slug}/banners/tablet/{safe_filename(filename)}"
+
 
 def banner_mobile_path(instance, filename):
-    name = os.path.splitext(safe_filename(filename))[0]
-    return f"{instance.store.slug}/banners/mobile/{name}.webp"
-
-# ======================= WEBP CONVERSION (WINDOWS-SAFE) =======================
-def convert_to_webp_in_memory(image_field):
-    """
-    Convert image to WebP entirely in memory — NO disk access
-    Avoids Windows file locking issues
-    """
-    if not image_field:
-        return image_field
-
-    if image_field.name.lower().endswith('.webp'):
-        return image_field
-
-    try:
-        # Seek to start — critical!
-        image_field.seek(0)
-        pil_image = PILImage.open(image_field)
-
-        # Handle transparency
-        if pil_image.mode in ('RGBA', 'LA', 'P'):
-            background = PILImage.new('RGB', pil_image.size, (255, 255, 255))
-            if pil_image.mode == 'P':
-                pil_image = pil_image.convert('RGBA')
-            background.paste(pil_image, mask=pil_image.split()[-1] if pil_image.mode == 'RGBA' else None)
-            pil_image = background
-        elif pil_image.mode != 'RGB':
-            pil_image = pil_image.convert('RGB')
-
-        buffer = BytesIO()
-        pil_image.save(buffer, format='WEBP', quality=85, method=6)  # 85 = great balance
-
-        # Create new filename
-        base_name = os.path.splitext(os.path.basename(image_field.name))[0]
-        new_filename = f"{base_name}.webp"
-
-        # Return new ContentFile (in memory)
-        return ContentFile(buffer.getvalue(), name=new_filename)
-
-    except Exception as e:
-        print(f"WebP in-memory conversion failed: {e}")
-        return image_field  # Fallback
+    return f"{instance.store.slug}/banners/mobile/{safe_filename(filename)}"
 
 
-# ======================= BACKGROUND CONVERSION (WINDOWS-SAFE) =======================
-def async_webp_convert(instance, field_names):
-    """Convert images in background — safe on Windows"""
-    def _convert():
-        try:
-            updated_fields = []
-            needs_save = False
-
-            for field_name in field_names:
-                image_field = getattr(instance, field_name)
-                if image_field and image_field.name and not image_field.name.lower().endswith('.webp'):
-                    new_image = convert_to_webp_in_memory(image_field)
-
-                    if new_image and new_image != image_field:
-                        # Delete old file if exists
-                        old_path = image_field.name
-                        if image_field.storage.exists(old_path):
-                            try:
-                                image_field.storage.delete(old_path)
-                            except Exception as delete_error:
-                                print(f"Could not delete old image {old_path}: {delete_error}")
-
-                        setattr(instance, field_name, new_image)
-                        updated_fields.append(field_name)
-                        needs_save = True
-
-            if needs_save:
-                # Save only updated fields
-                instance.save(update_fields=updated_fields)
-
-        except Exception as e:
-            print(f"Async WebP conversion failed: {e}")
-
-    # Run after transaction commits
-    transaction.on_commit(lambda: threading.Thread(target=_convert, daemon=True).start())
-
-    
 # ======================= MODELS =======================
 class Store(models.Model):
     name = models.CharField(max_length=200)
@@ -169,10 +82,19 @@ class Store(models.Model):
                 i += 1
             self.slug = slug
 
+        trigger_conversion = False
+        if self.pk:
+            old = Store.objects.get(pk=self.pk)
+            if old.logo != self.logo and self.logo and not str(self.logo.name or '').lower().endswith('.webp'):
+                trigger_conversion = True
+        else:
+            if self.logo and not str(self.logo.name or '').lower().endswith('.webp'):
+                trigger_conversion = True
+
         super().save(*args, **kwargs)
 
-        if self.logo:
-            async_webp_convert(self, ['logo'])
+        if trigger_conversion:
+            convert_image_to_webp.delay('Store', self.id, 'logo')
 
     def __str__(self):
         return self.name
@@ -184,7 +106,8 @@ class StoreAdmin(models.Model):
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.user.username} → {self.store.name}"
+        return f"{self.user.username} ? {self.store.name}"
+
 
 class Category(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='categories')
@@ -202,10 +125,19 @@ class Category(models.Model):
                 i += 1
             self.slug = slug
 
+        trigger_conversion = False
+        if self.pk:
+            old = Category.objects.get(pk=self.pk)
+            if old.image != self.image and self.image and not str(self.image.name or '').lower().endswith('.webp'):
+                trigger_conversion = True
+        else:
+            if self.image and not str(self.image.name or '').lower().endswith('.webp'):
+                trigger_conversion = True
+
         super().save(*args, **kwargs)
 
-        if self.image:
-            async_webp_convert(self, ['image'])
+        if trigger_conversion:
+            convert_image_to_webp.delay('Category', self.id, 'image')
 
     def __str__(self):
         return f"{self.store.name} - {self.name}"
@@ -223,12 +155,12 @@ class Product(models.Model):
     discount_percent = models.PositiveIntegerField(null=True, blank=True)
     deal_end_date = models.DateField(null=True, blank=True)
     video = models.FileField(
-    upload_to=product_video_path,
-    blank=True,
-    null=True,
-    validators=[validate_video_size],  # ← ADD THIS
-    help_text="Max 25MB, MP4 recommended (30-60 seconds)"
-)
+        upload_to=product_video_path,
+        blank=True,
+        null=True,
+        validators=[validate_video_size],
+        help_text="Max 30MB, MP4 recommended (30-60 seconds)"
+    )
     in_stock = models.BooleanField(default=True)
     is_new_arrival = models.BooleanField(default=False)
     is_best_seller = models.BooleanField(default=False)
@@ -242,35 +174,27 @@ class Product(models.Model):
     search_vector = SearchVectorField(null=True, blank=True)
 
     class Meta:
-        ordering = ['name']  # ← Default alphabetical order A → Z
-        
+        ordering = ['name']
         indexes = [
             GinIndex(name='name_trgm_idx', fields=['name'], opclasses=['gin_trgm_ops']),
             GinIndex(name='short_desc_trgm_idx', fields=['short_desc'], opclasses=['gin_trgm_ops']),
             GinIndex(fields=['search_vector'], name='product_search_gin'),
-            
             models.Index(fields=['store', 'is_featured', 'is_best_seller']),
             models.Index(fields=['store', 'deal_end_date']),
             models.Index(fields=['store', 'created_at']),
             models.Index(fields=['store', 'category']),
             models.Index(fields=['store', 'in_stock', 'is_featured']),
             models.Index(fields=['store', 'created_at', 'is_new_arrival']),
-            
             models.Index(fields=['-created_at', '-id'], name='idx_created_at_desc_id_desc'),
             models.Index(fields=['created_at', 'id'], name='idx_created_at_asc_id_asc'),
-            
             models.Index(fields=['-offer_price', '-id'], name='idx_offer_price_desc_id_desc', condition=models.Q(offer_price__isnull=False)),
             models.Index(fields=['offer_price', 'id'], name='idx_offer_price_asc_id_asc', condition=models.Q(offer_price__isnull=False)),
             models.Index(fields=['-regular_price', '-id'], name='idx_regular_price_desc_id_desc', condition=models.Q(offer_price__isnull=True)),
             models.Index(fields=['regular_price', 'id'], name='idx_regular_price_asc_id_asc', condition=models.Q(offer_price__isnull=True)),
-            
             models.Index(fields=['store', 'offer_price', 'regular_price'], name='idx_store_effective_price'),
             models.Index(fields=['store', '-created_at', '-id'], name='idx_store_created_desc'),
-            models.Index(fields=['store', '-created_at'], name='idx_store_created_search', condition=models.Q(is_active=True)),
-            
-            # CRITICAL FOR ALPHABETICAL SPEED
             models.Index(fields=['name'], name='idx_product_name'),
-    ]
+        ]
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -293,6 +217,7 @@ class Product(models.Model):
     def __str__(self):
         return f"{self.name} - {self.store.name}"
 
+
 class ProductSpecification(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='specifications')
     name = models.CharField(max_length=200)
@@ -312,10 +237,19 @@ class ProductImage(models.Model):
     sort_order = models.PositiveIntegerField(default=0)
 
     def save(self, *args, **kwargs):
+        trigger_conversion = False
+        if self.pk:
+            old = ProductImage.objects.get(pk=self.pk)
+            if old.image != self.image and self.image and not str(self.image.name or '').lower().endswith('.webp'):
+                trigger_conversion = True
+        else:
+            if self.image and not str(self.image.name or '').lower().endswith('.webp'):
+                trigger_conversion = True
+
         super().save(*args, **kwargs)
 
-        if self.image:
-            async_webp_convert(self, ['image'])
+        if trigger_conversion:
+            convert_image_to_webp.delay('ProductImage', self.id, 'image')
 
     class Meta:
         ordering = ['sort_order', 'id']
@@ -338,14 +272,30 @@ class StoreBanner(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
-        fields_to_convert = []
-        for field in ['image_desktop', 'image_tablet', 'image_mobile']:
-            image = getattr(self, field)
-            if image:
-                fields_to_convert.append(field)
+        # Handle each image field safely
+        if self.image_desktop and not str(self.image_desktop.name or '').lower().endswith('.webp'):
+            if self.pk:
+                old = StoreBanner.objects.get(pk=self.pk)
+                if old.image_desktop != self.image_desktop:
+                    convert_image_to_webp.delay('StoreBanner', self.id, 'image_desktop')
+            else:
+                convert_image_to_webp.delay('StoreBanner', self.id, 'image_desktop')
 
-        if fields_to_convert:
-            async_webp_convert(self, fields_to_convert)
+        if self.image_tablet and not str(self.image_tablet.name or '').lower().endswith('.webp'):
+            if self.pk:
+                old = StoreBanner.objects.get(pk=self.pk)
+                if old.image_tablet != self.image_tablet:
+                    convert_image_to_webp.delay('StoreBanner', self.id, 'image_tablet')
+            else:
+                convert_image_to_webp.delay('StoreBanner', self.id, 'image_tablet')
+
+        if self.image_mobile and not str(self.image_mobile.name or '').lower().endswith('.webp'):
+            if self.pk:
+                old = StoreBanner.objects.get(pk=self.pk)
+                if old.image_mobile != self.image_mobile:
+                    convert_image_to_webp.delay('StoreBanner', self.id, 'image_mobile')
+            else:
+                convert_image_to_webp.delay('StoreBanner', self.id, 'image_mobile')
 
     class Meta:
         ordering = ['order', '-created_at']
@@ -353,6 +303,7 @@ class StoreBanner(models.Model):
 
     def __str__(self):
         return f"{self.store.name} - Banner"
+
 
 class Lead(models.Model):
     STATUS_CHOICES = [('new','New Enquiry'),('contacted','Contacted'),('converted','Converted'),('just enquiry','just enquiry')]
@@ -368,16 +319,11 @@ class Lead(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def created_at_ist(self):
-        """Returns created_at in Indian Standard Time"""
         return localtime(self.created_at).strftime('%d %b %Y, %I:%M %p')
-
     created_at_ist.short_description = 'Enquiry Time (IST)'
 
     def __str__(self):
-        return f"{self.customer_name} → {self.store.name} ({self.created_at_ist()})"
-
-    def __str__(self):
-        return f"{self.customer_name} → {self.store.name}"
+        return f"{self.customer_name} ? {self.store.name} ({self.created_at_ist()})"
 
     def get_status_display(self):
         return dict(self.STATUS_CHOICES).get(self.status, self.status)
@@ -402,12 +348,21 @@ class SiteSettings(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
-        fields = []
-        if self.logo: fields.append('logo')
-        if self.favicon: fields.append('favicon')
+        if self.logo and not str(self.logo.name or '').lower().endswith('.webp'):
+            if self.pk:
+                old = SiteSettings.objects.get(pk=self.pk)
+                if old.logo != self.logo:
+                    convert_image_to_webp.delay('SiteSettings', self.id, 'logo')
+            else:
+                convert_image_to_webp.delay('SiteSettings', self.id, 'logo')
 
-        if fields:
-            async_webp_convert(self, fields)
+        if self.favicon and not str(self.favicon.name or '').lower().endswith('.webp'):
+            if self.pk:
+                old = SiteSettings.objects.get(pk=self.pk)
+                if old.favicon != self.favicon:
+                    convert_image_to_webp.delay('SiteSettings', self.id, 'favicon')
+            else:
+                convert_image_to_webp.delay('SiteSettings', self.id, 'favicon')
 
     def __str__(self):
         return "Site Settings"

@@ -2,6 +2,7 @@ Folder PATH listing for volume tamil
 Volume serial number is 32B3-C9FC
 C:.
 |   manage.py
+|   requirements.txt
 |   tree.txt
 |   
 +---logs
@@ -48,10 +49,14 @@ C:.
 |   |   |   |   |       f5e6c7d393e0.webp
 |   |   |   |   |       fe7724744701.jpg
 |   |   |   |   |       gemini_generated_image_h2fk6sh2fk6sh2fk.webp
+|   |   |   |   |       untitled-design-2.webp
+|   |   |   |   |       untitled-design-2_U1MFWSH.webp
 |   |   |   |   |       
 |   |   |   |   +---mobile
 |   |   |   |   |       37bc6d223ea4.png
 |   |   |   |   |       7dbdf4e9a59f.webp
+|   |   |   |   |       social_GgNOW5h.webp
+|   |   |   |   |       social_Yn4gWc5.webp
 |   |   |   |   |       
 |   |   |   |   \---tablet
 |   |   |   |           email.webp
@@ -93,9 +98,6 @@ C:.
 |   |   |       |   |   interior-design-house-modern-wooden_iE4P1ie.webp
 |   |   |       |   |   kam-idris-_hqhx3lbn18-unsplash.webp
 |   |   |       |   |   living-room.webp
-|   |   |       |   |   modern-living-room-interior-design.webp
-|   |   |       |   |   table.webp
-|   |   |       |   |   tv-set.webp
 |   |   |       |   |   
 |   |   |       |   \---videos
 |   |   |       |           3969436-uhd_3840_2160_25fps.mp4
@@ -135,9 +137,6 @@ C:.
 |   |           \---sofa-with-cuson
 |   |               |   pexels-fotios-photos-1957477.jpg
 |   |               |   pexels-fotios-photos-1957477.webp
-|   |               |   pexels-pixabay-416320.jpg
-|   |               |   pexels-pixabay-416320.webp
-|   |               |   pexels-steve-923192.jpg
 |   |               |   pexels-steve-923192.webp
 |   |               |   
 |   |               \---videos
