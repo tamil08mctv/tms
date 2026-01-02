@@ -10,6 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # # SAFE .env FORCE LOAD
 # env_path = BASE_DIR / '.env'
+
 # if env_path.exists():
 #     from decouple import Config, RepositoryEnv
 #     os.environ.update(RepositoryEnv(str(env_path)).data)
@@ -17,8 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 #     raise FileNotFoundError(f".env file not found at {env_path}")
 
 # SECURITY
-
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production-please!')
+SECRET_KEY = config('SECRET_KEY','django-insecure-j^6hn5x4)n2jg45r!l0h&q)5^q*01g+e)g9o=x*tcxd9rcf=lk')
 DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
 

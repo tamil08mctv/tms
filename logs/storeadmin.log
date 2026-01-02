@@ -40,3 +40,46 @@ INFO 2025-12-29 11:20:05,873 storeadmin Dashboard accessed
 INFO 2025-12-29 11:20:47,010 storeadmin Dashboard accessed (cache hit)
 INFO 2025-12-29 11:20:47,011 storeadmin Dashboard accessed
 INFO 2025-12-29 11:29:42,789 storeadmin Dashboard accessed
+INFO 2026-01-01 10:55:48,923 storeadmin Dashboard accessed (cache hit)
+INFO 2026-01-01 10:55:53,590 storeadmin Dashboard accessed (cache hit)
+INFO 2026-01-01 17:47:55,696 storeadmin Dashboard accessed (cache hit)
+INFO 2026-01-01 17:49:46,210 storeadmin Image DELETED from product '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-01 17:49:51,001 storeadmin Image DELETED from product '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-01 17:49:56,287 storeadmin Image DELETED from product '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-01 17:50:01,526 storeadmin Image DELETED from product '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-01 17:59:08,493 storeadmin Image DELETED from product '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-01 17:59:13,457 storeadmin Image DELETED from product '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-01 18:00:08,686 storeadmin Image DELETED from product '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-01 18:00:14,426 storeadmin Image DELETED from product '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-01 18:05:36,452 storeadmin Main image updated for '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-01 18:05:36,508 storeadmin Product UPDATED: '2 Seater Sofa' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2026-01-01 18:06:50,975 storeadmin Image DELETED from product '4 seater' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-01 18:09:42,140 storeadmin Dashboard accessed (cache hit)
+INFO 2026-01-01 18:17:18,862 storeadmin Dashboard accessed (cache hit)
+INFO 2026-01-02 09:46:02,454 storeadmin Category ADDED: 'COT' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-02 10:07:14,668 storeadmin Category UPDATED: 'COT' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-02 10:07:43,646 storeadmin Image DELETED from product '4 seat table with chair' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-02 10:08:06,421 storeadmin Product UPDATED: '4 seat table with chair' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2026-01-02 10:09:46,847 storeadmin Image DELETED from product '5 seater' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-02 10:10:38,202 storeadmin Product UPDATED: '5 seater' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2026-01-02 10:10:56,529 storeadmin Image DELETED from product 'Work Desk' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-02 10:10:59,946 storeadmin Image DELETED from product 'Work Desk' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-02 10:11:04,153 storeadmin Image DELETED from product 'Work Desk' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-02 10:11:19,743 storeadmin Product UPDATED: 'Work Desk' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2026-01-02 10:13:49,586 storeadmin Image DELETED from product 'Wardrobe' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-02 10:14:54,211 storeadmin Product UPDATED: 'Wardrobe' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2026-01-02 10:15:06,155 storeadmin Image DELETED from product 'tv' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-02 10:23:17,744 storeadmin Product UPDATED: 'tv' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
+INFO 2026-01-02 10:24:12,021 storeadmin Image DELETED from product 'Teacot' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-02 10:29:44,980 storeadmin 3 images DELETED (multi) from product 'Teacot' | Store: TMS FURNITURES
+INFO 2026-01-02 10:30:33,915 storeadmin Product UPDATED: 'Teacot' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-02 10:31:02,211 storeadmin 3 images DELETED (multi) from product '6 Seater Sofa' | Store: TMS FURNITURES
+INFO 2026-01-02 10:31:31,323 storeadmin Product UPDATED: '6 Seater Sofa' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-02 10:31:41,595 storeadmin Image DELETED from product 'aknfmk knakf'
+INFO 2026-01-02 10:32:10,317 storeadmin Product UPDATED: 'aknfmk knakf' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-02 10:32:27,396 storeadmin 2 images DELETED (multi) from product 'Storage Bench' | Store: TMS FURNITURES
+INFO 2026-01-02 10:32:56,104 storeadmin Product UPDATED: 'Storage Bench' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-02 10:34:09,292 storeadmin 7 images DELETED (multi) from product 'sofa 7 seater' | Store: TMS FURNITURES
+INFO 2026-01-02 10:34:35,383 storeadmin Product UPDATED: 'sofa 7 seater' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-02 10:34:51,306 storeadmin 2 images DELETED (multi) from product 'Single chair' | Store: TMS FURNITURES
+INFO 2026-01-02 10:35:21,477 storeadmin Product UPDATED: 'Single chair' | Store: TMS FURNITURES | User: vd

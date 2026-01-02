@@ -12,10 +12,6 @@
         <link rel="icon" href="{{ site_settings.favicon.url }}" type="image/x-icon">
         <link rel="shortcut icon" href="{{ site_settings.favicon.url }}" type="image/x-icon">
         <link rel="apple-touch-icon" href="{{ site_settings.favicon.url }}">
-    {% else %}
-        <link rel="icon" href="{% static 'TMS/images/favicon.ico' %}" type="image/x-icon">
-        <link rel="shortcut icon" href="{% static 'TMS/images/favicon.ico' %}" type="image/x-icon">
-        <link rel="apple-touch-icon" href="{% static 'TMS/images/apple-touch-icon.png' %}">
     {% endif %}
 
     {% block seo %}

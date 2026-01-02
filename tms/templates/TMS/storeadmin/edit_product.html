@@ -1,6 +1,5 @@
 {% extends 'TMS/storeadmin/base.html' %}
 {% load static %}
-
 {% block title %}Edit Product - {{ product.name }}{% endblock %}
 
 {% block content %}
@@ -8,10 +7,10 @@
     <div class="row justify-content-center">
         <div class="col-12 col-xl-11">
             <div class="card border-0 shadow-lg overflow-hidden" style="border-radius: 10px;">
-                <!-- Premium Header -->
+                <!-- Header -->
                 <div class="card-header position-relative border-0 py-1" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                     <div class="text-center w-100">
-                        <h4 class="text-white fw-bold  mb-1">
+                        <h4 class="text-white fw-bold mb-1">
                             <i class="fas fa-edit me-2"></i> Edit Product
                         </h4>
                         <p class="text-white opacity-90 mb-0 fs-5">{{ product.name }}</p>
@@ -22,7 +21,7 @@
                 </div>
 
                 <div class="card-body p-2 p-lg-2 bg-gradient-light" style="background: linear-gradient(to bottom, #f8f9fa, #ffffff);">
-                    <form method="post" enctype="multipart/form-data">
+                    <form method="post" enctype="multipart/form-data" id="editProductForm">
                         {% csrf_token %}
 
                         <!-- Main Grid -->
@@ -31,24 +30,20 @@
                             <div class="col-lg-8">
                                 <div class="bg-white rounded-4 shadow-sm p-4 p-md-5">
                                     <h5 class="fw-bold text-primary mb-4"><i class="fas fa-edit me-2"></i>Product Details</h5>
-
                                     <div class="mb-3">
                                         <label class="form-label fw-bold">Product Name</label>
                                         {{ form.name }}
                                     </div>
-
                                     <div class="mb-3">
                                         <label class="form-label fw-bold">Category</label>
                                         {{ form.category }}
                                     </div>
-
                                     <div class="mb-3">
-                                        <label class="form-label fw-bold">Short Description <small class="text-muted">(shown in listings)</small></label>
+                                        <label class="form-label fw-bold">Short Description</label>
                                         {{ form.short_desc }}
                                     </div>
-
                                     <div class="mb-3">
-                                        <label class="form-label fw-bold">Full Description <small class="text-muted">(detailed info)</small></label>
+                                        <label class="form-label fw-bold">Full Description</label>
                                         {{ form.description }}
                                     </div>
                                 </div>
@@ -57,14 +52,13 @@
                             <!-- Right: Price & Badges -->
                             <div class="col-lg-4">
                                 <div class="bg-white rounded-4 shadow-sm p-4 h-100">
-                                    <h5 class="fw-bold text-primary mb-4"><i class="fas fa-tags me-2"></i>Pricing</h5>
-
+                                    <h5 class="fw-bold text-primary mb-4"><i class="fas fa-tags me-2"></i>Pricing & Badges</h5>
                                     <div class="mb-3">
                                         <label class="form-label fw-bold">Regular Price (₹)</label>
                                         {{ form.regular_price }}
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label fw-bold">Offer Price (₹) <small class="text-muted">optional</small></label>
+                                        <label class="form-label fw-bold">Offer Price (₹)</label>
                                         {{ form.offer_price }}
                                     </div>
                                     <div class="mb-3">
@@ -75,9 +69,7 @@
                                         <input class="form-check-input" type="checkbox" name="call_for_price" id="call_for_price_edit" {% if product.call_for_price %}checked{% endif %}>
                                         <label class="form-check-label fw-bold text-info" for="call_for_price_edit">Call for Best Price</label>
                                     </div>
-
                                     <hr class="my-4">
-
                                     <h6 class="fw-bold text-primary mb-3"><i class="fas fa-medal me-2"></i>Special Badges</h6>
                                     <div class="d-grid gap-3">
                                         <div class="form-check form-switch">
@@ -110,14 +102,13 @@
                         </div>
 
                         <!-- Specifications -->
-                        <div class="bg-white rounded-4 shadow-sm p-3 mt-2">
+                        <div class="bg-white rounded-4 shadow-sm p-3 mt-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="fw-bold text-primary mb-0"><i class="fas fa-th-list me-2"></i>Specifications</h5>
                                 <button type="button" class="btn btn-outline-success rounded-pill px-4 py-2" id="add-spec">
                                     <i class="fas fa-plus me-2"></i>Add Specification
                                 </button>
                             </div>
-
                             {{ spec_formset.management_form }}
                             <div id="spec-container">
                                 {% for form in spec_formset %}
@@ -147,20 +138,26 @@
                             </div>
                         </div>
 
-                        <!-- Current Video -->
-                        {% if product.video %}
-                        <div class="bg-white rounded-4 shadow-sm p-2 mt-4">
-                            <h5 class="fw-bold text-primary mb-4"><i class="fas fa-video me-2"></i>Current Video</h5>
-                            <video controls class="w-100 rounded-4" style="max-height:220px;">
-                                <source src="{{ product.video.url }}" type="video/mp4">
-                                Your browser does not support the video tag.
-                            </video>
-                            <div class="mt-3">
-                                <label class="form-label fw-bold text-primary">Replace Video</label>
-                                <input type="file" name="video" accept="video/*" class="form-control form-control-lg rounded-pill">
-                            </div>
+                        <!-- Video Upload / Replace -->
+                        <div class="bg-white rounded-4 shadow-sm p-4 mt-4">
+                            <h5 class="fw-bold text-primary mb-4"><i class="fas fa-video me-2"></i>Product Video</h5>
+
+                            {% if product.video %}
+                                <div class="mb-4">
+                                    <p class="fw-bold text-success mb-2">Current Video:</p>
+                                    <video controls class="w-100 rounded-4" style="max-height:300px;">
+                                        <source src="{{ product.video.url }}" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                    <p class="text-muted small mt-2">Upload a new video to replace the current one. Old video will be deleted.</p>
+                                </div>
+                            {% else %}
+                                <p class="text-muted mb-3">No video uploaded yet.</p>
+                            {% endif %}
+
+                            <label class="form-label fw-bold">Upload / Replace Video (Max 50MB)</label>
+                            <input type="file" name="video" accept="video/*" class="form-control form-control-lg rounded-pill">
                         </div>
-                        {% endif %}
 
                         <!-- Add More Images -->
                         <div class="bg-white rounded-4 shadow-sm p-4 mt-4">
@@ -169,15 +166,25 @@
                             <small class="text-muted d-block mt-2">Hold Ctrl/Cmd to select multiple</small>
                         </div>
 
-                        <!-- Current Images -->
+                        <!-- Current Images with Multi-Delete -->
                         {% if product.images.exists %}
                         <div class="bg-white rounded-4 shadow-sm p-4 mt-4">
-                            <h5 class="fw-bold text-primary mb-4"><i class="fas fa-photo-video me-2"></i>Current Images</h5>
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="fw-bold text-primary mb-0"><i class="fas fa-photo-video me-2"></i>Current Images ({{ product.images.count }})</h5>
+                                <button type="submit" name="delete_selected_images" class="btn btn-danger rounded-pill px-4" onclick="return confirm('Delete selected images? This cannot be undone.')" {% if not product.images.exists %}disabled{% endif %}>
+                                    <i class="fas fa-trash me-2"></i> Delete Selected
+                                </button>
+                            </div>
+
                             <div class="row g-4">
                                 {% for img in product.images.all %}
                                 <div class="col-6 col-md-4 col-lg-3">
-                                    <div class="card border-0 shadow-sm hover-lift">
-                                        <img src="{{ img.image.url }}" class="card-img-top rounded-top" style="height:180px; object-fit:cover;">
+                                    <div class="card border-0 shadow-sm hover-lift position-relative">
+                                        <div class="form-check position-absolute top-0 start-0 m-2 z-3">
+                                            <input class="form-check-input" type="checkbox" name="selected_images" value="{{ img.id }}" id="img{{ img.id }}">
+                                            <label class="form-check-label" for="img{{ img.id }}"></label>
+                                        </div>
+                                        <img src="{{ img.image.url }}" class="card-img-top rounded-top" style="height:180px; object-fit:cover;" alt="{{ product.name }}">
                                         <div class="card-body p-3 text-center">
                                             {% if img.is_main %}
                                                 <span class="badge bg-success w-100 mb-2">MAIN IMAGE</span>
@@ -199,7 +206,7 @@
                         {% endif %}
 
                         <!-- Save Buttons -->
-                        <div class="text-center mt-2 pt-2">
+                        <div class="text-center mt-5 pt-3">
                             <a href="{% url 'store_products' %}" class="btn btn-secondary btn-lg rounded-pill px-5 py-3 me-3">
                                 Cancel
                             </a>
@@ -215,56 +222,21 @@
 </div>
 
 <style>
-    .bg-gradient-light {
-        background: linear-gradient(to bottom, #f8f9fa, #ffffff);
-    }
-
-    .form-control, .form-select {
-        border-radius: 50px !important;
-        padding: 0.8rem 1.2rem;
-        border: 1px solid #e0e0e0;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        transition: all 0.3s ease;
-        font-size: 1rem;
-    }
-
-    .form-control:focus, .form-select:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.3rem rgba(102, 126, 234, 0.2);
-    }
-
-    .form-check-input:checked {
-        background-color: #28a745;
-        border-color: #28a745;
-    }
-
-    .spec-row {
-        background: #f8f9fa;
-        padding: 12px;
-        border-radius: 20px;
-        transition: all 0.3s ease;
-    }
-
-    .spec-row:hover {
-        background: #eef2ff;
-        transform: translateY(-2px);
-    }
-
     .hover-lift:hover {
         transform: translateY(-8px);
         box-shadow: 0 15px 35px rgba(0,0,0,0.12) !important;
     }
-
-    @media (max-width: 768px) {
-        .spec-row .col-md-1 {
-            margin-top: 1rem;
-        }
-        .text-md-end {
-            text-align: center !important;
-        }
-        .btn {
-            font-size: 0.95rem;
-        }
+    .form-check-input:checked {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+    .spec-row {
+        background: #f8f9fa;
+        padding: 12px;
+        border-radius: 20px;
+    }
+    .spec-row:hover {
+        background: #eef2ff;
     }
 </style>
 
@@ -274,15 +246,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const addBtn = document.getElementById('add-spec');
     const totalForms = document.querySelector('input[name$="-TOTAL_FORMS"]');
 
-    const getEmptyRow = () => {
+    addBtn.addEventListener('click', () => {
+        const count = parseInt(totalForms.value);
         const row = document.createElement('div');
         row.className = 'row g-3 mb-3 align-items-end spec-row';
         row.innerHTML = `
             <div class="col-12 col-md-5">
-                <input type="text" class="form-control rounded-pill" placeholder="e.g. Material" name="">
+                <input type="text" class="form-control rounded-pill" placeholder="e.g. Material" name="form-${count}-name">
             </div>
             <div class="col-12 col-md-6">
-                <input type="text" class="form-control rounded-pill" placeholder="e.g. Solid Teak Wood" name="">
+                <input type="text" class="form-control rounded-pill" placeholder="e.g. Solid Teak Wood" name="form-${count}-value">
             </div>
             <div class="col-12 col-md-1 text-md-end">
                 <button type="button" class="btn btn-outline-danger rounded-pill px-3 remove-spec">
@@ -290,34 +263,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 </button>
             </div>
         `;
-        return row;
-    };
-
-    addBtn.addEventListener('click', () => {
-        const count = parseInt(totalForms.value);
-        const newRow = getEmptyRow();
-
-        newRow.querySelectorAll('input').forEach((input, i) => {
-            input.name = `form-${count}-${i === 0 ? 'name' : 'value'}`;
-        });
-
-        container.appendChild(newRow);
+        container.appendChild(row);
         totalForms.value = count + 1;
     });
 
     container.addEventListener('click', (e) => {
         if (e.target.closest('.remove-spec')) {
             const row = e.target.closest('.spec-row');
-            if (container.children.length > 1) {
-                const deleteCheckbox = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
-                if (deleteCheckbox) {
-                    deleteCheckbox.checked = true;
-                    row.style.display = 'none';
-                } else {
-                    row.remove();
-                }
-                totalForms.value = parseInt(totalForms.value) - 1;
+            const deleteBox = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
+            if (deleteBox) {
+                deleteBox.checked = true;
+                row.style.display = 'none';
+            } else {
+                row.remove();
             }
+            totalForms.value = parseInt(totalForms.value) - 1;
         }
     });
 });

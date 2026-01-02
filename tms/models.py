@@ -1,5 +1,4 @@
-# tms/models.py — FINAL: FAST S3 UPLOAD + BACKGROUND WEBP CONVERSION WITH CELERY (FULLY FIXED)
-
+# tms/models.py — FINAL: Environment-Adaptive WebP Conversion + Safe File Deletion
 import os
 import uuid
 from django.db import models
@@ -9,14 +8,20 @@ from django.core.exceptions import ValidationError
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.utils.timezone import localtime
-from .tasks import convert_image_to_webp
+from django.conf import settings
+
+# Import task safely — will be None if tasks.py missing
+try:
+    from .tasks import convert_image_to_webp
+except ImportError:
+    convert_image_to_webp = None
 
 
 def validate_video_size(value):
     limit_mb = 50
     limit_bytes = limit_mb * 1024 * 1024
     if value.size > limit_bytes:
-        raise ValidationError(f"Video file too large. Maximum size is {limit_mb}MB. Your file is {value.size // (1024*1024)}MB.")
+        raise ValidationError(f"Video file too large. Maximum size is {limit_mb}MB.")
 
 
 def safe_filename(filename):
@@ -24,7 +29,7 @@ def safe_filename(filename):
     return f"{slugify(name)[:50]}{ext.lower()}"
 
 
-# Upload paths — keep original extension (no forced .webp)
+# Upload paths
 def store_logo_path(instance, filename):
     return f"{instance.slug}/logos/{safe_filename(filename)}"
 
@@ -51,6 +56,26 @@ def banner_tablet_path(instance, filename):
 
 def banner_mobile_path(instance, filename):
     return f"{instance.store.slug}/banners/mobile/{safe_filename(filename)}"
+
+
+# ======================= SAFE WEBP CONVERSION HELPER =======================
+def trigger_webp_conversion(model_name, instance_id, field_name):
+    """
+    Safely trigger WebP conversion only when Redis/Celery is enabled and available.
+    In local development (USE_REDIS=False), it just logs and skips.
+    """
+    if not convert_image_to_webp:
+        print(f"[DEV MODE] WebP task not available – skipping {model_name} #{instance_id} {field_name}")
+        return
+
+    if getattr(settings, 'USE_REDIS', False):
+        try:
+            convert_image_to_webp.delay(model_name, instance_id, field_name)
+            print(f"[PRODUCTION] Queued WebP conversion: {model_name} #{instance_id} {field_name}")
+        except Exception as e:
+            print(f"[PRODUCTION] Celery failed (Redis down?): {e}")
+    else:
+        print(f"[DEV MODE] Skipped WebP conversion: {model_name} #{instance_id} {field_name}")
 
 
 # ======================= MODELS =======================
@@ -94,7 +119,20 @@ class Store(models.Model):
         super().save(*args, **kwargs)
 
         if trigger_conversion:
-            convert_image_to_webp.delay('Store', self.id, 'logo')
+            trigger_webp_conversion('Store', self.id, 'logo')
+
+    def delete(self, *args, **kwargs):
+        if self.logo:
+            storage = self.logo.storage
+            path = self.logo.name
+            super().delete(*args, **kwargs)
+            try:
+                if storage.exists(path):
+                    storage.delete(path)
+            except Exception:
+                pass
+        else:
+            super().delete(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -106,7 +144,7 @@ class StoreAdmin(models.Model):
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.user.username} ? {self.store.name}"
+        return f"{self.user.username} — {self.store.name}"
 
 
 class Category(models.Model):
@@ -137,7 +175,20 @@ class Category(models.Model):
         super().save(*args, **kwargs)
 
         if trigger_conversion:
-            convert_image_to_webp.delay('Category', self.id, 'image')
+            trigger_webp_conversion('Category', self.id, 'image')
+
+    def delete(self, *args, **kwargs):
+        if self.image:
+            storage = self.image.storage
+            path = self.image.name
+            super().delete(*args, **kwargs)
+            try:
+                if storage.exists(path):
+                    storage.delete(path)
+            except Exception:
+                pass
+        else:
+            super().delete(*args, **kwargs)
 
     def __str__(self):
         return f"{self.store.name} - {self.name}"
@@ -154,13 +205,7 @@ class Product(models.Model):
     offer_price = models.DecimalField(max_digits=12, decimal_places=0, null=True, blank=True)
     discount_percent = models.PositiveIntegerField(null=True, blank=True)
     deal_end_date = models.DateField(null=True, blank=True)
-    video = models.FileField(
-        upload_to=product_video_path,
-        blank=True,
-        null=True,
-        validators=[validate_video_size],
-        help_text="Max 30MB, MP4 recommended (30-60 seconds)"
-    )
+    video = models.FileField(upload_to=product_video_path, blank=True, null=True, validators=[validate_video_size])
     in_stock = models.BooleanField(default=True)
     is_new_arrival = models.BooleanField(default=False)
     is_best_seller = models.BooleanField(default=False)
@@ -214,6 +259,18 @@ class Product(models.Model):
 
         super().save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        if self.video:
+            storage = self.video.storage
+            path = self.video.name
+            try:
+                if storage.exists(path):
+                    storage.delete(path)
+            except Exception:
+                pass
+        self.images.all().delete()
+        super().delete(*args, **kwargs)
+
     def __str__(self):
         return f"{self.name} - {self.store.name}"
 
@@ -249,7 +306,20 @@ class ProductImage(models.Model):
         super().save(*args, **kwargs)
 
         if trigger_conversion:
-            convert_image_to_webp.delay('ProductImage', self.id, 'image')
+            trigger_webp_conversion('ProductImage', self.id, 'image')
+
+    def delete(self, *args, **kwargs):
+        if self.image:
+            storage = self.image.storage
+            path = self.image.name
+            super().delete(*args, **kwargs)
+            try:
+                if storage.exists(path):
+                    storage.delete(path)
+            except Exception:
+                pass
+        else:
+            super().delete(*args, **kwargs)
 
     class Meta:
         ordering = ['sort_order', 'id']
@@ -272,30 +342,45 @@ class StoreBanner(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
-        # Handle each image field safely
         if self.image_desktop and not str(self.image_desktop.name or '').lower().endswith('.webp'):
             if self.pk:
                 old = StoreBanner.objects.get(pk=self.pk)
                 if old.image_desktop != self.image_desktop:
-                    convert_image_to_webp.delay('StoreBanner', self.id, 'image_desktop')
+                    trigger_webp_conversion('StoreBanner', self.id, 'image_desktop')
             else:
-                convert_image_to_webp.delay('StoreBanner', self.id, 'image_desktop')
+                trigger_webp_conversion('StoreBanner', self.id, 'image_desktop')
 
-        if self.image_tablet and not str(self.image_tablet.name or '').lower().endswith('.webp'):
+        if self.image_tablet and self.image_tablet.name and not str(self.image_tablet.name).lower().endswith('.webp'):
             if self.pk:
                 old = StoreBanner.objects.get(pk=self.pk)
                 if old.image_tablet != self.image_tablet:
-                    convert_image_to_webp.delay('StoreBanner', self.id, 'image_tablet')
+                    trigger_webp_conversion('StoreBanner', self.id, 'image_tablet')
             else:
-                convert_image_to_webp.delay('StoreBanner', self.id, 'image_tablet')
+                trigger_webp_conversion('StoreBanner', self.id, 'image_tablet')
 
         if self.image_mobile and not str(self.image_mobile.name or '').lower().endswith('.webp'):
             if self.pk:
                 old = StoreBanner.objects.get(pk=self.pk)
                 if old.image_mobile != self.image_mobile:
-                    convert_image_to_webp.delay('StoreBanner', self.id, 'image_mobile')
+                    trigger_webp_conversion('StoreBanner', self.id, 'image_mobile')
             else:
-                convert_image_to_webp.delay('StoreBanner', self.id, 'image_mobile')
+                trigger_webp_conversion('StoreBanner', self.id, 'image_mobile')
+
+    def delete(self, *args, **kwargs):
+        paths = [
+            self.image_desktop.name if self.image_desktop else None,
+            self.image_tablet.name if self.image_tablet else None,
+            self.image_mobile.name if self.image_mobile else None,
+        ]
+        storage = self.image_desktop.storage
+        super().delete(*args, **kwargs)
+        for path in paths:
+            if path:
+                try:
+                    if storage.exists(path):
+                        storage.delete(path)
+                except Exception:
+                    pass
 
     class Meta:
         ordering = ['order', '-created_at']
@@ -323,7 +408,7 @@ class Lead(models.Model):
     created_at_ist.short_description = 'Enquiry Time (IST)'
 
     def __str__(self):
-        return f"{self.customer_name} ? {self.store.name} ({self.created_at_ist()})"
+        return f"{self.customer_name} — {self.store.name} ({self.created_at_ist()})"
 
     def get_status_display(self):
         return dict(self.STATUS_CHOICES).get(self.status, self.status)
@@ -352,17 +437,33 @@ class SiteSettings(models.Model):
             if self.pk:
                 old = SiteSettings.objects.get(pk=self.pk)
                 if old.logo != self.logo:
-                    convert_image_to_webp.delay('SiteSettings', self.id, 'logo')
+                    trigger_webp_conversion('SiteSettings', self.id, 'logo')
             else:
-                convert_image_to_webp.delay('SiteSettings', self.id, 'logo')
+                trigger_webp_conversion('SiteSettings', self.id, 'logo')
 
         if self.favicon and not str(self.favicon.name or '').lower().endswith('.webp'):
             if self.pk:
                 old = SiteSettings.objects.get(pk=self.pk)
                 if old.favicon != self.favicon:
-                    convert_image_to_webp.delay('SiteSettings', self.id, 'favicon')
+                    trigger_webp_conversion('SiteSettings', self.id, 'favicon')
             else:
-                convert_image_to_webp.delay('SiteSettings', self.id, 'favicon')
+                trigger_webp_conversion('SiteSettings', self.id, 'favicon')
+
+    def delete(self, *args, **kwargs):
+        paths = [
+            self.logo.name if self.logo else None,
+            self.favicon.name if self.favicon else None,
+        ]
+        storage = self.logo.storage if self.logo else (self.favicon.storage if self.favicon else None)
+        super().delete(*args, **kwargs)
+        if storage:
+            for path in paths:
+                if path:
+                    try:
+                        if storage.exists(path):
+                            storage.delete(path)
+                    except Exception:
+                        pass
 
     def __str__(self):
         return "Site Settings"
@@ -385,9 +486,12 @@ class SocialLink(models.Model):
 
     def get_icon_class(self):
         icons = {
-            'facebook': 'fab fa-facebook-f', 'instagram': 'fab fa-instagram',
-            'youtube': 'fab fa-youtube', 'twitter': 'fab fa-twitter',
-            'whatsapp': 'fab fa-whatsapp', 'linkedin': 'fab fa-linkedin-in',
+            'facebook': 'fab fa-facebook-f',
+            'instagram': 'fab fa-instagram',
+            'youtube': 'fab fa-youtube',
+            'twitter': 'fab fa-twitter',
+            'whatsapp': 'fab fa-whatsapp',
+            'linkedin': 'fab fa-linkedin-in',
             'tiktok': 'fab fa-tiktok'
         }
         return icons.get(self.platform, 'fas fa-link')

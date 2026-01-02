@@ -57,8 +57,7 @@ def store_dashboard(request):
             'recent_products': recent_products,
         }
         cache.set(cache_key, context, 300)  # 5min cache
-    else:
-        print("Dashboard accessed (cache hit)", extra={'client_ip': client_ip, 'user': user})
+        storeadmin_logger.info("Dashboard accessed (cache hit)", extra={'client_ip': client_ip, 'user': user})
     
     return render(request, 'TMS/storeadmin/dashboard.html', context)
 
@@ -230,7 +229,6 @@ def store_products(request):
     }
 
     return render(request, 'TMS/storeadmin/products.html', context)
-
 @login_required
 def edit_product(request, pk):
     if not hasattr(request.user, 'storeadmin'):
@@ -238,8 +236,6 @@ def edit_product(request, pk):
     
     store = request.user.storeadmin.store
     product = get_object_or_404(Product, pk=pk, store=store)
-    client_ip = request.META.get('REMOTE_ADDR', 'unknown')
-    
     
     ProductSpecFormSet = inlineformset_factory(
         Product, ProductSpecification,
@@ -252,46 +248,64 @@ def edit_product(request, pk):
         form = ProductForm(request.POST, request.FILES, instance=product)
         spec_formset = ProductSpecFormSet(request.POST, instance=product)
 
-        delete_image_id = request.POST.get('delete_image')
-        if delete_image_id:
-            image_to_delete = get_object_or_404(ProductImage, id=delete_image_id, product=product)
-            image_to_delete.delete()
-            storeadmin_logger.info(f"Image DELETED from product '{product.name}' | Store: {store.name} | User: {request.user.username}")
-            messages.success(request, "Image deleted successfully!")
+        # Multi-Delete
+        selected_image_ids = request.POST.getlist('selected_images')
+        if 'delete_selected_images' in request.POST and selected_image_ids:
+            images_to_delete = ProductImage.objects.filter(id__in=selected_image_ids, product=product)
+            count = images_to_delete.count()
+            images_to_delete.delete()
+            messages.success(request, f"{count} image(s) deleted!")
             return redirect('edit_product', pk=product.pk)
 
+        # Single Delete
+        delete_image_id = request.POST.get('delete_image')
+        if delete_image_id:
+            get_object_or_404(ProductImage, id=delete_image_id, product=product).delete()
+            messages.success(request, "Image deleted!")
+            return redirect('edit_product', pk=product.pk)
+
+        # Manual Set Main
         main_image_id = request.POST.get('main_image')
         if main_image_id:
             ProductImage.objects.filter(product=product).update(is_main=False)
             ProductImage.objects.filter(id=main_image_id, product=product).update(is_main=True)
-            storeadmin_logger.info(f"Main image updated for '{product.name}' | Store: {store.name} | User: {request.user.username}")
             messages.success(request, "Main image updated!")
+            return redirect('edit_product', pk=product.pk)
 
+        # Save Product
         if form.is_valid() and spec_formset.is_valid():
+            # Video replacement - delete old
+            if 'video' in request.FILES and product.video:
+                try:
+                    product.video.storage.delete(product.video.name)
+                except Exception:
+                    pass
+
+            # Badges
             product.call_for_price = 'call_for_price' in request.POST
-            product.is_limited_stock = 'is_limited_stock' in request.POST
             product.is_new_arrival = 'is_new_arrival' in request.POST
             product.is_best_seller = 'is_best_seller' in request.POST
             product.is_limited_deal = 'is_limited_deal' in request.POST
             product.is_special_offer = 'is_special_offer' in request.POST
-     
+
             form.save()
             spec_formset.save()
 
+            # === NEW IMAGES LOGIC ===
             extra_images = request.FILES.getlist('extra_images')
-            for img_file in extra_images:
-                ProductImage.objects.create(product=product, image=img_file)
+            if extra_images:
+                # Check if product currently has ANY main image
+                has_main = ProductImage.objects.filter(product=product, is_main=True).exists()
 
-            image_order = request.POST.getlist('image_order')
-            if image_order:
-                for index, image_id in enumerate(image_order):
-                    ProductImage.objects.filter(id=image_id, product=product).update(sort_order=index)
+                for i, img_file in enumerate(extra_images):
+                    new_img = ProductImage.objects.create(product=product, image=img_file)
+                    # Only auto-set first as main IF no main image existed before
+                    if not has_main and i == 0:
+                        new_img.is_main = True
+                        new_img.save()
 
-            storeadmin_logger.info(f"Product UPDATED: '{product.name}' | Store: {store.name} | User: {request.user.username} | IP: {client_ip}")
             messages.success(request, "Product updated successfully!")
             return redirect('store_products')
-        else:
-            messages.error(request, "Please correct the errors below.")
 
     else:
         form = ProductForm(instance=product)
@@ -304,7 +318,6 @@ def edit_product(request, pk):
         'form': form,
         'spec_formset': spec_formset,
     })
-
 
 @login_required
 def delete_product(request, pk):
