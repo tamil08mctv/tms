@@ -83,3 +83,4 @@ INFO 2026-01-02 10:34:09,292 storeadmin 7 images DELETED (multi) from product 's
 INFO 2026-01-02 10:34:35,383 storeadmin Product UPDATED: 'sofa 7 seater' | Store: TMS FURNITURES | User: vd
 INFO 2026-01-02 10:34:51,306 storeadmin 2 images DELETED (multi) from product 'Single chair' | Store: TMS FURNITURES
 INFO 2026-01-02 10:35:21,477 storeadmin Product UPDATED: 'Single chair' | Store: TMS FURNITURES | User: vd
+INFO 2026-01-03 11:11:04,404 storeadmin Dashboard accessed (cache hit)

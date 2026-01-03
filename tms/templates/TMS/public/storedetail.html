@@ -36,36 +36,163 @@
 
 {% block content %}
 
-<!-- STORE HERO BANNER — LIKE HOME PAGE -->
-<section class="position-relative" style="background:#000;">
-    <!-- FULL SCREEN SLIDER -->
+<!-- STORE HERO BANNER — FULL CONTENT VISIBLE (SAME AS HOME PAGE) -->
+<section class="hero-banner-section position-relative" style="background: #111111;">
     {% if store.banners.exists %}
-    <div class="swiper hero-swiper position-relative" style="max-height: 400px;">
+    <div class="swiper hero-swiper">
         <div class="swiper-wrapper">
             {% for banner in store.banners.all %}
             <div class="swiper-slide">
                 {% if banner.link %}
-                <a href="{{ banner.link }}" class="d-block w-100 h-100">
+                <a href="{{ banner.link }}" class="d-block w-100 h-100" target="_blank" rel="noopener">
                 {% endif %}
-                    <img src="{{ banner.image_desktop.url }}" 
-                         class="d-none d-lg-block w-100 h-100 " style="object-fit: cover;" alt="{{ banner.caption }} "fetchpriority="high" loading="lazy">
+                
+                    <!-- Desktop (>=992px) -->
+                    <img src="{{ banner.image_desktop.url }}"
+                         class="d-none d-lg-block w-100 h-100"
+                         loading="lazy"
+                         fetchpriority="high"
+                         alt="{{ banner.caption|default:'TMS Furniture Premium Banner' }}"
+                         style="object-fit: contain; object-position: center; background: #111111;">
+
+                    <!-- Tablet (>=768px <992px) - Fallback to desktop if no tablet image -->
                     {% if banner.image_tablet %}
-                    <img src="{{ banner.image_tablet.url }}" 
-                         class="d-none d-md-block d-lg-none w-100 h-100" style="object-fit: cover;" alt="{{ banner.caption }}"fetchpriority="high" loading="lazy" >
+                    <img src="{{ banner.image_tablet.url }}"
+                         class="d-none d-md-block d-lg-none w-100 h-100"
+                         loading="lazy"
+                         alt="{{ banner.caption|default:'TMS Furniture Premium Banner' }}"
+                         style="object-fit: contain; object-position: center; background: #111111;">
+                    {% else %}
+                    <img src="{{ banner.image_desktop.url }}"
+                         class="d-none d-md-block d-lg-none w-100 h-100"
+                         loading="lazy"
+                         alt="{{ banner.caption|default:'TMS Furniture Premium Banner' }}"
+                         style="object-fit: contain; object-position: center; background: #111111;">
                     {% endif %}
-                    <img src="{{ banner.image_mobile.url }}" 
-                         class="d-block d-md-none w-100 h-100" style="object-fit: cover;" alt="{{ banner.caption }}" fetchpriority="high" loading="lazy" >
+
+                    <!-- Mobile (<768px) -->
+                    <img src="{{ banner.image_mobile.url }}"
+                         class="d-block d-md-none w-100 h-100"
+                         loading="lazy"
+                         alt="{{ banner.caption|default:'TMS Furniture Premium Banner' }}"
+                         style="object-fit: contain; object-position: center; background: #111111;">
+
                 {% if banner.link %}</a>{% endif %}
             </div>
             {% endfor %}
         </div>
-        <div class="swiper-button-next text-white arrow-btn"></div>
-        <div class="swiper-button-prev text-white arrow-btn"></div>
+
+        <!-- Arrows -->
+        <div class="swiper-button-next text-white"></div>
+        <div class="swiper-button-prev text-white"></div>
+
+        <!-- Dots -->
         <div class="swiper-pagination"></div>
     </div>
     {% endif %}
+</section>
 
-    </section>
+<!-- Swiper CDN (keep if not already in base.html) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<!-- Styles - Full Content Visible + Seamless Dark Sides (SAME AS HOME) -->
+<style>
+    .hero-banner-section {
+        background: #111111;
+    }
+    .hero-swiper,
+    .swiper-slide,
+    .swiper-slide img {
+        height: 520px; /* Desktop */
+    }
+    @media (max-width: 991.98px) {
+        .hero-swiper,
+        .swiper-slide,
+        .swiper-slide img {
+            height: 450px; /* Tablet */
+        }
+    }
+    @media (max-width: 767.98px) {
+        .hero-swiper,
+        .swiper-slide,
+        .swiper-slide img {
+            height: 380px; /* Mobile */
+        }
+    }
+
+    /* Full image visible + dark sides blend */
+    .swiper-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center;
+        background: #111111;
+    }
+
+    /* Premium Arrows */
+    .swiper-button-next,
+    .swiper-button-prev {
+        width: 50px;
+        height: 50px;
+        background: rgba(0,0,0,0.7);
+        border-radius: 50%;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255,255,255,0.3);
+    }
+    .swiper-button-next:hover,
+    .swiper-button-prev:hover {
+        background: #FFD700;
+        border-color: #FFD700;
+    }
+    .swiper-button-next::after,
+    .swiper-button-prev::after {
+        font-size: 20px;
+        color: rgb(92, 85, 85);
+    }
+    .swiper-button-next:hover::after,
+    .swiper-button-prev:hover::after {
+        color: #000;
+    }
+
+    /* Gold Pagination */
+    .swiper-pagination-bullet {
+        background: rgba(255,255,255,0.6);
+    }
+    .swiper-pagination-bullet-active {
+        background: #FFD700;
+        transform: scale(1.4);
+    }
+
+    /* Arrows visible on hover (desktop) */
+    @media (min-width: 992px) {
+        .swiper-button-next,
+        .swiper-button-prev {
+            opacity: 0.3;
+        }
+        .hero-swiper:hover .swiper-button-next,
+        .hero-swiper:hover .swiper-button-prev {
+            opacity: 1;
+        }
+    }
+</style>
+
+<!-- Swiper Init -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        new Swiper('.hero-swiper', {
+            loop: true,
+            autoplay: { delay: 5000, disableOnInteraction: false },
+            speed: 1200,
+            effect: 'fade',
+            fadeEffect: { crossFade: true },
+            pagination: { el: '.swiper-pagination', clickable: true },
+            navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+            keyboard: true,
+            grabCursor: true
+        });
+    });
+</script>
 
 
 <!-- FINAL PERFECT STORE HEADER — EXACTLY AS YOU WANTED -->
@@ -163,33 +290,6 @@
         </div>
     </div>
 </section>
-
-
-<!-- SWIPER STYLES & SCRIPT -->
-<style>
-    .arrow-btn {
-        width: 56px !important; height: 56px !important;
-        background: rgba(255,255,255,0.15) !important; border-radius: 50%;
-        backdrop-filter: blur(12px); border: 2px solid rgba(255,255,255,0.3);
-        color: white !important; opacity: 0; transition: all 0.5s ease;
-    }
-    .hero-swiper:hover .arrow-btn { opacity: 1 !important; }
-    .arrow-btn:hover { background: white !important; color: #000 !important; transform: scale(1.15); }
-    .arrow-btn:after { font-size: 22px !important; font-weight: bold; }
-    .swiper-pagination-bullet { width: 11px; height: 11px; background: rgba(255,255,255,0.5); }
-    .swiper-pagination-bullet-active { background: #FFD700; transform: scale(1.5); box-shadow: 0 0 20px rgba(255,215,0,0.8); }
-</style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        new Swiper('.hero-swiper', {
-            loop: true, autoplay: { delay: 5000, disableOnInteraction: false },
-            speed: 1200, effect: 'fade', fadeEffect: { crossFade: true },
-            pagination: { el: '.swiper-pagination', clickable: true },
-            navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }
-        });
-    });
-</script>
 
 
 <!-- FLASH DEALS -->

@@ -340,8 +340,34 @@ class StoreBanner(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
+        # If updating (has pk), check for changed images and delete old ones
+        if self.pk:
+            old = StoreBanner.objects.get(pk=self.pk)
+
+            # Desktop image changed
+            if old.image_desktop != self.image_desktop and old.image_desktop:
+                try:
+                    old.image_desktop.storage.delete(old.image_desktop.name)
+                except Exception:
+                    pass
+
+            # Tablet image changed
+            if old.image_tablet != self.image_tablet and old.image_tablet:
+                try:
+                    old.image_tablet.storage.delete(old.image_tablet.name)
+                except Exception:
+                    pass
+
+            # Mobile image changed
+            if old.image_mobile != self.image_mobile and old.image_mobile:
+                try:
+                    old.image_mobile.storage.delete(old.image_mobile.name)
+                except Exception:
+                    pass
+
         super().save(*args, **kwargs)
 
+        # Trigger WebP conversion (your existing logic)
         if self.image_desktop and not str(self.image_desktop.name or '').lower().endswith('.webp'):
             if self.pk:
                 old = StoreBanner.objects.get(pk=self.pk)
@@ -367,12 +393,13 @@ class StoreBanner(models.Model):
                 trigger_webp_conversion('StoreBanner', self.id, 'image_mobile')
 
     def delete(self, *args, **kwargs):
+        # Delete all images on object delete
+        storage = self.image_desktop.storage
         paths = [
             self.image_desktop.name if self.image_desktop else None,
             self.image_tablet.name if self.image_tablet else None,
             self.image_mobile.name if self.image_mobile else None,
         ]
-        storage = self.image_desktop.storage
         super().delete(*args, **kwargs)
         for path in paths:
             if path:
