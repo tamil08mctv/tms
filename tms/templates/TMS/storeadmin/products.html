@@ -23,7 +23,7 @@
             <h2 class="fw-bold text-dark mb-1">Manage Products</h2>
             <p class="text-muted mb-0">Total: <strong class="text-success fs-4">{{ total_count }}</strong> products</p>
             {% if applied_filters %}
-                <small class="text-success fw-bold d-block mt-1">Filters: {{ applied_filters|join:" • " }}</small>
+                <small class="text-success fw-bold d-block mt-1">Filters: {{ applied_filters|join:"  " }}</small>
             {% endif %}
         </div>
         <button class="btn btn-success rounded-pill px-5 py-3 shadow-lg fw-bold" data-bs-toggle="modal" data-bs-target="#addProductModal">
@@ -58,7 +58,7 @@
         </div>
     </form>
 
-    <!-- Products Grid — Optimized for Speed -->
+    <!-- Products Grid " Optimized for Speed -->
     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-4">
         {% for p in products %}
         <div class="col">
@@ -99,10 +99,10 @@
                             <span class="text-primary fw-bold">Call for Price</span>
                         {% else %}
                             {% if p.offer_price and p.offer_price < p.regular_price %}
-                                <span class="text-success fw-bold fs-5">₹{{ p.offer_price|floatformat:0 }}</span>
-                                <small class="text-muted text-decoration-line-through ms-1">₹{{ p.regular_price|floatformat:0 }}</small>
+                                <span class="text-success fw-bold fs-5">{{ p.offer_price|floatformat:0 }}</span>
+                                <small class="text-muted text-decoration-line-through ms-1">{{ p.regular_price|floatformat:0 }}</small>
                             {% else %}
-                                <span class="text-success fw-bold fs-5">₹{{ p.regular_price|floatformat:0 }}</span>
+                                <span class="text-success fw-bold fs-5">{{ p.regular_price|floatformat:0 }}</span>
                             {% endif %}
                         {% endif %}
                     </p>
@@ -137,7 +137,7 @@
         <ul class="pagination pagination-lg">
             {% if products.has_previous %}
                 <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">First</a></li>
-                <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ products.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}">‹</a></li>
+                <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ products.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}"></a></li>
             {% endif %}
 
             {% for num in products.paginator.page_range %}
@@ -149,7 +149,7 @@
             {% endfor %}
 
             {% if products.has_next %}
-                <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ products.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}">›</a></li>
+                <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ products.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}"></a></li>
                 <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ products.paginator.num_pages }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}">Last</a></li>
             {% endif %}
         </ul>
@@ -211,11 +211,11 @@
                                 <h5 class="fw-bold text-primary mb-4"><i class="fas fa-tags me-2"></i>Pricing</h5>
 
                                 <div class="mb-4">
-                                    <label class="form-label fw-bold">Regular Price (₹)</label>
+                                    <label class="form-label fw-bold">Regular Price ()</label>
                                     {{ form.regular_price }}
                                 </div>
                                 <div class="mb-4">
-                                    <label class="form-label fw-bold">Offer Price (₹) <small class="text-muted">optional</small></label>
+                                    <label class="form-label fw-bold">Offer Price () <small class="text-muted">optional</small></label>
                                     {{ form.offer_price }}
                                 </div>
                                 <div class="mb-4">

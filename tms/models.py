@@ -1,4 +1,3 @@
-# tms/models.py — FINAL: Environment-Adaptive WebP Conversion + Safe File Deletion
 import os
 import uuid
 from django.db import models
@@ -65,7 +64,7 @@ def trigger_webp_conversion(model_name, instance_id, field_name):
     In local development (USE_REDIS=False), it just logs and skips.
     """
     if not convert_image_to_webp:
-        print(f"[DEV MODE] WebP task not available – skipping {model_name} #{instance_id} {field_name}")
+        print(f"[DEV MODE] WebP task not available - skipping {model_name} #{instance_id} {field_name}")
         return
 
     if getattr(settings, 'USE_REDIS', False):
@@ -144,8 +143,7 @@ class StoreAdmin(models.Model):
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.user.username} — {self.store.name}"
-
+        return f"{self.user.username} - {self.store.name}"
 
 class Category(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='categories')
@@ -435,7 +433,7 @@ class Lead(models.Model):
     created_at_ist.short_description = 'Enquiry Time (IST)'
 
     def __str__(self):
-        return f"{self.customer_name} — {self.store.name} ({self.created_at_ist()})"
+        return f"{self.customer_name} - {self.store.name} ({self.created_at_ist()})"
 
     def get_status_display(self):
         return dict(self.STATUS_CHOICES).get(self.status, self.status)

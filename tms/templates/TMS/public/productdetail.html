@@ -39,10 +39,7 @@
         "ratingValue": "{% if product.average_rating %}{{ product.average_rating }}{% else %}4.5{% endif %}",
         "reviewCount": "{% if product.review_count %}{{ product.review_count }}{% else %}10{% endif %}"
     },
-    {% if product.sku %}
-    "sku": "{{ product.sku }}",
-    {% endif %}
-    {% if product.category %}
+     {% if product.category %}
     "category": "{{ product.category.name|escapejs }}",
     {% endif %}
     "url": "{{ request.build_absolute_uri }}"
@@ -184,11 +181,11 @@
                         <div>
                             {% if product.offer_price and product.offer_price < product.regular_price %}
                                 <div class="d-flex align-items-center gap-2">
-                                    <span style=" font-size: 20px;color: #878787;text-decoration: line-through;">₹{{ product.regular_price|floatformat:0 }}</span>
-                                    <span class="text-success fs-4 fw-medium">₹{{ product.offer_price|floatformat:0 }}</span>
+                                    <span style=" font-size: 20px;color: #878787;text-decoration: line-through;">&#8377; {{ product.regular_price|floatformat:0 }}</span>
+                                    <span class="text-success fs-4 fw-medium">&#8377; {{ product.offer_price|floatformat:0 }}</span>
                                 </div>
                             {% else %}
-                                <span class="text-success fs-4 fw-medium">₹{{ product.regular_price|floatformat:0 }}</span>
+                                <span class="text-success fs-4 fw-medium">&#8377; {{ product.regular_price|floatformat:0 }}</span>
                             {% endif %}
                         </div>
                         
@@ -289,9 +286,7 @@
 
 {% endif %}
     
-                
-                <!-- Description as Unordered List Points -->
-{% if product.description %}
+      {% if product.description %}
 <div class="card border-0 shadow-sm mb-2">
     <div class="card-header bg-white border-0 py-2">
         <h6 class="fw-semibold text-dark mb-0 d-flex align-items-center gap-2">
@@ -373,17 +368,17 @@
                         <div class="mt-2">
                             {% if p.offer_price and p.offer_price < p.regular_price %}
                                 <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                                     <span class="text-success fs-5 fw-medium">₹{{ p.offer_price }}</span>
-                                       <span style=" font-size: 14px;color: #878787;text-decoration: line-through;">₹{{ p.regular_price }}</span>
+                                     <span class="text-success fs-5 fw-medium">&#8377; {{ p.offer_price }}</span>
+                                       <span style=" font-size: 14px;color: #878787;text-decoration: line-through;">&#8377; {{ p.regular_price }}</span>
                                          <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
                                </div>
                             {% else %}
-                                <span class="text-success fs-5 fw-bold">₹{{ p.regular_price }}</span>
+                                <span class="text-success fs-5 fw-bold">&#8377; {{ p.regular_price }}</span>
                             {% endif %}
                         </div>
 
                         <small class="text-muted d-block mt-2 fw-medium">
-                            {{ p.store.name }} • {{ p.store.city }}
+                            {{ p.store.name }} | {{ p.store.city }}
                         </small>
                     </div>
                 </div>
@@ -483,8 +478,7 @@
     }
     
 
-    
-
+   
     /* Mobile layout - full width */
     @media (max-width: 992px) {
         .col-12 {
@@ -646,7 +640,7 @@ function formatDescription() {
         .replace(/&nbsp;/g, ' ')
         .split('\n')
         .map(line => line
-            .replace(/^[•\-\*\u2022]\s*/, '')
+            .replace(/^['\-\*\u2022]\s*/, '')
             .trim()
         )
         .filter(line => line.length > 0);
@@ -758,14 +752,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (!modal || !modalContent) return;
 
-  // 🔒 Store original form HTML (CRITICAL)
+  
   const originalFormHTML = modalContent.innerHTML;
 
   function attachFormHandler() {
     const form = document.getElementById('enquiryForm');
     if (!form) return;
 
-    // 🔥 HARD RESET on load
+   
     form.reset();
 
     form.addEventListener('submit', function (e) {
@@ -871,13 +865,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // 🔁 Restore clean form every time modal closes
+
   modal.addEventListener('hidden.bs.modal', function () {
     modalContent.innerHTML = originalFormHTML;
     attachFormHandler();
   });
 
-  // 🧹 Extra safety on refresh / back button
   window.addEventListener('pageshow', function () {
     const f = document.getElementById('enquiryForm');
     if (f) f.reset();
@@ -901,9 +894,6 @@ function escapeHtml(text) {
   return d.innerHTML;
 }
 
-
-
-// Helpers
 function showError(input, message) {
   const err = document.createElement('small');
   err.className = 'text-danger d-block mt-1 ps-3';
@@ -918,8 +908,6 @@ function escapeHtml(text) {
 }
 
 
-
-// Initialize on load
 document.addEventListener('DOMContentLoaded', function() {
     // Set first thumbnail as active
     const firstThumbDesktop = document.querySelector('#thumbnailStrip img');

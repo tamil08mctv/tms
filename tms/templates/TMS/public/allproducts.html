@@ -20,7 +20,7 @@
 <style>
     .product-item { opacity: 1 !important; transform: none !important; animation: none !important; }
 
-    /* ULTRA-SMOOTH HOVER — NO LAG ON DESKTOP */
+   
     .hover-card {
         transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         transform: translateZ(0);
@@ -34,7 +34,7 @@
         box-shadow: 0 12px 28px rgba(0,0,0,0.12);
     }
 
-    /* Rest of your beautiful styles — unchanged */
+   
     .desktop-filter-bar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 24px; padding: 30px 25px; margin-bottom: 40px; box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3); position: relative; overflow: hidden; }
     .desktop-filter-bar::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 24px; z-index: 1; }
     .desktop-filter-bar > .row { position: relative; z-index: 2; }
@@ -67,7 +67,7 @@
 {% block content %}
 <div class="container-fluid py-3 px-3 bg-white">
 
-    <!-- MOBILE TITLE -->
+   
     <div class="text-center py-3 bg-light text-dark rounded-4 shadow-lg d-lg-none">
         <h2 class="filter-title mb-0 fs-3">
             {% if request.GET.q %}
@@ -87,7 +87,7 @@
         {% if request.GET.q %}
         <a href="{% url 'all_products' %}{% if request.GET.filter %}?filter={{ request.GET.filter }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.store %}&store={{ request.GET.store }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
            class="btn btn-outline-danger px-4 py-3 mt-3">
-            Clear Search ×
+            Clear Search 
         </a>
         {% endif %}
 
@@ -98,7 +98,7 @@
 
             {% if request.GET.filter or request.GET.category or request.GET.store or request.GET.sort %}
             <a href="{% url 'all_products' %}{% if request.GET.q %}?q={{ request.GET.q }}{% endif %}" class="btn btn-outline-danger mobile-clear-btn">
-                Clear Filter ×
+                Clear Filter 
             </a>
             {% endif %}
         </div>
@@ -124,7 +124,7 @@
         {% if request.GET.q %}
         <a href="{% url 'all_products' %}{% if request.GET.filter %}?filter={{ request.GET.filter }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.store %}&store={{ request.GET.store }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
            class="btn btn-outline-danger rounded-pill px-4 py-2">
-            Clear Search ×
+            Clear Search 
         </a>
         {% endif %}
     </div>
@@ -232,17 +232,17 @@
                         <div class="mt-2">
                             {% if p.offer_price and p.offer_price < p.regular_price %}
                                 <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                                    <span class="text-success fs-5 fw-medium">₹{{ p.offer_price }}</span>
-                                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">₹{{ p.regular_price }}</span>
+                                    <span class="text-success fs-5 fw-medium">&#8377; {{ p.offer_price }}</span>
+                                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">&#8377; {{ p.regular_price }}</span>
                                     <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
                                 </div>
                             {% else %}
-                                <span class="text-success fs-5 fw-bold">₹{{ p.regular_price }}</span>
+                                <span class="text-success fs-5 fw-bold">&#8377; {{ p.regular_price }}</span>
                             {% endif %}
                         </div>
 
                         <small class="text-muted d-block mt-2 fw-medium">
-                            {{ p.store.name }} • {{ p.store.city }}
+                            {{ p.store.name }} | {{ p.store.city }}
                         </small>
                     </div>
                 </div>
@@ -263,7 +263,7 @@
     <div id="endMessage" class="end-message text-center py-3" style="display: none;">
         <i class="fas fa-check-circle"></i>
         <p class="mt-4 fw-bold">You've explored all products!</p>
-        <p class="text-muted">Thank you for shopping with TMS ❤️</p>
+        <p class="text-muted">Thank you for shopping with TMS</p>
     </div>
 </div>
 
@@ -336,7 +336,6 @@
     </div>
 </div>
 
-<!-- ULTRA-SMOOTH, NO-LAG INFINITE SCROLL SCRIPT -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let currentPage = 2;

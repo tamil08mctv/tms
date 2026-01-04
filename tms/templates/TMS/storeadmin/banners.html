@@ -55,11 +55,11 @@
         <ul class="pagination pagination-sm">
             {% if banners.has_previous %}
                 <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page=1">First</a></li>
-                <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ banners.previous_page_number }}">‹</a></li>
+                <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ banners.previous_page_number }}"></a></li>
             {% endif %}
             <li class="page-item active"><span class="page-link rounded-pill mx-1 bg-success border-success">{{ banners.number }}</span></li>
             {% if banners.has_next %}
-                <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ banners.next_page_number }}">›</a></li>
+                <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ banners.next_page_number }}"></a></li>
                 <li class="page-item"><a class="page-link rounded-pill mx-1" href="?page={{ banners.paginator.num_pages }}">Last</a></li>
             {% endif %}
         </ul>

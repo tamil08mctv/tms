@@ -21,9 +21,9 @@
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
 <!-- DYNAMIC SEO FOR HOMEPAGE ONLY -->
-<meta name="description" content="TMS Furnitures - Premium Furniture at best prices across Tamil Nadu. Shop{% if has_deals %} Deals of the Day,{% endif %}{% if has_best_sellers %} Best Sellers,{% endif %}{% if has_limited_deals %} Limited Deals,{% endif %}{% if has_special_offers %} Special Offers,{% endif %}{% if has_new_arrivals %} New Arrivals,{% endif %} and more!">
-<meta name="keywords" content="furniture tamil nadu, premium furniture, tms furniture, sofa, bed, dining table, wardrobe">
-<meta property="og:title" content="TMS Furnitures - Premium Furniture in Tamil Nadu">
+<meta name="description" content="TMS Furniture - Premium Furniture at best prices across Tamil Nadu. Shop{% if has_deals %} Deals of the Day,{% endif %}{% if has_best_sellers %} Best Sellers,{% endif %}{% if has_limited_deals %} Limited Deals,{% endif %}{% if has_special_offers %} Special Offers,{% endif %}{% if has_new_arrivals %} New Arrivals,{% endif %} and more!">
+<meta name="keywords" content="furniture tamil nadu, premium furniture, tms furniture, sofa,teapoy, diwan bed, dining table, wardrobe">
+<meta property="og:title" content="TMS Furniture - Premium Furniture in Tamil Nadu">
 <meta property="og:description" content="Discover premium quality furniture at unbeatable prices. Shop deals, best sellers, new arrivals & more across Tamil Nadu stores.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="{{ request.build_absolute_uri }}">
@@ -135,7 +135,7 @@
             <div class="col-lg-11 col-xl-10">
                 <div class="text-center py-4 px-4 rounded-4 bg-dark shadow-2xl">
                     <p class="fs-3 text-white mb-3 opacity-95" style="letter-spacing: 1.5px;">
-                        * One Brand * Premium Quality * Best Prices Across Tamil Nadu
+                         One Brand | Premium Quality | Best Prices Across Tamil Nadu
                     </p>
                     <div class="d-flex flex-column flex-sm-row gap-4 justify-content-center">
                         <a href="{% url 'all_products' %}" class="btn btn-warning btn-lg rounded-pill fw-bold shadow-lg border-0 px-5 py-3 ripple">
@@ -161,7 +161,7 @@
     .hero-swiper,
     .swiper-slide,
     .swiper-slide img {
-        height: 520px; /* Desktop */
+        height: 470px; /* Desktop */
     }
     @media (max-width: 991.98px) {
         .hero-swiper,
@@ -188,8 +188,8 @@
     /* Premium Arrows */
     .swiper-button-next,
     .swiper-button-prev {
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
         background: rgba(0,0,0,0.7);
         border-radius: 50%;
         backdrop-filter: blur(10px);
@@ -278,16 +278,16 @@
                 <div class="mt-auto text-center">
                   {% if p.offer_price and p.offer_price < p.regular_price %}
                   <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                    <span class="text-success fs-5 fw-medium">Rs.{{ p.offer_price }}</span>
-                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">Rs.{{ p.regular_price }}</span>
+                    <span class="text-success fs-5 fw-medium">&#8377; {{ p.offer_price }}</span>
+                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">&#8377; {{ p.regular_price }}</span>
                     <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
                   </div>
                   {% else %}
-                  <span class="text-success fs-5 fw-bold">Rs.{{ p.regular_price }}</span>
+                  <span class="text-success fs-5 fw-bold">&#8377; {{ p.regular_price }}</span>
                   {% endif %}
                 </div>
                 <div class="mt-auto text-center pt-2">
-                  <small class="text-muted d-block fw-medium">{{ p.store.name }} * {{ p.store.city }}</small>
+                  <small class="text-muted d-block fw-medium">{{ p.store.name }} | {{ p.store.city }}</small>
                 </div>
               </div>
             </div>
@@ -327,16 +327,16 @@
                             <div class="mt-auto text-center">
                                 {% if p.offer_price and p.offer_price < p.regular_price %}
                                 <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                                    <span class="text-success fs-5 fw-medium">Rs.{{ p.offer_price }}</span>
-                                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">Rs.{{ p.regular_price }}</span>
+                                    <span class="text-success fs-5 fw-medium">&#8377; {{ p.offer_price }}</span>
+                                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">&#8377; {{ p.regular_price }}</span>
                                     <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
                                 </div>
                                 {% else %}
-                                <span class="text-success fs-5 fw-bold">Rs.{{ p.regular_price }}</span>
+                                <span class="text-success fs-5 fw-bold">&#8377; {{ p.regular_price }}</span>
                                 {% endif %}
                             </div>
                             <div class="mt-auto text-center pt-2">
-                                <small class="text-muted d-block fw-medium">{{ p.store.name }} * {{ p.store.city }}</small>
+                                <small class="text-muted d-block fw-medium">{{ p.store.name }} | {{ p.store.city }}</small>
                             </div>
                         </div>
                     </div>
@@ -380,16 +380,16 @@
                 <div class="mt-auto text-center">
                   {% if p.offer_price and p.offer_price < p.regular_price %}
                   <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                    <span class="text-success fs-5 fw-medium">Rs.{{ p.offer_price }}</span>
-                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">Rs.{{ p.regular_price }}</span>
+                    <span class="text-success fs-5 fw-medium">&#8377; {{ p.offer_price }}</span>
+                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">&#8377; {{ p.regular_price }}</span>
                     <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
                   </div>
                   {% else %}
-                  <span class="text-success fs-5 fw-bold">Rs.{{ p.regular_price }}</span>
+                  <span class="text-success fs-5 fw-bold">&#8377; {{ p.regular_price }}</span>
                   {% endif %}
                 </div>
                 <div class="mt-auto text-center pt-2">
-                  <small class="text-muted d-block fw-medium">{{ p.store.name }} * {{ p.store.city }}</small>
+                  <small class="text-muted d-block fw-medium">{{ p.store.name }} | {{ p.store.city }}</small>
                 </div>
               </div>
             </div>
@@ -429,16 +429,16 @@
                             <div class="mt-auto text-center">
                                 {% if p.offer_price and p.offer_price < p.regular_price %}
                                 <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                                    <span class="text-success fs-5 fw-medium">Rs.{{ p.offer_price }}</span>
-                                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">Rs.{{ p.regular_price }}</span>
+                                    <span class="text-success fs-5 fw-medium">&#8377; {{ p.offer_price }}</span>
+                                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">&#8377; {{ p.regular_price }}</span>
                                     <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
                                 </div>
                                 {% else %}
-                                <span class="text-success fs-5 fw-bold">Rs.{{ p.regular_price }}</span>
+                                <span class="text-success fs-5 fw-bold">&#8377; {{ p.regular_price }}</span>
                                 {% endif %}
                             </div>
                             <div class="mt-auto text-center pt-2">
-                                <small class="text-muted d-block fw-medium">{{ p.store.name }} * {{ p.store.city }}</small>
+                                <small class="text-muted d-block fw-medium">{{ p.store.name }} | {{ p.store.city }}</small>
                             </div>
                         </div>
                     </div>
@@ -477,16 +477,16 @@
                             <div class="mt-auto text-center">
                                 {% if p.offer_price and p.offer_price < p.regular_price %}
                                 <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                                    <span class="text-success fs-5 fw-medium">Rs.{{ p.offer_price }}</span>
-                                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">Rs.{{ p.regular_price }}</span>
+                                    <span class="text-success fs-5 fw-medium">&#8377; {{ p.offer_price }}</span>
+                                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">&#8377; {{ p.regular_price }}</span>
                                     <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
                                 </div>
                                 {% else %}
-                                <span class="text-success fs-5 fw-bold">Rs.{{ p.regular_price }}</span>
+                                <span class="text-success fs-5 fw-bold">&#8377; {{ p.regular_price }}</span>
                                 {% endif %}
                             </div>
                             <div class="mt-auto text-center pt-2">
-                                <small class="text-muted d-block fw-medium">{{ p.store.name }} * {{ p.store.city }}</small>
+                                <small class="text-muted d-block fw-medium">{{ p.store.name }} | {{ p.store.city }}</small>
                             </div>
                         </div>
                     </div>
@@ -532,16 +532,16 @@
                 <div class="mt-auto text-center">
                   {% if p.offer_price and p.offer_price < p.regular_price %}
                   <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                    <span class="text-success fs-5 fw-medium">Rs.{{ p.offer_price }}</span>
-                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">Rs.{{ p.regular_price }}</span>
+                    <span class="text-success fs-5 fw-medium">&#8377; {{ p.offer_price }}</span>
+                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">&#8377; {{ p.regular_price }}</span>
                     <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
                   </div>
                   {% else %}
-                  <span class="text-success fs-5 fw-bold">Rs.{{ p.regular_price }}</span>
+                  <span class="text-success fs-5 fw-bold">&#8377; {{ p.regular_price }}</span>
                   {% endif %}
                 </div>
                 <div class="mt-auto text-center pt-2">
-                  <small class="text-muted d-block fw-medium">{{ p.store.name }} * {{ p.store.city }}</small>
+                  <small class="text-muted d-block fw-medium">{{ p.store.name }} | {{ p.store.city }}</small>
                 </div>
               </div>
             </div>

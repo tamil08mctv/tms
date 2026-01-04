@@ -1,15 +1,59 @@
 {% extends 'TMS/base.html' %}
 {% load static %}
 
-{% block title %}
-    {% if store %}
-        Categories at {{ store.name }} - {{ store.city }} | TMS Furnitures
-    {% else %}
-        All Categories – TMS Furnitures
-    {% endif %}
-{% endblock %}
-
 {% block extra_head %}
+<!-- Dynamic SEO -->
+<meta name="description" content="
+    {% if store %}
+        Browse all furniture categories at {{ store.name }} in {{ store.city }}. Shop premium sofas, beds, dining tables, wardrobes and more from TMS trusted showroom.
+    {% else %}
+        Explore all premium furniture categories from TMS Furnitures - Sofas, beds, dining sets, wardrobes, office furniture and more across Tamil Nadu stores. Best prices guaranteed.
+    {% endif %}
+">
+
+<meta name="keywords" content="
+    {% if store %}
+        {{ store.name }}, {{ store.city }} furniture categories, {{ store.city }} furniture showroom, tms furniture {{ store.city }}, sofa {{ store.city }}, bed {{ store.city }}
+    {% else %}
+        furniture categories tamil nadu, tms furniture categories, sofa categories, bed categories, dining table categories, wardrobe categories, premium furniture tamil nadu
+    {% endif %}
+">
+
+<!-- Open Graph -->
+<meta property="og:title" content="
+    {% if store %}
+        Categories at {{ store.name }} - {{ store.city }} | TMS Furniture
+    {% else %}
+        All Categories - Explore Premium Furniture Collections | TMS Furniture
+    {% endif %}
+">
+<meta property="og:description" content="
+    {% if store %}
+        Discover furniture categories at {{ store.name }}, {{ store.city }} - Premium quality from TMS multi-store brand.
+    {% else %}
+        Browse complete furniture categories from TMS Furnitures - Premium collections across Tamil Nadu.
+    {% endif %}
+">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta property="og:image" content="{% static 'TMS/images/og-image.jpg' %}">
+<meta property="og:site_name" content="TMS Furniture">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="
+    {% if store %}
+        Categories at {{ store.name }} - {{ store.city }} | TMS Furniture
+    {% else %}
+        All Categories - Explore Premium Furniture Collections | TMS Furniture
+    {% endif %}
+">
+<meta name="twitter:description" content="{% if store %}Categories at {{ store.name }}, {{ store.city }}{% else %}All premium furniture categories from TMS{% endif %}">
+<meta name="twitter:image" content="{% static 'TMS/images/og-image.jpg' %}">
+
+<!-- Canonical -->
+<link rel="canonical" href="{{ request.build_absolute_uri }}">
+
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
 
@@ -19,7 +63,6 @@
         --secondary: #764ba2;
         --success: #00c853;
     }
-
     .category-card {
         background: white;
         border-radius: 20px;
@@ -45,14 +88,12 @@
         transition: opacity 0.4s;
     }
     .category-card:hover::before { opacity: 1; }
-
     .category-img {
         height: 160px;
         object-fit: cover;
         transition: transform 0.6s ease;
     }
     .category-card:hover .category-img { transform: scale(1.1); }
-
     .fallback-icon {
         height: 160px;
         background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -62,14 +103,12 @@
         align-items: center;
         justify-content: center;
     }
-
     .category-name {
         font-size: 1.3rem;
         font-weight: 800;
         color: #222;
         margin: 15px 0 8px;
     }
-
     .product-count-badge {
         background: linear-gradient(45deg, var(--success), #00bfa5);
         color: white;
@@ -78,7 +117,6 @@
         font-size: 0.9rem;
         font-weight: bold;
     }
-
     .hero-title {
         background: linear-gradient(90deg, #667eea, #764ba2);
         -webkit-background-clip: text;
@@ -89,23 +127,21 @@
 {% endblock %}
 
 {% block content %}
-
-<!-- HERO SECTION — CHANGES BASED ON STORE OR GLOBAL -->
-<section class="py-2 text-white text-center position-relative overflow-hidden" 
+<!-- HERO SECTION -->
+<section class="py-2 text-white text-center position-relative overflow-hidden"
          style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
     <div class="container-fluid py-4">
         {% if store %}
-          
             <h1 class="display-5 fw-bold mb-2" data-aos="fade-up">
                 Categories at {{ store.name }}
             </h1>
             <p class="lead fs-4 opacity-90" data-aos="fade-up" data-aos-delay="100">
-                {{ store.city }} • {{ categories|length }} Categories Available
+                {{ store.city }} | {{ categories|length }} Categories Available
             </p>
         {% else %}
             <h2 class="display-5 fw-bold hero-title mb-2" data-aos="fade-up">
                 All Categories
-            </h1>
+            </h2>
             <p class="lead fs-2 opacity-90" data-aos="fade-up" data-aos-delay="100">
                 Explore {{ categories|length|default:"200+" }} Premium Collections
             </p>
@@ -113,29 +149,26 @@
     </div>
 </section>
 
-<!-- CATEGORIES GRID — SAME BEAUTIFUL DESIGN -->
+<!-- CATEGORIES GRID -->
 <section class="py-3 bg-light">
     <div class="container-fluid px-4">
         <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-4 justify-content-center">
             {% for category in categories %}
-            <div class="col" data-aos="fade-up" data-aos-delay="{{ forloop.counter0}}">
-                <a href="{% url 'all_products' %}?{% if store %}store={{ store.slug }}&{% endif %}category={{ category.slug }}" 
+            <div class="col" data-aos="fade-up">
+                <a href="{% url 'all_products' %}?{% if store %}store={{ store.slug }}&{% endif %}category={{ category.slug }}"
                    class="text-decoration-none">
                     <div class="category-card text-center p-4 position-relative">
                         {% if category.image %}
-                        <img src="{{ category.image.url }}" 
-                             class="img-fluid rounded category-img mx-auto d-block" 
-                             style="height:150px;width:150px;object-fit:cover;" 
-                             alt="{{ category.name }}">
+                        <img src="{{ category.image.url }}"
+                             class="img-fluid rounded category-img mx-auto d-block"
+                             style="height:150px;width:150px;object-fit:cover;"
+                             alt="{{ category.name }} - TMS Furniture">
                         {% else %}
                         <div class="fallback-icon rounded mx-auto d-block">
                             <i class="fas fa-couch"></i>
                         </div>
                         {% endif %}
-
                         <h5 class="category-name mt-4 text-dark">{{ category.name }}</h5>
-                        
-                        <!-- Show product count only if available -->
                         {% if category.product_count is not None %}
                         <span class="product-count-badge d-inline-block text-success">
                             {{ category.product_count }} items
@@ -161,7 +194,6 @@
             {% endfor %}
         </div>
 
-        <!-- PAGINATION - Only show for global categories -->
         {% if not store and is_paginated %}
         <div class="d-flex justify-content-center mt-5">
             <nav>
@@ -170,7 +202,6 @@
                     <li class="page-item"><a class="page-link rounded-pill px-4" href="?page=1">First</a></li>
                     <li class="page-item"><a class="page-link rounded-pill px-4" href="?page={{ page_obj.previous_page_number }}">Prev</a></li>
                     {% endif %}
-
                     {% for num in paginator.page_range %}
                         {% if page_obj.number == num %}
                         <li class="page-item active"><span class="page-link rounded-pill bg-primary border-0">{{ num }}</span></li>
@@ -178,7 +209,6 @@
                         <li class="page-item"><a class="page-link rounded-pill" href="?page={{ num }}">{{ num }}</a></li>
                         {% endif %}
                     {% endfor %}
-
                     {% if page_obj.has_next %}
                     <li class="page-item"><a class="page-link rounded-pill px-4" href="?page={{ page_obj.next_page_number }}">Next</a></li>
                     <li class="page-item"><a class="page-link rounded-pill px-4" href="?page={{ paginator.num_pages }}">Last</a></li>
@@ -189,7 +219,6 @@
         {% endif %}
     </div>
 </section>
-
 {% endblock %}
 
 {% block extra_js %}

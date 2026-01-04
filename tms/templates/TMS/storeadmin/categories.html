@@ -76,7 +76,7 @@
                     <a class="page-link rounded-pill mx-1" href="?page=1{% if current_search %}&search={{ current_search }}{% endif %}">First</a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link rounded-pill mx-1" href="?page={{ categories.previous_page_number }}{% if current_search %}&search={{ current_search }}{% endif %}">‹</a>
+                    <a class="page-link rounded-pill mx-1" href="?page={{ categories.previous_page_number }}{% if current_search %}&search={{ current_search }}{% endif %}"></a>
                 </li>
             {% endif %}
 
@@ -94,7 +94,7 @@
 
             {% if categories.has_next %}
                 <li class="page-item">
-                    <a class="page-link rounded-pill mx-1" href="?page={{ categories.next_page_number }}{% if current_search %}&search={{ current_search }}{% endif %}">›</a>
+                    <a class="page-link rounded-pill mx-1" href="?page={{ categories.next_page_number }}{% if current_search %}&search={{ current_search }}{% endif %}"></a>
                 </li>
                 <li class="page-item">
                     <a class="page-link rounded-pill mx-1" href="?page={{ categories.paginator.num_pages }}{% if current_search %}&search={{ current_search }}{% endif %}">Last</a>

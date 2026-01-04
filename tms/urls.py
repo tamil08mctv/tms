@@ -1,4 +1,4 @@
-# tms/urls.py → FINAL WITH ADMIN PATHS
+# tms/urls.py â†’ FINAL WITH ADMIN PATHS
 
 from django.urls import path
 from django.contrib.auth import views as auth_views
@@ -19,7 +19,7 @@ from .views.storeadmin import (
 from .views.superadmin import (
     super_dashboard, store_list_super, create_store, 
     edit_store, toggle_store, export_all_leads,site_settings, all_leads,
-    manage_store_admins, create_store_admin, edit_store_admin, toggle_store_admin, delete_store_admin,delete_store # ← NEW
+    manage_store_admins, create_store_admin, edit_store_admin, toggle_store_admin, delete_store_admin,delete_store # â† NEW
 )
 from .views.auth import login_redirect
 
@@ -78,7 +78,7 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='TMS/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(
     template_name='TMS/login.html',
-    next_page='login'  # ← This forces redirect to /login/ URL
+    next_page='login'  # â† This forces redirect to /login/ URL
 ), name='logout'),
     path('login-redirect/', login_redirect, name='login_redirect'),
 

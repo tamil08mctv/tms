@@ -10,7 +10,7 @@
         <p class="lead text-muted">Find your nearest TMS showroom</p>
     </div>
 
- <!-- FILTER BAR — NOW FULLY WORKING -->
+ <!-- FILTER BAR " NOW FULLY WORKING -->
     <form method="get" class="mb-5">
         <div class="row g-3 align-items-end">
             <div class="col-lg-5 col-md-6">
@@ -45,7 +45,7 @@
             {% if query %}<strong>"{{ query }}"</strong>{% endif %}
             {% if query and selected_city %} in {% endif %}
             {% if selected_city %}<strong>{{ selected_city }}</strong>{% endif %}
-            • {{ stores.object_list|length }} store{{ stores.object_list|length|pluralize }} found
+             {{ stores.object_list|length }} store{{ stores.object_list|length|pluralize }} found
         </p>
         <a href="{% url 'store_list' %}" class="text-decoration-none small">
             Clear filters

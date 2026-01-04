@@ -1,4 +1,4 @@
-# tms/forms.py → FINAL: WITH StoreAdminForm
+# tms/forms.py â†’ FINAL: WITH StoreAdminForm
 from django.contrib.auth.models import User
 from django import forms
 import re
@@ -101,7 +101,7 @@ SocialLinkFormSet = inlineformset_factory(
     }
 )
 
-# tms/forms.py → FINAL CLEAN VERSION (NO ERROR!)
+# tms/forms.py â†’ FINAL CLEAN VERSION (NO ERROR!)
 
 class ProductForm(forms.ModelForm):
     extra_images = forms.FileField(
@@ -144,7 +144,7 @@ class CategoryForm(forms.ModelForm):
         }
 
 class StoreForm(forms.ModelForm):
-    # ← REMOVED admin_username/admin_password - now separate
+    # â† REMOVED admin_username/admin_password - now separate
 
     class Meta:
         model = Store
@@ -163,7 +163,7 @@ class StoreUpdateForm(forms.ModelForm):
         }
 
 
-# tms/forms.py → ONLY THIS ONE StoreBannerForm
+# tms/forms.py â†’ ONLY THIS ONE StoreBannerForm
 class StoreBannerForm(forms.ModelForm):
     class Meta:
         model = StoreBanner
