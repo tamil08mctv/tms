@@ -9,12 +9,11 @@ from django.contrib.postgres.search import SearchVectorField
 from django.utils.timezone import localtime
 from django.conf import settings
 
-# Import task safely — will be None if tasks.py missing
+
 try:
     from .tasks import convert_image_to_webp
 except ImportError:
     convert_image_to_webp = None
-
 
 def validate_video_size(value):
     limit_mb = 50
@@ -22,40 +21,74 @@ def validate_video_size(value):
     if value.size > limit_bytes:
         raise ValidationError(f"Video file too large. Maximum size is {limit_mb}MB.")
 
-
 def safe_filename(filename):
     name, ext = os.path.splitext(filename)
     return f"{slugify(name)[:50]}{ext.lower()}"
-
 
 # Upload paths
 def store_logo_path(instance, filename):
     return f"{instance.slug}/logos/{safe_filename(filename)}"
 
-
 def category_image_path(instance, filename):
     return f"{instance.store.slug}/categories/{safe_filename(filename)}"
-
 
 def product_video_path(instance, filename):
     return f"{instance.store.slug}/products/{instance.slug}/videos/{safe_filename(filename)}"
 
+from django.utils.text import slugify
+import os
 
 def product_image_path(instance, filename):
-    return f"{instance.product.store.slug}/products/{instance.product.slug}/{safe_filename(filename)}"
+    """
+    Smart upload path:
+    - For main product images: store/products/product-slug/filename
+    - For variant images: store/products/product-slug/productname-variant_title/filename
+    """
+    # Get product safely
+    if hasattr(instance, 'product'):
+        product = instance.product
+    elif hasattr(instance, 'variant') and hasattr(instance.variant, 'product'):
+        product = instance.variant.product
+    else:
+        # Fallback
+        safe_name = slugify(os.path.splitext(filename)[0])[:50]
+        ext = os.path.splitext(filename)[1]
+        return f"fallback/products/{safe_name}{ext}"
 
+    if not product or not product.store or not product.slug:
+        safe_name = slugify(os.path.splitext(filename)[0])[:50]
+        ext = os.path.splitext(filename)[1]
+        return f"fallback/products/{safe_name}{ext}"
 
+    store_slug = slugify(product.store.name)[:50]
+    product_slug = product.slug[:100]
+
+    # Variant part: productname - variant_title (clean & readable)
+    variant_part = ""
+    if hasattr(instance, 'variant'):
+        variant_title = instance.variant.get_display_title()
+        if variant_title and variant_title != "Standard Variant":
+            # Clean: slugify variant title, replace spaces with -, remove special chars
+            clean_title = slugify(variant_title)[:80]
+            variant_part = f"{product_slug}-{clean_title}/"
+        else:
+            variant_part = f"{product_slug}/"
+    else:
+        variant_part = f"{product_slug}/"
+
+    # Safe filename
+    name_part, ext = os.path.splitext(filename)
+    safe_filename = slugify(name_part)[:100] + ext.lower()
+
+    return f"{store_slug}/products/{variant_part}{safe_filename}"
 def banner_desktop_path(instance, filename):
     return f"{instance.store.slug}/banners/desktop/{safe_filename(filename)}"
-
 
 def banner_tablet_path(instance, filename):
     return f"{instance.store.slug}/banners/tablet/{safe_filename(filename)}"
 
-
 def banner_mobile_path(instance, filename):
     return f"{instance.store.slug}/banners/mobile/{safe_filename(filename)}"
-
 
 # ======================= SAFE WEBP CONVERSION HELPER =======================
 def trigger_webp_conversion(model_name, instance_id, field_name):
@@ -75,7 +108,6 @@ def trigger_webp_conversion(model_name, instance_id, field_name):
             print(f"[PRODUCTION] Celery failed (Redis down?): {e}")
     else:
         print(f"[DEV MODE] Skipped WebP conversion: {model_name} #{instance_id} {field_name}")
-
 
 # ======================= MODELS =======================
 class Store(models.Model):
@@ -136,7 +168,6 @@ class Store(models.Model):
     def __str__(self):
         return self.name
 
-
 class StoreAdmin(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='store_admins')
@@ -191,7 +222,6 @@ class Category(models.Model):
     def __str__(self):
         return f"{self.store.name} - {self.name}"
 
-
 class Product(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='products')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
@@ -199,10 +229,10 @@ class Product(models.Model):
     slug = models.SlugField(max_length=350, blank=True, unique=True)
     short_desc = models.TextField(max_length=500)
     description = models.TextField(blank=True)
-    regular_price = models.DecimalField(max_digits=12, decimal_places=0)
+    regular_price = models.DecimalField(max_digits=12, decimal_places=0, null=True, blank=True)
     offer_price = models.DecimalField(max_digits=12, decimal_places=0, null=True, blank=True)
-    discount_percent = models.PositiveIntegerField(null=True, blank=True)
     deal_end_date = models.DateField(null=True, blank=True)
+    discount_percent = models.PositiveIntegerField(null=True, blank=True)
     video = models.FileField(upload_to=product_video_path, blank=True, null=True, validators=[validate_video_size])
     in_stock = models.BooleanField(default=True)
     is_new_arrival = models.BooleanField(default=False)
@@ -272,7 +302,6 @@ class Product(models.Model):
     def __str__(self):
         return f"{self.name} - {self.store.name}"
 
-
 class ProductSpecification(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='specifications')
     name = models.CharField(max_length=200)
@@ -283,7 +312,6 @@ class ProductSpecification(models.Model):
 
     class Meta:
         ordering = ['id']
-
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
@@ -324,6 +352,83 @@ class ProductImage(models.Model):
 
     def __str__(self):
         return f"Image - {self.product.name}"
+    
+
+
+# ======================= PRODUCT VARIANTS =======================
+class VariantAttribute(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='variant_attributes')
+    name = models.CharField(max_length=100, help_text="e.g., Color, Size, Material, Finish")
+
+    class Meta:
+        unique_together = ('product', 'name')
+        ordering = ['id']
+
+    def __str__(self):
+        return f"{self.product.name} - {self.name}"
+
+class ProductVariant(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='variants')
+    
+    regular_price = models.DecimalField(max_digits=12, decimal_places=0)
+    offer_price = models.DecimalField(max_digits=12, decimal_places=0, null=True, blank=True)
+    discount_percent = models.PositiveIntegerField(null=True, blank=True)
+    
+    in_stock = models.BooleanField(default=True)
+    
+    image = models.ImageField(upload_to=product_image_path, blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if self.regular_price and self.offer_price and self.offer_price < self.regular_price:
+            discount = ((self.regular_price - self.offer_price) / self.regular_price) * 100
+            self.discount_percent = max(0, int(discount))
+        else:
+            self.discount_percent = None
+        super().save(*args, **kwargs)
+
+    def get_display_title(self):
+        values = self.values.all().order_by('attribute__name')
+        return " - ".join([v.value for v in values]) or "Standard Variant"
+
+    def __str__(self):
+        return f"{self.product.name} - {self.get_display_title()}"
+
+class VariantValue(models.Model):
+    variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE, related_name='values')
+    attribute = models.ForeignKey(VariantAttribute, on_delete=models.CASCADE)
+    value = models.CharField(max_length=200)
+
+    class Meta:
+        unique_together = ('variant', 'attribute')
+        ordering = ['attribute__name']
+
+    def __str__(self):
+        return f"{self.attribute.name}: {self.value}"
+    
+class ProductVariantImage(models.Model):
+    variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to=product_image_path)
+    is_main = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['sort_order', 'id']
+
+    def __str__(self):
+        return f"Image for {self.variant.get_display_title()}"
+
+class VariantSpecification(models.Model):
+    variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE, related_name='specifications')
+    name = models.CharField(max_length=200)
+    value = models.CharField(max_length=500)
+
+    def __str__(self):
+        return f"{self.name}: {self.value}"
+
+    class Meta:
+        ordering = ['id']
 
 
 class StoreBanner(models.Model):
@@ -416,10 +521,18 @@ class StoreBanner(models.Model):
 
 
 class Lead(models.Model):
-    STATUS_CHOICES = [('new','New Enquiry'),('contacted','Contacted'),('converted','Converted'),('just enquiry','just enquiry')]
+    STATUS_CHOICES = [
+        ('new', 'New Enquiry'),
+        ('contacted', 'Contacted'),
+        ('converted', 'Converted'),
+        ('just enquiry', 'Just Enquiry')
+    ]
+    
     uid = models.UUIDField(default=uuid.uuid4, editable=False)
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='leads')
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True, related_name='leads')
+    variant = models.ForeignKey(ProductVariant, on_delete=models.SET_NULL, null=True, blank=True, related_name='leads')  # NEW FIELD
+    
     customer_name = models.CharField(max_length=100)
     phone = models.CharField(max_length=15)
     city = models.CharField(max_length=100, blank=True)
@@ -433,7 +546,13 @@ class Lead(models.Model):
     created_at_ist.short_description = 'Enquiry Time (IST)'
 
     def __str__(self):
-        return f"{self.customer_name} - {self.store.name} ({self.created_at_ist()})"
+        variant_name = f" ({self.variant.get_display_title()})" if self.variant else ""
+        return f"{self.customer_name} - {self.product.name if self.product else 'General'}{variant_name} ({self.store.name})"
+
+    def get_product_display(self):
+        if self.variant:
+            return f"{self.product.name} — {self.variant.get_display_title()}"
+        return self.product.name if self.product else "General Enquiry"
 
     def get_status_display(self):
         return dict(self.STATUS_CHOICES).get(self.status, self.status)
@@ -442,7 +561,10 @@ class Lead(models.Model):
         indexes = [
             models.Index(fields=['-created_at']),
             models.Index(fields=['status', 'store']),
+            models.Index(fields=['product']),
+            models.Index(fields=['variant']),  # For filtering by variant
         ]
+        ordering = ['-created_at']
 
 
 class SiteSettings(models.Model):
@@ -495,7 +617,6 @@ class SiteSettings(models.Model):
 
     class Meta:
         verbose_name_plural = "Site Settings"
-
 
 class SocialLink(models.Model):
     settings = models.ForeignKey(SiteSettings, on_delete=models.CASCADE, related_name='social_links')

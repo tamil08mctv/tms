@@ -1,86 +1,377 @@
-INFO 2025-12-27 17:05:46,166 storeadmin Dashboard accessed
-INFO 2025-12-27 17:05:51,400 storeadmin Dashboard accessed (cache hit)
-INFO 2025-12-27 17:05:51,401 storeadmin Dashboard accessed
-INFO 2025-12-27 17:11:28,518 storeadmin Dashboard accessed
-INFO 2025-12-27 18:15:50,518 storeadmin Product UPDATED: '6 Seater Sofa' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-27 18:16:52,683 storeadmin Product UPDATED: '6 Seater Sofa' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-27 18:20:05,355 storeadmin Product UPDATED: '6 Seater Sofa' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-27 18:23:37,510 storeadmin Product UPDATED: '6 Seater Sofa' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-28 12:44:09,028 storeadmin Dashboard accessed
-INFO 2025-12-28 12:45:20,011 storeadmin Product UPDATED: '2 Seater Sofa' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-28 13:05:31,051 storeadmin Dashboard accessed
-INFO 2025-12-28 13:18:50,308 storeadmin Dashboard accessed
-INFO 2025-12-28 13:26:06,310 storeadmin Dashboard accessed
-INFO 2025-12-28 13:31:26,504 storeadmin Dashboard accessed
-INFO 2025-12-28 15:36:58,826 storeadmin Product UPDATED: '2 Seater Sofa' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-28 16:50:52,195 storeadmin Main image updated for 'Rolling Chair pairs' | Store: TMS FURNITURES | User: vd
-INFO 2025-12-28 16:50:52,233 storeadmin Product UPDATED: 'Rolling Chair pairs' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2025-12-28 18:35:10,662 storeadmin Dashboard accessed
-INFO 2025-12-28 19:19:15,381 storeadmin Dashboard accessed
-INFO 2025-12-29 10:03:14,506 storeadmin Dashboard accessed
-INFO 2025-12-29 10:12:54,740 storeadmin Category ADDED: 'Furnitures' | Store: TMS TRADERS | User: admin@tmstraders.com
-INFO 2025-12-29 10:14:49,633 storeadmin Dashboard accessed
-INFO 2025-12-29 10:14:51,853 storeadmin Dashboard accessed (cache hit)
-INFO 2025-12-29 10:14:51,854 storeadmin Dashboard accessed
-INFO 2025-12-29 10:33:16,301 storeadmin Main image updated for 'DEsk with table' | Store: TMS TRADERS | User: admin@tmstraders.com
-INFO 2025-12-29 10:33:16,356 storeadmin Product UPDATED: 'DEsk with table' | Store: TMS TRADERS | User: admin@tmstraders.com | IP: 127.0.0.1
-INFO 2025-12-29 10:47:25,281 storeadmin Dashboard accessed
-INFO 2025-12-29 11:19:31,635 storeadmin Dashboard accessed
-INFO 2025-12-29 11:19:46,950 storeadmin Lead status updated: New Enquiry to Converted | Lead ID: 113 | Customer: tamil | Store: TMS TRADERS | User: admin@tmstraders.com
-INFO 2025-12-29 11:19:50,767 storeadmin Dashboard accessed (cache hit)
-INFO 2025-12-29 11:19:50,768 storeadmin Dashboard accessed
-INFO 2025-12-29 11:19:53,576 storeadmin Dashboard accessed (cache hit)
-INFO 2025-12-29 11:19:53,576 storeadmin Dashboard accessed
-INFO 2025-12-29 11:19:55,348 storeadmin Dashboard accessed (cache hit)
-INFO 2025-12-29 11:19:55,349 storeadmin Dashboard accessed
-INFO 2025-12-29 11:19:57,807 storeadmin Dashboard accessed (cache hit)
-INFO 2025-12-29 11:19:57,808 storeadmin Dashboard accessed
-INFO 2025-12-29 11:20:05,872 storeadmin Dashboard accessed (cache hit)
-INFO 2025-12-29 11:20:05,873 storeadmin Dashboard accessed
-INFO 2025-12-29 11:20:47,010 storeadmin Dashboard accessed (cache hit)
-INFO 2025-12-29 11:20:47,011 storeadmin Dashboard accessed
-INFO 2025-12-29 11:29:42,789 storeadmin Dashboard accessed
-INFO 2026-01-01 10:55:48,923 storeadmin Dashboard accessed (cache hit)
-INFO 2026-01-01 10:55:53,590 storeadmin Dashboard accessed (cache hit)
-INFO 2026-01-01 17:47:55,696 storeadmin Dashboard accessed (cache hit)
-INFO 2026-01-01 17:49:46,210 storeadmin Image DELETED from product '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-01 17:49:51,001 storeadmin Image DELETED from product '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-01 17:49:56,287 storeadmin Image DELETED from product '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-01 17:50:01,526 storeadmin Image DELETED from product '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-01 17:59:08,493 storeadmin Image DELETED from product '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-01 17:59:13,457 storeadmin Image DELETED from product '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-01 18:00:08,686 storeadmin Image DELETED from product '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-01 18:00:14,426 storeadmin Image DELETED from product '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-01 18:05:36,452 storeadmin Main image updated for '2 Seater Sofa' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-01 18:05:36,508 storeadmin Product UPDATED: '2 Seater Sofa' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2026-01-01 18:06:50,975 storeadmin Image DELETED from product '4 seater' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-01 18:09:42,140 storeadmin Dashboard accessed (cache hit)
-INFO 2026-01-01 18:17:18,862 storeadmin Dashboard accessed (cache hit)
-INFO 2026-01-02 09:46:02,454 storeadmin Category ADDED: 'COT' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-02 10:07:14,668 storeadmin Category UPDATED: 'COT' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-02 10:07:43,646 storeadmin Image DELETED from product '4 seat table with chair' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-02 10:08:06,421 storeadmin Product UPDATED: '4 seat table with chair' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2026-01-02 10:09:46,847 storeadmin Image DELETED from product '5 seater' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-02 10:10:38,202 storeadmin Product UPDATED: '5 seater' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2026-01-02 10:10:56,529 storeadmin Image DELETED from product 'Work Desk' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-02 10:10:59,946 storeadmin Image DELETED from product 'Work Desk' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-02 10:11:04,153 storeadmin Image DELETED from product 'Work Desk' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-02 10:11:19,743 storeadmin Product UPDATED: 'Work Desk' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2026-01-02 10:13:49,586 storeadmin Image DELETED from product 'Wardrobe' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-02 10:14:54,211 storeadmin Product UPDATED: 'Wardrobe' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2026-01-02 10:15:06,155 storeadmin Image DELETED from product 'tv' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-02 10:23:17,744 storeadmin Product UPDATED: 'tv' | Store: TMS FURNITURES | User: vd | IP: 127.0.0.1
-INFO 2026-01-02 10:24:12,021 storeadmin Image DELETED from product 'Teacot' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-02 10:29:44,980 storeadmin 3 images DELETED (multi) from product 'Teacot' | Store: TMS FURNITURES
-INFO 2026-01-02 10:30:33,915 storeadmin Product UPDATED: 'Teacot' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-02 10:31:02,211 storeadmin 3 images DELETED (multi) from product '6 Seater Sofa' | Store: TMS FURNITURES
-INFO 2026-01-02 10:31:31,323 storeadmin Product UPDATED: '6 Seater Sofa' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-02 10:31:41,595 storeadmin Image DELETED from product 'aknfmk knakf'
-INFO 2026-01-02 10:32:10,317 storeadmin Product UPDATED: 'aknfmk knakf' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-02 10:32:27,396 storeadmin 2 images DELETED (multi) from product 'Storage Bench' | Store: TMS FURNITURES
-INFO 2026-01-02 10:32:56,104 storeadmin Product UPDATED: 'Storage Bench' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-02 10:34:09,292 storeadmin 7 images DELETED (multi) from product 'sofa 7 seater' | Store: TMS FURNITURES
-INFO 2026-01-02 10:34:35,383 storeadmin Product UPDATED: 'sofa 7 seater' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-02 10:34:51,306 storeadmin 2 images DELETED (multi) from product 'Single chair' | Store: TMS FURNITURES
-INFO 2026-01-02 10:35:21,477 storeadmin Product UPDATED: 'Single chair' | Store: TMS FURNITURES | User: vd
-INFO 2026-01-03 11:11:04,404 storeadmin Dashboard accessed (cache hit)
+INFO 2026-01-06 17:33:50,697 storeadmin EDIT PRODUCT: Chairs (ID: 3) - has_variants: False
+INFO 2026-01-06 17:33:50,703 storeadmin POST request received
+INFO 2026-01-06 17:33:50,740 storeadmin Forms valid: False
+WARNING 2026-01-06 17:33:50,740 storeadmin Form validation failed
+INFO 2026-01-06 17:33:50,749 storeadmin Found 0 existing variants
+INFO 2026-01-06 17:34:03,286 storeadmin EDIT PRODUCT: Chairs (ID: 3) - has_variants: False
+INFO 2026-01-06 17:34:03,287 storeadmin POST request received
+INFO 2026-01-06 17:34:03,313 storeadmin Forms valid: False
+WARNING 2026-01-06 17:34:03,313 storeadmin Form validation failed
+INFO 2026-01-06 17:34:03,319 storeadmin Found 0 existing variants
+INFO 2026-01-06 17:34:40,439 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-06 17:34:40,454 storeadmin Found 3 existing variants
+INFO 2026-01-06 17:34:40,454 storeadmin Attaching nested formsets to variant 3
+INFO 2026-01-06 17:34:40,460 storeadmin Attaching nested formsets to variant 4
+INFO 2026-01-06 17:34:40,463 storeadmin Attaching nested formsets to variant 5
+INFO 2026-01-06 17:39:57,125 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-06 17:39:57,159 storeadmin Found 3 existing variants
+INFO 2026-01-06 17:39:57,160 storeadmin Attaching nested formsets to variant 3
+INFO 2026-01-06 17:39:57,161 storeadmin Attaching nested formsets to variant 4
+INFO 2026-01-06 17:39:57,163 storeadmin Attaching nested formsets to variant 5
+INFO 2026-01-06 17:41:41,540 storeadmin EDIT PRODUCT: Chairs (ID: 3) - has_variants: False
+INFO 2026-01-06 17:41:41,546 storeadmin Found 0 existing variants
+INFO 2026-01-06 17:41:47,019 storeadmin EDIT PRODUCT: Chairs (ID: 3) - has_variants: False
+INFO 2026-01-06 17:41:47,020 storeadmin POST request received
+INFO 2026-01-06 17:41:47,051 storeadmin Forms valid: False
+WARNING 2026-01-06 17:41:47,051 storeadmin Form validation failed
+INFO 2026-01-06 17:41:47,062 storeadmin Found 0 existing variants
+INFO 2026-01-06 17:54:36,919 storeadmin EDIT PRODUCT: Chairs (ID: 3) - has_variants: False
+INFO 2026-01-06 17:54:36,932 storeadmin POST request received
+INFO 2026-01-06 17:54:36,979 storeadmin Forms valid: False
+WARNING 2026-01-06 17:54:36,979 storeadmin Form validation failed
+INFO 2026-01-06 17:54:36,992 storeadmin Found 0 existing variants
+INFO 2026-01-06 17:54:56,448 storeadmin EDIT PRODUCT: Chairs (ID: 3) - has_variants: False
+INFO 2026-01-06 17:54:56,448 storeadmin POST request received
+INFO 2026-01-06 17:54:56,470 storeadmin Forms valid: False
+WARNING 2026-01-06 17:54:56,470 storeadmin Form validation failed
+INFO 2026-01-06 17:54:56,484 storeadmin Found 0 existing variants
+INFO 2026-01-06 18:01:56,308 storeadmin EDIT PRODUCT: Chairs (ID: 3) - has_variants: False
+INFO 2026-01-06 18:01:56,318 storeadmin POST request received
+INFO 2026-01-06 18:01:56,357 storeadmin Forms valid: False
+WARNING 2026-01-06 18:01:56,367 storeadmin Validation errors:  [{}, {}, {}, {}, {}, {}] [{}] [{'regular_price': ['This field is required.']}]
+INFO 2026-01-06 18:01:56,376 storeadmin Found 0 existing variants to attach nested formsets
+INFO 2026-01-06 18:08:18,545 storeadmin EDIT PRODUCT: Chairs (ID: 3) - has_variants: False
+INFO 2026-01-06 18:08:18,546 storeadmin POST request received
+INFO 2026-01-06 18:08:18,587 storeadmin Forms valid: False
+WARNING 2026-01-06 18:08:18,599 storeadmin Validation errors: form= spec=[{}, {}, {}, {}, {}, {}] attr=[{}] variant=[{'regular_price': ['This field is required.']}]
+INFO 2026-01-06 18:08:18,609 storeadmin Found 0 existing variants to attach nested formsets
+INFO 2026-01-06 18:08:39,156 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-06 18:08:39,165 storeadmin Found 3 existing variants to attach nested formsets
+INFO 2026-01-06 18:09:17,155 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-06 18:09:17,156 storeadmin POST request received
+INFO 2026-01-06 18:09:17,211 storeadmin Forms valid: True
+INFO 2026-01-06 18:09:17,302 storeadmin Main product saved
+INFO 2026-01-06 18:09:17,623 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-06 18:09:17,631 storeadmin Found 2 existing variants to attach nested formsets
+INFO 2026-01-08 23:51:37,667 storeadmin Dashboard accessed (cache hit)
+INFO 2026-01-08 23:51:44,716 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-08 23:51:44,726 storeadmin Found 2 existing variants to attach nested formsets
+INFO 2026-01-08 23:58:40,999 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-08 23:58:41,021 storeadmin Found 2 existing variants to attach nested formsets
+INFO 2026-01-09 00:06:39,008 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 00:06:39,089 storeadmin Found 2 existing variants to attach nested formsets
+INFO 2026-01-09 00:06:54,499 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 00:06:54,509 storeadmin Found 2 existing variants to attach nested formsets
+INFO 2026-01-09 00:17:44,184 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 00:17:44,205 storeadmin Found 2 existing variants to attach nested formsets
+INFO 2026-01-09 00:34:43,902 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 00:34:43,947 storeadmin Found 2 existing variants to attach nested formsets
+INFO 2026-01-09 00:34:51,295 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 00:34:51,306 storeadmin Found 2 existing variants to attach nested formsets
+INFO 2026-01-09 00:39:00,849 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 00:39:00,879 storeadmin Found 2 existing variants to attach nested formsets
+INFO 2026-01-09 00:39:07,717 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 00:39:07,729 storeadmin Found 2 existing variants to attach nested formsets
+INFO 2026-01-09 00:49:03,815 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 13:31:26,337 storeadmin Dashboard accessed (cache hit)
+INFO 2026-01-09 13:31:35,671 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 13:40:31,560 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 13:41:25,168 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 13:42:05,896 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 13:53:02,238 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 13:57:28,497 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 14:00:51,174 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 14:00:51,187 storeadmin POST request received
+INFO 2026-01-09 14:00:51,498 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 14:01:30,263 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 14:01:30,264 storeadmin POST request received
+INFO 2026-01-09 14:01:30,509 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 14:01:35,484 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 14:01:41,870 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 14:02:00,869 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+INFO 2026-01-09 14:02:00,871 storeadmin POST request received
+ERROR 2026-01-09 14:02:00,993 storeadmin Save failed: 'ProductVariantImage' object has no attribute 'product'
+Traceback (most recent call last):
+  File "C:\Users\Tamiltech08\PycharmProjects\tmsgroups\tms\views\storeadmin.py", line 361, in edit_product
+    ProductVariantImage.objects.create(variant=variant, image=file)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 663, in create
+    obj.save(force_insert=True, using=self.db)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 902, in save
+    self.save_base(
+    ~~~~~~~~~~~~~~^
+        using=using,
+        ^^^^^^^^^^^^
+    ...<2 lines>...
+        update_fields=update_fields,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 1008, in save_base
+    updated = self._save_table(
+        raw,
+    ...<4 lines>...
+        update_fields,
+    )
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 1169, in _save_table
+    results = self._do_insert(
+        cls._base_manager, using, fields, returning_fields, raw
+    )
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 1210, in _do_insert
+    return manager._insert(
+           ~~~~~~~~~~~~~~~^
+        [self],
+        ^^^^^^^
+    ...<3 lines>...
+        raw=raw,
+        ^^^^^^^^
+    )
+    ^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1868, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\compiler.py", line 1881, in execute_sql
+    for sql, params in self.as_sql():
+                       ~~~~~~~~~~~^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\compiler.py", line 1806, in as_sql
+    self.prepare_value(field, self.pre_save_val(field, obj))
+                              ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\compiler.py", line 1750, in pre_save_val
+    return field.pre_save(obj, add=True)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\fields\files.py", line 338, in pre_save
+    file.save(file.name, file.file, save=False)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\fields\files.py", line 98, in save
+    name = self.field.generate_filename(self.instance, name)
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\fields\files.py", line 353, in generate_filename
+    filename = self.upload_to(instance, filename)
+  File "C:\Users\Tamiltech08\PycharmProjects\tmsgroups\tms\models.py", line 39, in product_image_path
+    return f"{instance.product.store.slug}/products/{instance.product.slug}/{safe_filename(filename)}"
+              ^^^^^^^^^^^^^^^^
+AttributeError: 'ProductVariantImage' object has no attribute 'product'
+INFO 2026-01-09 14:06:33,805 storeadmin EDIT PRODUCT: Lunaria Zam (ID: 4) - has_variants: True
+ERROR 2026-01-09 14:06:33,911 storeadmin Save error: 'ProductVariantImage' object has no attribute 'product'
+Traceback (most recent call last):
+  File "C:\Users\Tamiltech08\PycharmProjects\tmsgroups\tms\views\storeadmin.py", line 391, in edit_product
+    ProductVariantImage.objects.create(variant=variant, image=file)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 663, in create
+    obj.save(force_insert=True, using=self.db)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 902, in save
+    self.save_base(
+    ~~~~~~~~~~~~~~^
+        using=using,
+        ^^^^^^^^^^^^
+    ...<2 lines>...
+        update_fields=update_fields,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 1008, in save_base
+    updated = self._save_table(
+        raw,
+    ...<4 lines>...
+        update_fields,
+    )
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 1169, in _save_table
+    results = self._do_insert(
+        cls._base_manager, using, fields, returning_fields, raw
+    )
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 1210, in _do_insert
+    return manager._insert(
+           ~~~~~~~~~~~~~~~^
+        [self],
+        ^^^^^^^
+    ...<3 lines>...
+        raw=raw,
+        ^^^^^^^^
+    )
+    ^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1868, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\compiler.py", line 1881, in execute_sql
+    for sql, params in self.as_sql():
+                       ~~~~~~~~~~~^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\compiler.py", line 1806, in as_sql
+    self.prepare_value(field, self.pre_save_val(field, obj))
+                              ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\compiler.py", line 1750, in pre_save_val
+    return field.pre_save(obj, add=True)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\fields\files.py", line 338, in pre_save
+    file.save(file.name, file.file, save=False)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\fields\files.py", line 98, in save
+    name = self.field.generate_filename(self.instance, name)
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\fields\files.py", line 353, in generate_filename
+    filename = self.upload_to(instance, filename)
+  File "C:\Users\Tamiltech08\PycharmProjects\tmsgroups\tms\models.py", line 39, in product_image_path
+    return f"{instance.product.store.slug}/products/{instance.product.slug}/{safe_filename(filename)}"
+              ^^^^^^^^^^^^^^^^
+AttributeError: 'ProductVariantImage' object has no attribute 'product'
+ERROR 2026-01-09 14:19:30,747 storeadmin Save error: 'ProductVariantImage' object has no attribute 'product'
+Traceback (most recent call last):
+  File "C:\Users\Tamiltech08\PycharmProjects\tmsgroups\tms\views\storeadmin.py", line 357, in edit_product
+    ProductVariantImage.objects.create(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        variant=variant,
+        ^^^^^^^^^^^^^^^^
+        image=file
+        ^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 663, in create
+    obj.save(force_insert=True, using=self.db)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 902, in save
+    self.save_base(
+    ~~~~~~~~~~~~~~^
+        using=using,
+        ^^^^^^^^^^^^
+    ...<2 lines>...
+        update_fields=update_fields,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 1008, in save_base
+    updated = self._save_table(
+        raw,
+    ...<4 lines>...
+        update_fields,
+    )
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 1169, in _save_table
+    results = self._do_insert(
+        cls._base_manager, using, fields, returning_fields, raw
+    )
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 1210, in _do_insert
+    return manager._insert(
+           ~~~~~~~~~~~~~~~^
+        [self],
+        ^^^^^^^
+    ...<3 lines>...
+        raw=raw,
+        ^^^^^^^^
+    )
+    ^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1868, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\compiler.py", line 1881, in execute_sql
+    for sql, params in self.as_sql():
+                       ~~~~~~~~~~~^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\compiler.py", line 1806, in as_sql
+    self.prepare_value(field, self.pre_save_val(field, obj))
+                              ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\compiler.py", line 1750, in pre_save_val
+    return field.pre_save(obj, add=True)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\fields\files.py", line 338, in pre_save
+    file.save(file.name, file.file, save=False)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\fields\files.py", line 98, in save
+    name = self.field.generate_filename(self.instance, name)
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\fields\files.py", line 353, in generate_filename
+    filename = self.upload_to(instance, filename)
+  File "C:\Users\Tamiltech08\PycharmProjects\tmsgroups\tms\models.py", line 39, in product_image_path
+    return f"{instance.product.store.slug}/products/{instance.product.slug}/{safe_filename(filename)}"
+              ^^^^^^^^^^^^^^^^
+AttributeError: 'ProductVariantImage' object has no attribute 'product'
+ERROR 2026-01-09 14:25:50,242 storeadmin Error uploading images for variant 4: 'ProductVariantImage' object has no attribute 'product'
+INFO 2026-01-09 14:26:20,291 storeadmin Dashboard accessed (cache hit)
+INFO 2026-01-10 07:31:33,477 storeadmin Dashboard accessed (cache hit)
+ERROR 2026-01-10 07:36:47,428 storeadmin Error uploading images for variant 4: 'ProductVariantImage' object has no attribute 'product'
+ERROR 2026-01-10 07:36:47,436 storeadmin Error uploading images for variant 6: An error occurred in the current transaction. You can't execute queries until the end of the 'atomic' block.
+ERROR 2026-01-10 07:52:26,129 storeadmin Upload error for variant 4: 'ProductVariantImage' object has no attribute 'product'
+INFO 2026-01-10 07:54:57,484 storeadmin Dashboard accessed (cache hit)
+ERROR 2026-01-10 08:02:08,007 storeadmin Full save failed: 'ProductVariantImage' object has no attribute 'product'
+Traceback (most recent call last):
+  File "C:\Users\Tamiltech08\PycharmProjects\tmsgroups\tms\views\storeadmin.py", line 355, in edit_product
+    ProductVariantImage.objects.create(variant=variant, image=file)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 663, in create
+    obj.save(force_insert=True, using=self.db)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 902, in save
+    self.save_base(
+    ~~~~~~~~~~~~~~^
+        using=using,
+        ^^^^^^^^^^^^
+    ...<2 lines>...
+        update_fields=update_fields,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 1008, in save_base
+    updated = self._save_table(
+        raw,
+    ...<4 lines>...
+        update_fields,
+    )
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 1169, in _save_table
+    results = self._do_insert(
+        cls._base_manager, using, fields, returning_fields, raw
+    )
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 1210, in _do_insert
+    return manager._insert(
+           ~~~~~~~~~~~~~~~^
+        [self],
+        ^^^^^^^
+    ...<3 lines>...
+        raw=raw,
+        ^^^^^^^^
+    )
+    ^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1868, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\compiler.py", line 1881, in execute_sql
+    for sql, params in self.as_sql():
+                       ~~~~~~~~~~~^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\compiler.py", line 1806, in as_sql
+    self.prepare_value(field, self.pre_save_val(field, obj))
+                              ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\compiler.py", line 1750, in pre_save_val
+    return field.pre_save(obj, add=True)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\fields\files.py", line 338, in pre_save
+    file.save(file.name, file.file, save=False)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\fields\files.py", line 98, in save
+    name = self.field.generate_filename(self.instance, name)
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\fields\files.py", line 353, in generate_filename
+    filename = self.upload_to(instance, filename)
+  File "C:\Users\Tamiltech08\PycharmProjects\tmsgroups\tms\models.py", line 39, in product_image_path
+    return f"{instance.product.store.slug}/products/{instance.product.slug}/{safe_filename(filename)}"
+              ^^^^^^^^^^^^^^^^
+AttributeError: 'ProductVariantImage' object has no attribute 'product'
+INFO 2026-01-10 08:13:36,861 storeadmin Uploaded 4 images to variant 4
+WARNING 2026-01-10 08:13:36,864 storeadmin Failed to upload for variant_extra_images_6: ProductVariant matching query does not exist.
+INFO 2026-01-10 09:00:17,464 storeadmin Dashboard accessed (cache hit)

@@ -1,201 +1,366 @@
 {% extends 'TMS/storeadmin/base.html' %}
 {% load static %}
+
 {% block title %}Edit Product - {{ product.name }}{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-2 py-md-3">
+<div class="container-fluid py-4 px-3">
     <div class="row justify-content-center">
         <div class="col-12 col-xl-11">
-            <div class="card border-0 shadow-lg overflow-hidden" style="border-radius: 10px;">
-                <!-- Header -->
-                <div class="card-header position-relative border-0 py-1" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                    <div class="text-center w-100">
-                        <h4 class="text-white fw-bold mb-1">
-                            <i class="fas fa-edit me-2"></i> Edit Product
-                        </h4>
-                        <p class="text-white opacity-90 mb-0 fs-5">{{ product.name }}</p>
-                    </div>
-                    <a href="{% url 'store_products' %}" class="btn btn-outline-light position-absolute end-0 top-50 translate-middle-y me-5">
-                        <i class="fas fa-times"></i>
-                    </a>
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white py-4 text-center">
+                    <h3 class="mb-0 fw-bold"><i class="fas fa-edit me-3"></i>Edit Product: {{ product.name }}</h3>
                 </div>
-
-                <div class="card-body p-2 p-lg-2 bg-gradient-light" style="background: linear-gradient(to bottom, #f8f9fa, #ffffff);">
-                    <form method="post" enctype="multipart/form-data" id="editProductForm">
+                <div class="card-body p-4 p-lg-5 bg-light">
+                    <form method="post" enctype="multipart/form-data" id="mainForm">
                         {% csrf_token %}
 
-                        <!-- Main Grid -->
-                        <div class="row g-4">
-                            <!-- Left: Core Info -->
+                        {{ variant_formset.management_form }}
+
+                        <!-- Product Details & Badges -->
+                        <div class="row g-5 mb-5">
                             <div class="col-lg-8">
-                                <div class="bg-white rounded-4 shadow-sm p-4 p-md-5">
-                                    <h5 class="fw-bold text-primary mb-4"><i class="fas fa-edit me-2"></i>Product Details</h5>
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Product Name</label>
-                                        {{ form.name }}
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Category</label>
-                                        {{ form.category }}
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Short Description</label>
-                                        {{ form.short_desc }}
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Full Description</label>
-                                        {{ form.description }}
+                                <div class="bg-white rounded-4 shadow p-4">
+                                    <h5 class="fw-bold text-primary mb-4">Product Details</h5>
+                                    <div class="row g-4">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Product Name</label>
+                                            {{ form.name }}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Category</label>
+                                            {{ form.category }}
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-bold">Short Description</label>
+                                            {{ form.short_desc }}
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-bold">Full Description</label>
+                                            {{ form.description }}
+                                        </div>
+
+                                        {% if not has_variants %}
+                                        <hr class="my-5 border-secondary">
+                                        <h5 class="fw-bold text-success mb-4">Pricing</h5>
+                                        <div class="row g-4">
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold">Regular Price (₹)</label>
+                                                {{ form.regular_price }}
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold">Offer Price (₹)</label>
+                                                {{ form.offer_price }}
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold">Deal End Date</label>
+                                                {{ form.deal_end_date }}
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                        <div class="alert alert-info mt-4 rounded-4">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            <strong>Pricing is managed per variant below.</strong>
+                                        </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Right: Price & Badges -->
                             <div class="col-lg-4">
-                                <div class="bg-white rounded-4 shadow-sm p-4 h-100">
-                                    <h5 class="fw-bold text-primary mb-4"><i class="fas fa-tags me-2"></i>Pricing & Badges</h5>
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Regular Price ()</label>
-                                        {{ form.regular_price }}
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Offer Price ()</label>
-                                        {{ form.offer_price }}
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Deal End Date</label>
-                                        {{ form.deal_end_date }}
-                                    </div>
-                                    <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input" type="checkbox" name="call_for_price" id="call_for_price_edit" {% if product.call_for_price %}checked{% endif %}>
-                                        <label class="form-check-label fw-bold text-info" for="call_for_price_edit">Call for Best Price</label>
-                                    </div>
-                                    <hr class="my-4">
-                                    <h6 class="fw-bold text-primary mb-3"><i class="fas fa-medal me-2"></i>Special Badges</h6>
-                                    <div class="d-grid gap-3">
+                                <div class="bg-white rounded-4 shadow p-4 h-100">
+                                    <h5 class="fw-bold text-primary mb-4">Status & Badges</h5>
+                                    <div class="d-grid gap-4">
                                         <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" name="is_best_seller" id="edit_best_seller" {% if product.is_best_seller %}checked{% endif %}>
-                                            <label class="form-check-label fw-bold text-warning" for="edit_best_seller">Best Seller</label>
+                                            <input class="form-check-input" type="checkbox" name="call_for_price" id="call_for_price" {% if product.call_for_price %}checked{% endif %}>
+                                            <label class="form-check-label fw-bold text-info">Call for Price</label>
                                         </div>
                                         <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" name="is_limited_deal" id="edit_limited_deal" {% if product.is_limited_deal %}checked{% endif %}>
-                                            <label class="form-check-label fw-bold text-danger" for="edit_limited_deal">Limited Deal</label>
+                                            <input class="form-check-input" type="checkbox" name="is_best_seller" id="is_best_seller" {% if product.is_best_seller %}checked{% endif %}>
+                                            <label class="form-check-label fw-bold text-warning">Best Seller</label>
                                         </div>
                                         <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" name="is_special_offer" id="edit_special_offer" {% if product.is_special_offer %}checked{% endif %}>
-                                            <label class="form-check-label fw-bold" style="color:#9c27b0" for="edit_special_offer">Special Offer</label>
+                                            <input class="form-check-input" type="checkbox" name="is_new_arrival" id="is_new_arrival" {% if product.is_new_arrival %}checked{% endif %}>
+                                            <label class="form-check-label fw-bold text-success">New Arrival</label>
                                         </div>
                                         <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" name="is_new_arrival" id="edit_new_arrival" {% if product.is_new_arrival %}checked{% endif %}>
-                                            <label class="form-check-label fw-bold text-success" for="edit_new_arrival">New Arrival</label>
+                                            <input class="form-check-input" type="checkbox" name="is_limited_deal" id="is_limited_deal" {% if product.is_limited_deal %}checked{% endif %}>
+                                            <label class="form-check-label fw-bold text-danger">Limited Deal</label>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" name="is_special_offer" id="is_special_offer" {% if product.is_special_offer %}checked{% endif %}>
+                                            <label class="form-check-label fw-bold" style="color:#9c27b0;">Special Offer</label>
                                         </div>
                                         <div class="form-check form-switch">
                                             {{ form.is_featured }}
-                                            <label class="form-check-label fw-bold text-primary" for="{{ form.is_featured.id_for_label }}">Featured</label>
+                                            <label class="form-check-label fw-bold text-primary">Featured Product</label>
                                         </div>
                                         <div class="form-check form-switch">
                                             {{ form.in_stock }}
-                                            <label class="form-check-label fw-bold" for="{{ form.in_stock.id_for_label }}">In Stock</label>
+                                            <label class="form-check-label fw-bold">In Stock</label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Specifications -->
-                        <div class="bg-white rounded-4 shadow-sm p-3 mt-4">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="fw-bold text-primary mb-0"><i class="fas fa-th-list me-2"></i>Specifications</h5>
-                                <button type="button" class="btn btn-outline-success rounded-pill px-4 py-2" id="add-spec">
+                        <!-- Product Specifications -->
+                        <div class="bg-white rounded-4 shadow p-4 mb-5">
+                            {{ spec_formset.management_form }}
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="fw-bold text-primary mb-0">Product Specifications</h5>
+                                <button type="button" class="btn btn-success rounded-pill px-5 shadow-sm" id="add-spec">
                                     <i class="fas fa-plus me-2"></i>Add Specification
                                 </button>
                             </div>
-                            {{ spec_formset.management_form }}
                             <div id="spec-container">
                                 {% for form in spec_formset %}
-                                <div class="row g-3 mb-3 align-items-end spec-row">
-                                    {% if form.instance.pk %}
-                                        {{ form.id }}
-                                    {% endif %}
-                                    <div class="col-12 col-md-5">
-                                        <input type="text" class="form-control rounded-pill" placeholder="e.g. Material" name="{{ form.name.html_name }}" value="{{ form.name.value|default:'' }}">
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <input type="text" class="form-control rounded-pill" placeholder="e.g. Solid Teak Wood" name="{{ form.value.html_name }}" value="{{ form.value.value|default:'' }}">
-                                    </div>
-                                    <div class="col-12 col-md-1 text-md-end">
-                                        <button type="button" class="btn btn-outline-danger rounded-pill px-3 remove-spec">
-                                            <i class="fas fa-trash-alt"></i>
+                                <div class="row g-4 mb-3 align-items-center spec-row border-bottom pb-3">
+                                    {% if form.instance.pk %}{{ form.id }}{% endif %}
+                                    <div class="col-md-5">{{ form.name }}</div>
+                                    <div class="col-md-6">{{ form.value }}</div>
+                                    <div class="col-md-1 text-end">
+                                        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill remove-spec">
+                                            <i class="fas fa-trash"></i>
                                         </button>
-                                        {% if form.instance.pk %}
-                                            <div class="form-check mt-2">
-                                                {{ form.DELETE }}
-                                                <label class="form-check-label small text-danger">Delete</label>
-                                            </div>
-                                        {% endif %}
+                                        {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
                                     </div>
                                 </div>
                                 {% endfor %}
                             </div>
                         </div>
 
-                        <!-- Video Upload / Replace -->
-                        <div class="bg-white rounded-4 shadow-sm p-4 mt-4">
-                            <h5 class="fw-bold text-primary mb-4"><i class="fas fa-video me-2"></i>Product Video</h5>
-
-                            {% if product.video %}
-                                <div class="mb-4">
-                                    <p class="fw-bold text-success mb-2">Current Video:</p>
-                                    <video controls class="w-100 rounded-4" style="max-height:300px;">
-                                        <source src="{{ product.video.url }}" type="video/mp4">
-                                        Your browser does not support the video tag.
-                                    </video>
-                                    <p class="text-muted small mt-2">Upload a new video to replace the current one. Old video will be deleted.</p>
-                                </div>
-                            {% else %}
-                                <p class="text-muted mb-3">No video uploaded yet.</p>
-                            {% endif %}
-
-                            <label class="form-label fw-bold">Upload / Replace Video (Max 50MB)</label>
-                            <input type="file" name="video" accept="video/*" class="form-control form-control-lg rounded-pill">
-                        </div>
-
-                        <!-- Add More Images -->
-                        <div class="bg-white rounded-4 shadow-sm p-4 mt-4">
-                            <h5 class="fw-bold text-primary mb-4"><i class="fas fa-images me-2"></i>Add More Images</h5>
-                            <input type="file" name="extra_images" multiple accept="image/*" class="form-control form-control-lg rounded-pill">
-                            <small class="text-muted d-block mt-2">Hold Ctrl/Cmd to select multiple</small>
-                        </div>
-
-                        <!-- Current Images with Multi-Delete -->
-                        {% if product.images.exists %}
-                        <div class="bg-white rounded-4 shadow-sm p-4 mt-4">
+                        <!-- Variant Types -->
+                        <div class="bg-white rounded-4 shadow p-4 mb-5">
+                            {{ attr_formset.management_form }}
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h5 class="fw-bold text-primary mb-0"><i class="fas fa-photo-video me-2"></i>Current Images ({{ product.images.count }})</h5>
-                                <button type="submit" name="delete_selected_images" class="btn btn-danger rounded-pill px-4" onclick="return confirm('Delete selected images? This cannot be undone.')" {% if not product.images.exists %}disabled{% endif %}>
-                                    <i class="fas fa-trash me-2"></i> Delete Selected
+                                <h5 class="fw-bold text-primary mb-0">Variant Types (e.g. Color, Size)</h5>
+                                <div>
+                                    <button type="button" class="btn btn-primary rounded-pill px-4 me-2" id="add-type">
+                                        <i class="fas fa-plus me-2"></i>Add Type
+                                    </button>
+                                    <button type="submit" name="save_attributes" class="btn btn-warning rounded-pill px-5 shadow">
+                                        Save Types & Refresh
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="type-container">
+                                {% for form in attr_formset %}
+                                <div class="input-group mb-3 type-row align-items-center">
+                                    {{ form.id }}
+                                    <span class="input-group-text bg-light">Type:</span>
+                                    {{ form.name }}
+                                    <button type="button" class="btn btn-outline-danger remove-type">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Variants Section -->
+                        {% if has_variants %}
+                        <div class="bg-white rounded-4 shadow-lg p-5 mb-5 border border-success">
+                            <div class="d-flex justify-content-between align-items-center mb-5">
+                                <h4 class="fw-bold text-success mb-0">Product Variants</h4>
+                                <button type="button" class="btn btn-success rounded-pill px-5 shadow-lg fw-bold" id="add-variant">
+                                    <i class="fas fa-plus-circle me-2"></i>Add New Variant
                                 </button>
                             </div>
 
-                            <div class="row g-4">
-                                {% for img in product.images.all %}
-                                <div class="col-6 col-md-4 col-lg-3">
-                                    <div class="card border-0 shadow-sm hover-lift position-relative">
-                                        <div class="form-check position-absolute top-0 start-0 m-2 z-3">
-                                            <input class="form-check-input" type="checkbox" name="selected_images" value="{{ img.id }}" id="img{{ img.id }}">
-                                            <label class="form-check-label" for="img{{ img.id }}"></label>
-                                        </div>
-                                        <img src="{{ img.image.url }}" class="card-img-top rounded-top" style="height:180px; object-fit:cover;" alt="{{ product.name }}">
-                                        <div class="card-body p-3 text-center">
-                                            {% if img.is_main %}
-                                                <span class="badge bg-success w-100 mb-2">MAIN IMAGE</span>
+                            <div id="variant-container">
+                                {% for variant_form in variant_formset %}
+                                <div class="card border-0 shadow-sm variant-block mb-5 rounded-4 overflow-hidden">
+                                    <div class="card-header bg-gradient-primary text-white py-3">
+                                        <h5 class="mb-0 fw-bold">
+                                            {% if variant_form.instance.pk %}
+                                                Variant #{{ forloop.counter }} — {{ variant_form.instance.get_display_title|default:"Standard" }}
                                             {% else %}
-                                                <button type="submit" name="main_image" value="{{ img.id }}" class="btn btn-outline-primary btn-sm w-100 mb-2">
-                                                    Set as Main
-                                                </button>
+                                                New Variant (Save to enable full editing)
                                             {% endif %}
-                                            <button type="submit" name="delete_image" value="{{ img.id }}"
-                                                    onclick="return confirm('Delete this image?')" class="btn btn-danger btn-sm w-100">
-                                                <i class="fas fa-trash me-1"></i> Delete
+                                        </h5>
+                                    </div>
+                                    <div class="card-body p-5 bg-light">
+                                        {{ variant_form.id }}
+
+                                        <!-- Pricing & Stock -->
+                                        <div class="row g-4 mb-5">
+                                            <div class="col-md-4">
+                                                <label class="form-label fw-bold">Regular Price (₹)</label>
+                                                {{ variant_form.regular_price }}
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label fw-bold">Offer Price (₹)</label>
+                                                {{ variant_form.offer_price }}
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-check form-switch mt-4">
+                                                    {{ variant_form.in_stock }}
+                                                    <label class="form-check-label fw-bold ms-3">In Stock</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Variant Values -->
+                                        <div class="bg-white rounded-4 p-4 mb-4 shadow-sm">
+                                            <h6 class="fw-bold text-success mb-4">Variant Values</h6>
+                                            {% if variant_form.instance.pk %}
+                                                {{ variant_form.nested_values.management_form }}
+                                                <div class="table-responsive">
+                                                    <table class="table table-hover align-middle">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th>Attribute</th>
+                                                                <th>Value</th>
+                                                                <th width="80">Action</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="nested-values">
+                                                            {% for value_form in variant_form.nested_values %}
+                                                            <tr class="value-row">
+                                                                <td>
+                                                                    {{ value_form.id }}
+                                                                    {{ value_form.attribute }}
+                                                                </td>
+                                                                <td>{{ value_form.value }}</td>
+                                                                <td>
+                                                                    <button type="button" class="btn btn-sm btn-outline-danger remove-value">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </button>
+                                                                    {% if value_form.instance.pk %}
+                                                                        {{ value_form.DELETE }}
+                                                                    {% endif %}
+                                                                </td>
+                                                            </tr>
+                                                            {% empty %}
+                                                            <tr>
+                                                                <td colspan="3" class="text-muted text-center py-3">
+                                                                    No variant values assigned yet.
+                                                                </td>
+                                                            </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-success add-value mt-3"
+                                                        data-prefix="{{ variant_form.nested_values.prefix }}">
+                                                    <i class="fas fa-plus me-2"></i>Add Value
+                                                </button>
+                                            {% else %}
+                                                <p class="text-muted fst-italic">Save the variant first to assign values.</p>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Variant Specifications -->
+                                        <div class="bg-white rounded-4 p-4 mb-4 shadow-sm">
+                                            <h6 class="fw-bold text-info mb-4">Variant Specifications</h6>
+                                            {% if variant_form.instance.pk %}
+                                                {{ variant_form.nested_specs.management_form }}
+                                                <div class="table-responsive">
+                                                    <table class="table table-hover align-middle">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th>Name</th>
+                                                                <th>Value</th>
+                                                                <th width="80">Action</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="nested-specs">
+                                                            {% for spec_form in variant_form.nested_specs %}
+                                                            <tr class="spec-row">
+                                                                <td>
+                                                                    {{ spec_form.id }}
+                                                                    {{ spec_form.name }}
+                                                                </td>
+                                                                <td>{{ spec_form.value }}</td>
+                                                                <td>
+                                                                    <button type="button" class="btn btn-sm btn-outline-danger remove-spec">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </button>
+                                                                    {% if spec_form.instance.pk %}
+                                                                        {{ spec_form.DELETE }}
+                                                                    {% endif %}
+                                                                </td>
+                                                            </tr>
+                                                            {% empty %}
+                                                            <tr>
+                                                                <td colspan="3" class="text-muted text-center py-3">
+                                                                    No specifications added yet.
+                                                                </td>
+                                                            </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-info add-variant-spec mt-3"
+                                                        data-prefix="{{ variant_form.nested_specs.prefix }}">
+                                                    <i class="fas fa-plus me-2"></i>Add Specification
+                                                </button>
+                                            {% else %}
+                                                <p class="text-muted fst-italic">Save the variant first to add specifications.</p>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Variant Images – One multi-upload field (first auto-main) -->
+                                        <div class="bg-white rounded-4 shadow p-4 mb-5">
+                                            <h6 class="fw-bold text-warning mb-4">Variant Images (First uploaded becomes main)</h6>
+
+                                            <!-- Multi-upload field -->
+                                            <div class="mb-4">
+                                                <label class="form-label fw-bold">Upload Images</label>
+                                                <input type="file" 
+                                                       name="variant_extra_images_{{ variant_form.instance.id|default:'new_'|add:forloop.counter0 }}" 
+                                                       multiple accept="image/*" 
+                                                       class="form-control">
+                                            </div>
+
+                                            <!-- Existing images grid with actions -->
+                                            {% if variant_form.instance.pk and variant_form.instance.images.exists %}
+                                            <h6 class="fw-bold text-dark mb-3">Current Images ({{ variant_form.instance.images.count }})</h6>
+                                            <form method="post">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="variant_id" value="{{ variant_form.instance.id }}">
+                                                <div class="row g-4">
+                                                    {% for img in variant_form.instance.images.all %}
+                                                    <div class="col-6 col-md-4 col-lg-3">
+                                                        <div class="card border-0 shadow position-relative">
+                                                            <div class="form-check position-absolute top-0 start-0 m-2">
+                                                                <input class="form-check-input" type="checkbox" name="selected_variant_images" value="{{ img.id }}">
+                                                            </div>
+                                                            <img src="{{ img.image.url }}" class="card-img-top rounded" style="height:200px; object-fit:cover;">
+                                                            <div class="card-body text-center p-3">
+                                                                {% if img.is_main %}
+                                                                    <span class="badge bg-success w-100 mb-2">MAIN IMAGE</span>
+                                                                {% else %}
+                                                                    <button type="submit" name="set_main_variant_image" value="{{ img.id }}" class="btn btn-outline-primary btn-sm w-100 mb-2">
+                                                                        Set as Main
+                                                                    </button>
+                                                                {% endif %}
+                                                                <button type="submit" name="delete_variant_image" value="{{ img.id }}" class="btn btn-danger btn-sm w-100">
+                                                                    Delete
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                                <div class="text-end mt-4">
+                                                    <button type="submit" name="delete_selected_variant_images" class="btn btn-danger rounded-pill px-5 shadow">
+                                                        <i class="fas fa-trash me-2"></i>Delete Selected
+                                                    </button>
+                                                </div>
+                                            </form>
+                                            {% else %}
+                                            <p class="text-muted text-center">No images uploaded for this variant yet.</p>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Delete Variant -->
+                                        <div class="text-end mt-4">
+                                            {{ variant_form.DELETE }}
+                                            <button type="button" class="btn btn-danger rounded-pill px-5 remove-variant">
+                                                <i class="fas fa-trash me-2"></i>Delete This Variant
                                             </button>
                                         </div>
                                     </div>
@@ -203,15 +368,76 @@
                                 {% endfor %}
                             </div>
                         </div>
+                        {% else %}
+                        <div class="alert alert-info text-center py-5 rounded-4 mb-5 border">
+                            <i class="fas fa-info-circle fs-1 mb-4 text-primary"></i>
+                            <h4 class="fw-bold text-primary">No Variants Configured</h4>
+                            <p class="lead text-muted">Add variant types above and click "Save Types & Refresh" to create variants.</p>
+                        </div>
                         {% endif %}
 
-                        <!-- Save Buttons -->
-                        <div class="text-center mt-5 pt-3">
-                            <a href="{% url 'store_products' %}" class="btn btn-secondary btn-lg rounded-pill px-5 py-3 me-3">
+                        <!-- Main Product Gallery (non-variant only) -->
+                        {% if not has_variants %}
+                        <div class="bg-white rounded-4 shadow p-4 mb-5">
+                            <h5 class="fw-bold text-primary mb-4">Current Product Images</h5>
+                            {% if product.images.exists %}
+                            <div class="row g-4">
+                                {% for img in product.images.all %}
+                                <div class="col-6 col-md-4 col-lg-3">
+                                    <div class="card border-0 shadow position-relative">
+                                        <div class="form-check position-absolute top-0 start-0 m-2">
+                                            <input class="form-check-input" type="checkbox" name="selected_images" value="{{ img.id }}">
+                                        </div>
+                                        <img src="{{ img.image.url }}" class="card-img-top rounded" style="height:200px; object-fit:cover;">
+                                        <div class="card-body text-center p-3">
+                                            {% if img.is_main %}
+                                                <span class="badge bg-success w-100 mb-2">MAIN IMAGE</span>
+                                            {% else %}
+                                                <button type="submit" name="main_image" value="{{ img.id }}" class="btn btn-outline-primary btn-sm w-100 mb-2">
+                                                    Set as Main
+                                                </button>
+                                            {% endif %}
+                                            <button type="submit" name="delete_image" value="{{ img.id }}" class="btn btn-danger btn-sm w-100">
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="text-end mt-4">
+                                <button type="submit" name="delete_selected_images" class="btn btn-danger rounded-pill px-5 shadow">
+                                    <i class="fas fa-trash me-2"></i>Delete Selected
+                                </button>
+                            </div>
+                            {% else %}
+                            <p class="text-muted text-center">No images uploaded yet.</p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Media Upload -->
+                        <div class="row g-4 mb-5">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Product Video (Optional)</label>
+                                <input type="file" name="video" accept="video/*" class="form-control form-control-lg">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Add More Images (Main Product)</label>
+                                <input type="file" name="extra_images" multiple accept="image/*" class="form-control form-control-lg">
+                                {% if has_variants %}
+                                <small class="text-warning d-block mt-2">Main product images are ignored when variants exist. Use variant images instead.</small>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Save -->
+                        <div class="text-center py-5 border-top">
+                            <a href="{% url 'store_products' %}" class="btn btn-outline-secondary btn-lg rounded-pill px-5 me-4">
                                 Cancel
                             </a>
-                            <button type="submit" class="btn btn-success btn-lg rounded-pill px-5 py-3 shadow-lg fw-bold" style="min-width: 220px;">
-                                <i class="fas fa-save me-3"></i> Save Changes
+                            <button type="submit" class="btn btn-success btn-lg rounded-pill px-5 shadow-lg fw-bold">
+                                <i class="fas fa-save me-3"></i>Save Product & Variants
                             </button>
                         </div>
                     </form>
@@ -221,63 +447,220 @@
     </div>
 </div>
 
-<style>
-    .hover-lift:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.12) !important;
-    }
-    .form-check-input:checked {
-        background-color: #dc3545;
-        border-color: #dc3545;
-    }
-    .spec-row {
-        background: #f8f9fa;
-        padding: 12px;
-        border-radius: 20px;
-    }
-    .spec-row:hover {
-        background: #eef2ff;
-    }
-</style>
-
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const container = document.getElementById('spec-container');
-    const addBtn = document.getElementById('add-spec');
-    const totalForms = document.querySelector('input[name$="-TOTAL_FORMS"]');
+    const variantAttributes = [
+        {% for attr in product.variant_attributes.all %}
+            { id: {{ attr.id }}, name: "{{ attr.name|escapejs }}" },
+        {% endfor %}
+    ];
 
-    addBtn.addEventListener('click', () => {
-        const count = parseInt(totalForms.value);
+    function getAttributeOptions(selectedId = null) {
+        let options = '<option value="">--- Select Attribute ---</option>';
+        variantAttributes.forEach(attr => {
+            const selected = selectedId == attr.id ? 'selected' : '';
+            options += `<option value="${attr.id}" ${selected}>${attr.name}</option>`;
+        });
+        return options;
+    }
+
+    // Add Variant Type
+    document.getElementById('add-type')?.addEventListener('click', function () {
+        const container = document.getElementById('type-container');
+        const total = document.querySelector('#id_attr-TOTAL_FORMS');
+        const count = parseInt(total.value);
         const row = document.createElement('div');
-        row.className = 'row g-3 mb-3 align-items-end spec-row';
+        row.className = 'input-group mb-3 type-row align-items-center';
         row.innerHTML = `
-            <div class="col-12 col-md-5">
-                <input type="text" class="form-control rounded-pill" placeholder="e.g. Material" name="form-${count}-name">
-            </div>
-            <div class="col-12 col-md-6">
-                <input type="text" class="form-control rounded-pill" placeholder="e.g. Solid Teak Wood" name="form-${count}-value">
-            </div>
-            <div class="col-12 col-md-1 text-md-end">
-                <button type="button" class="btn btn-outline-danger rounded-pill px-3 remove-spec">
-                    <i class="fas fa-trash-alt"></i>
-                </button>
-            </div>
+            <span class="input-group-text bg-light">Type:</span>
+            <input type="text" name="attr-${count}-name" class="form-control rounded-pill" placeholder="e.g. Color, Size" required>
+            <button type="button" class="btn btn-outline-danger remove-type"><i class="fas fa-trash"></i></button>
         `;
         container.appendChild(row);
-        totalForms.value = count + 1;
+        total.value = count + 1;
     });
 
-    container.addEventListener('click', (e) => {
-        if (e.target.closest('.remove-spec')) {
-            const row = e.target.closest('.spec-row');
-            const deleteBox = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
-            if (deleteBox) {
-                deleteBox.checked = true;
+    document.getElementById('type-container')?.addEventListener('click', e => {
+        if (e.target.closest('.remove-type')) {
+            const row = e.target.closest('.type-row');
+            const del = row.querySelector('input[name$="-DELETE"]');
+            if (del) {
+                del.checked = true;
                 row.style.display = 'none';
             } else {
                 row.remove();
+                document.querySelector('#id_attr-TOTAL_FORMS').value--;
             }
-            totalForms.value = parseInt(totalForms.value) - 1;
+        }
+    });
+
+    // Add New Variant
+    document.getElementById('add-variant')?.addEventListener('click', function () {
+        const container = document.getElementById('variant-container');
+        const total = document.querySelector('#id_variant-TOTAL_FORMS');
+        const count = parseInt(total.value);
+
+        const block = document.createElement('div');
+        block.className = 'card border-0 shadow-sm variant-block mb-5 rounded-4 overflow-hidden';
+        block.innerHTML = `
+            <div class="card-header bg-gradient-primary text-white py-3">
+                <h5 class="mb-0 fw-bold">New Variant (Save to enable values/specs)</h5>
+            </div>
+            <div class="card-body p-5 bg-light">
+                <input type="hidden" name="variant-${count}-id">
+                <div class="row g-4 mb-5">
+                    <div class="col-md-4"><label class="form-label fw-bold">Regular Price (₹)</label><input type="number" name="variant-${count}-regular_price" class="form-control rounded-pill"></div>
+                    <div class="col-md-4"><label class="form-label fw-bold">Offer Price (₹)</label><input type="number" name="variant-${count}-offer_price" class="form-control rounded-pill"></div>
+                    <div class="col-md-4"><div class="form-check form-switch mt-4"><input type="checkbox" name="variant-${count}-in_stock" class="form-check-input" checked><label class="form-check-label fw-bold ms-3">In Stock</label></div></div>
+                </div>
+                <div class="row mb-5">
+                    <div class="col-12"><label class="form-label fw-bold">Main Variant Image</label><input type="file" name="variant-${count}-image" class="form-control rounded-pill"></div>
+                </div>
+                <div class="bg-white rounded-4 p-4 mb-4 shadow-sm"><h6 class="fw-bold text-success mb-4">Variant Values</h6><p class="text-muted fst-italic">Save the variant first to assign values.</p></div>
+                <div class="bg-white rounded-4 p-4 mb-4 shadow-sm"><h6 class="fw-bold text-info mb-4">Variant Specifications</h6><p class="text-muted fst-italic">Save the variant first to add specifications.</p></div>
+                <div class="bg-white rounded-4 p-4 mb-4 shadow-sm">
+                    <h6 class="fw-bold text-warning mb-4">Additional Images</h6>
+                    <input type="file" name="variant_extra_images_new_${count}" multiple accept="image/*" class="form-control">
+                </div>
+                <div class="text-end mt-4">
+                    <button type="button" class="btn btn-danger rounded-pill px-5 remove-variant">
+                        <i class="fas fa-trash me-2"></i>Delete This Variant
+                    </button>
+                </div>
+            </div>
+        `;
+        container.appendChild(block);
+        total.value = count + 1;
+    });
+
+    // Main event delegation
+    document.getElementById('variant-container')?.addEventListener('click', function (e) {
+        // Remove variant
+        if (e.target.closest('.remove-variant')) {
+            const block = e.target.closest('.variant-block');
+            const del = block.querySelector('input[name$="-DELETE"]');
+            if (del) {
+                del.checked = true;
+                block.style.display = 'none';
+            } else {
+                block.remove();
+                document.querySelector('#id_variant-TOTAL_FORMS').value--;
+            }
+        }
+
+        // Add Variant Value
+        if (e.target.closest('.add-value')) {
+            const btn = e.target.closest('.add-value');
+            const prefix = btn.dataset.prefix;
+            const tbody = btn.previousElementSibling.querySelector('.nested-values');
+            let totalInput = document.getElementById(`id_${prefix}-TOTAL_FORMS`);
+            if (!totalInput) {
+                totalInput = document.createElement('input');
+                totalInput.type = 'hidden';
+                totalInput.id = `id_${prefix}-TOTAL_FORMS`;
+                totalInput.name = `${prefix}-TOTAL_FORMS`;
+                totalInput.value = '0';
+                btn.parentNode.insertBefore(totalInput, btn);
+            }
+            const count = parseInt(totalInput.value);
+
+            const row = document.createElement('tr');
+            row.className = 'value-row';
+            row.innerHTML = `
+                <td>
+                    <input type="hidden" name="${prefix}-${count}-id">
+                    <select name="${prefix}-${count}-attribute" class="form-select rounded-pill" required>
+                        ${getAttributeOptions()}
+                    </select>
+                </td>
+                <td>
+                    <input type="text" name="${prefix}-${count}-value" class="form-control rounded-pill" placeholder="e.g. Red, Large" required>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-value"><i class="fas fa-trash"></i></button>
+                    <input type="hidden" name="${prefix}-${count}-DELETE">
+                </td>
+            `;
+            tbody.appendChild(row);
+            totalInput.value = count + 1;
+        }
+
+        // Add Variant Specification
+        if (e.target.closest('.add-variant-spec')) {
+            const btn = e.target.closest('.add-variant-spec');
+            const prefix = btn.dataset.prefix;
+            const tbody = btn.previousElementSibling.querySelector('.nested-specs');
+            let totalInput = document.getElementById(`id_${prefix}-TOTAL_FORMS`);
+            if (!totalInput) {
+                totalInput = document.createElement('input');
+                totalInput.type = 'hidden';
+                totalInput.id = `id_${prefix}-TOTAL_FORMS`;
+                totalInput.name = `${prefix}-TOTAL_FORMS`;
+                totalInput.value = '0';
+                btn.parentNode.insertBefore(totalInput, btn);
+            }
+            const count = parseInt(totalInput.value);
+
+            const row = document.createElement('tr');
+            row.className = 'spec-row';
+            row.innerHTML = `
+                <td>
+                    <input type="hidden" name="${prefix}-${count}-id">
+                    <input type="text" name="${prefix}-${count}-name" class="form-control rounded-pill" placeholder="e.g. Weight">
+                </td>
+                <td>
+                    <input type="text" name="${prefix}-${count}-value" class="form-control rounded-pill" placeholder="e.g. 15 kg">
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-spec"><i class="fas fa-trash"></i></button>
+                    <input type="hidden" name="${prefix}-${count}-DELETE">
+                </td>
+            `;
+            tbody.appendChild(row);
+            totalInput.value = count + 1;
+        }
+
+        // Remove value/spec row
+        if (e.target.closest('.remove-value') || e.target.closest('.remove-spec')) {
+            const row = e.target.closest('tr');
+            const deleteInput = row.querySelector('input[name$="-DELETE"]');
+            if (deleteInput) {
+                deleteInput.value = 'on';
+                row.style.opacity = '0.5';
+                row.querySelectorAll('input, select').forEach(el => el.disabled = true);
+            } else {
+                row.remove();
+            }
+        }
+    });
+
+    // Product Specifications
+    document.getElementById('add-spec')?.addEventListener('click', function () {
+        const container = document.getElementById('spec-container');
+        const total = document.querySelector('#id_form-TOTAL_FORMS');
+        const count = parseInt(total.value);
+        const row = document.createElement('div');
+        row.className = 'row g-4 mb-3 align-items-center spec-row border-bottom pb-3';
+        row.innerHTML = `
+            <div class="col-md-5"><input type="text" name="form-${count}-name" class="form-control" placeholder="e.g. Material"></div>
+            <div class="col-md-6"><input type="text" name="form-${count}-value" class="form-control" placeholder="e.g. Teak Wood"></div>
+            <div class="col-md-1 text-end"><button type="button" class="btn btn-outline-danger btn-sm rounded-pill remove-spec"><i class="fas fa-trash"></i></button></div>
+        `;
+        container.appendChild(row);
+        total.value = count + 1;
+    });
+
+    document.getElementById('spec-container')?.addEventListener('click', e => {
+        if (e.target.closest('.remove-spec')) {
+            const row = e.target.closest('.spec-row');
+            const del = row.querySelector('input[name$="-DELETE"]');
+            if (del) {
+                del.checked = true;
+                row.style.display = 'none';
+            } else {
+                row.remove();
+                document.querySelector('#id_form-TOTAL_FORMS').value--;
+            }
         }
     });
 });

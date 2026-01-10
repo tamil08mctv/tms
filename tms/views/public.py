@@ -2,7 +2,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q, F, Exists, OuterRef, Prefetch
 from django.core.cache import cache
-from ..models import Store, Product, Category, Lead, StoreBanner, SiteSettings, ProductSpecification, ProductImage
+from ..models import Store, Product, Category, Lead, StoreBanner, SiteSettings, ProductSpecification, ProductImage, ProductVariant, VariantValue, VariantAttribute
 from ..forms import EnquiryForm
 from datetime import date, timedelta
 from django.db.models import Count
@@ -89,335 +89,6 @@ def home(request):
 
     return render(request, 'TMS/public/home.html', context)
 
-
-# def all_products(request):
-#     context = get_common_context()
-#     today = date.today()
-#     seven_days_ago = timezone.now() - timedelta(days=7)
-
-#     main_image_prefetch = Prefetch(
-#     'images',
-#     queryset=ProductImage.objects.filter(is_main=True).only('image'),
-#     to_attr='main_image'
-#     )
-
-
-#     products = Product.objects.filter(store__is_active=True) \
-#     .select_related('store', 'category') \
-#     .prefetch_related(main_image_prefetch, 'specifications') \
-#     .only(
-#         'id', 'name', 'slug', 'short_desc', 'regular_price', 'offer_price',
-#         'call_for_price', 'is_best_seller', 'is_special_offer', 'is_limited_deal',
-#         'deal_end_date', 'is_new_arrival', 'is_featured', 'created_at',
-#         'store__name', 'store__slug', 'category__name', 'category__slug'
-#     )
-
-
-#     original_q = request.GET.get('q', '').strip()
-#     q = original_q.lower() if original_q else ''
-
-#     applied_filters = []
-#     search_terms = []
-#     sort_by_relevance = False
-
-#     # Normalize query
-#     normalized_q = re.sub(r'\s+', ' ', q)
-#     normalized_q = re.sub(r'[^\w\s]', ' ', normalized_q)
-#     normalized_q = ' '.join(normalized_q.split()).lower()
-
-#     main_image_prefetch = Prefetch(
-#         'images',
-#         queryset=ProductImage.objects.filter(is_main=True).only('image'),
-#         to_attr='main_image'
-#     )
-
-#     # 1. PRICE FILTERS
-#     price_match = re.search(r'(under|below|less than|upto|budget)\s*₹?([\d,]+)', q)
-#     if price_match:
-#         max_price = int(price_match.group(2).replace(',', ''))
-#         products = products.filter(effective_price__lte=max_price)
-#         applied_filters.append(f"Under ₹{max_price:,}")
-
-#     # 2. PURE NUMBER → Budget search
-#     elif q.replace(',', '').isdigit():
-#         number = int(q.replace(',', ''))
-#         max_price = number * 1000
-#         products = products.filter(effective_price__lte=max_price)
-#         applied_filters.append(f"Under ₹{number:,}000")
-#         search_terms.append(original_q)
-
-#     else:
-#         if normalized_q:
-#             # First: Try normal icontains search (fast & accurate)
-#             base_search = (
-#                 Q(name__icontains=normalized_q) |
-#                 Q(short_desc__icontains=normalized_q) |
-#                 Q(category__name__icontains=normalized_q) |
-#                 Q(store__name__icontains=normalized_q)
-#             )
-
-#             spec_subquery = ProductSpecification.objects.filter(
-#                 product=OuterRef('pk')
-#             ).filter(
-#                 Q(name__icontains=normalized_q) | Q(value__icontains=normalized_q)
-#             )
-
-#             products = products.filter(base_search | Exists(spec_subquery))
-
-#             # If no results → fall back to trigram with very low threshold
-#             if not products.exists():
-#                 products = (
-#                     Product.objects
-#                     .filter(store__is_active=True)
-#                     .select_related('store', 'category')
-#                     .prefetch_related(main_image_prefetch, 'specifications')
-
-#                     .annotate(
-#                         name_sim=TrigramSimilarity('name', normalized_q),
-#                         desc_sim=TrigramSimilarity('short_desc', normalized_q),
-#                         similarity=F('name_sim') + F('desc_sim') * 0.7
-#                     )
-#                     .filter(similarity__gt=0.05)
-#                     .order_by('-similarity')
-#                 )
-
-#             search_terms.append(normalized_q.title())
-
-#     # Quality & Offer words
-#     if any(word in q for word in ['best', 'top', 'popular', 'premium', 'good', 'high quality', 'luxury']):
-#         sort_by_relevance = True
-
-#     if any(word in q for word in ['offer', 'deal', 'discount', 'sale', 'on offer', 'clearance']):
-#         products = products.filter(
-#             Q(is_special_offer=True) |
-#             Q(is_limited_deal=True) |
-#             Q(deal_end_date__gte=today)
-#         )
-#         applied_filters.append("Offers & Deals")
-#         sort_by_relevance = True
-
-#     # MANUAL FILTERS
-#     filter_type = request.GET.get('filter')
-#     category_slug = request.GET.get('category')
-#     store_slug = request.GET.get('store')
-
-#     if filter_type:
-#         if filter_type == 'deals':
-#             products = products.filter(deal_end_date__gte=today)
-#         elif filter_type == 'bestselling':
-#             products = products.filter(is_best_seller=True)
-#         elif filter_type == 'limited':
-#             products = products.filter(is_limited_deal=True)
-#         elif filter_type == 'special':
-#             products = products.filter(is_special_offer=True)
-#         elif filter_type == 'new':
-#             products = products.filter(Q(is_new_arrival=True) | Q(created_at__gte=seven_days_ago))
-#         elif filter_type == 'featured':
-#             products = products.filter(is_featured=True)
-#         elif filter_type == 'other':
-#             products = products.exclude(
-#                 Q(is_best_seller=True) |
-#                 Q(deal_end_date__gte=today) |
-#                 Q(is_limited_deal=True) |
-#                 Q(is_special_offer=True) |
-#                 Q(is_featured=True) |
-#                 Q(is_new_arrival=True)|Q(created_at__gte=seven_days_ago)
-#             )
-
-#     if category_slug:
-#         products = products.filter(category__slug=category_slug)
-#     if store_slug:
-#         products = products.filter(store__slug=store_slug)
-
-#     # SORTING
-#     sort = request.GET.get('sort')
-#     if sort == 'price_low':
-#         products = products.order_by('effective_price')
-#     elif sort == 'price_high':
-#         products = products.order_by('-effective_price')
-#     elif sort == 'newest':
-#         products = products.order_by('-created_at')
-#     else:
-#         if sort_by_relevance:
-#             products = products.order_by(
-#                 '-is_best_seller',
-#                 '-is_featured',
-#                 '-is_special_offer',
-#                 '-is_limited_deal',
-#                 F('deal_end_date').desc(nulls_last=True),
-#                 'name'
-#             )
-#         else:
-#             products = products.order_by('name')
-
-#     # Pagination
-#     paginator = Paginator(products,50)
-#     page = request.GET.get('page')
-#     products_page = paginator.get_page(page)
-
-#     context.update({
-#         'products': products_page,
-#         'query': original_q,
-#         'applied_filters': applied_filters,
-#         'search_terms': search_terms,
-#         'filter_type': filter_type or '',
-#         'current_category': Category.objects.filter(slug=category_slug).first() if category_slug else None,
-#         'current_store': Store.objects.filter(slug=store_slug).first() if store_slug else None,
-#         'categories_all': Category.objects.all(),
-#         'stores_all': Store.objects.filter(is_active=True),
-#         'today': today
-#     })
-#     return render(request, 'TMS/public/allproducts.html', context)
-
-
-# def all_products(request):
-#     context = get_common_context()
-#     today = date.today()
-#     seven_days_ago = timezone.now() - timedelta(days=7)
-
-#     main_image_prefetch = Prefetch(
-#         'images',
-#         queryset=ProductImage.objects.filter(is_main=True).only('image'),
-#         to_attr='main_image'
-#     )
-
-#     qs = Product.objects.filter(store__is_active=True) \
-#         .select_related('store', 'category') \
-#         .prefetch_related(main_image_prefetch) \
-#         .only(
-#             'id', 'name', 'slug', 'short_desc', 'regular_price', 'offer_price',
-#             'is_best_seller', 'is_special_offer', 'is_limited_deal',
-#             'deal_end_date', 'is_new_arrival', 'is_featured', 'created_at',
-#             'store__name', 'store__slug', 'category__name', 'category__slug'
-#         ).order_by('name')
-
-#     original_q = request.GET.get('q', '').strip()
-#     q_lower = original_q.lower() if original_q else ''
-#     applied_filters = []
-#     search_terms = []
-#     sort_by_relevance = False
-
-#     # Normalize query
-#     normalized_q = ' '.join(re.sub(r'[^\w\s]', ' ', q_lower).split())
-
-#     if original_q:
-#         # PRICE FILTERS
-#         price_match = re.search(r'(under|below|less than|upto|budget)\s*₹?([\d,]+)', q_lower)
-#         if price_match:
-#             max_price = int(price_match.group(2).replace(',', ''))
-#             qs = qs.filter(Q(offer_price__lte=max_price) | Q(regular_price__lte=max_price))
-#             applied_filters.append(f"Under ₹{max_price:,}")
-#         elif original_q.replace(',', '').isdigit():
-#             number = int(original_q.replace(',', ''))
-#             max_price = number * 1000
-#             qs = qs.filter(Q(offer_price__lte=max_price) | Q(regular_price__lte=max_price))
-#             applied_filters.append(f"Under ₹{number:,}000")
-#         else:
-#             if normalized_q:
-#                 base_search = (
-#                     Q(name__icontains=normalized_q) |
-#                     Q(short_desc__icontains=normalized_q) |
-#                     Q(category__name__icontains=normalized_q) |
-#                     Q(store__name__icontains=normalized_q)
-#                 )
-#                 spec_subquery = ProductSpecification.objects.filter(product=OuterRef('pk')).filter(
-#     Q(name__icontains=normalized_q) | Q(value__icontains=normalized_q)
-# )
-#                 qs = qs.filter(base_search | Exists(spec_subquery))
-
-#                 # Trigram fallback if no results
-#                 if not qs.exists():
-#                     qs = Product.objects.filter(store__is_active=True) \
-#                         .select_related('store', 'category') \
-#                         .prefetch_related(main_image_prefetch) \
-#                         .annotate(
-#                             name_sim=TrigramSimilarity('name', normalized_q),
-#                             desc_sim=TrigramSimilarity('short_desc', normalized_q),
-#                             similarity=F('name_sim') + F('desc_sim') * 0.7
-#                         ) \
-#                         .filter(similarity__gt=0.05) \
-#                         .order_by('-similarity','name')
-                    
-#                     search_terms.append(normalized_q.title())
-
-
-#         # Detect quality/offer words
-#         if any(word in q_lower for word in ['best', 'top', 'popular', 'premium', 'good', 'high quality', 'luxury']):
-#             sort_by_relevance = True
-
-#         if any(word in q_lower for word in ['offer', 'deal', 'discount', 'sale', 'on offer', 'clearance']):
-#             qs = qs.filter(
-#                 Q(is_special_offer=True) |
-#                 Q(is_limited_deal=True) |
-#                 Q(deal_end_date__gte=today)
-#             )
-#             applied_filters.append("Offers & Deals")
-#             sort_by_relevance = True
-
-#     # MANUAL FILTERS
-#     filter_type = request.GET.get('filter')
-#     if filter_type == 'deals':
-#         qs = qs.filter(deal_end_date__gte=today)
-#     elif filter_type == 'bestselling':
-#         qs = qs.filter(is_best_seller=True)
-#     elif filter_type == 'limited':
-#         qs = qs.filter(is_limited_deal=True)
-#     elif filter_type == 'special':
-#         qs = qs.filter(is_special_offer=True)
-#     elif filter_type == 'new':
-#         qs = qs.filter(Q(is_new_arrival=True) | Q(created_at__gte=seven_days_ago))
-#     elif filter_type == 'featured':
-#         qs = qs.filter(is_featured=True)
-
-#     if request.GET.get('category'):
-#         qs = qs.filter(category__slug=request.GET['category'])
-#     if request.GET.get('store'):
-#         qs = qs.filter(store__slug=request.GET['store'])
-
-#     # SORTING
-#     sort = request.GET.get('sort')
-#     if sort == 'price_low':
-#         qs = qs.order_by(Coalesce('offer_price', 'regular_price'), 'name')
-#     elif sort == 'price_high':
-#         qs = qs.annotate(
-#         effective_price=Coalesce('offer_price', 'regular_price')
-#     ).order_by('-effective_price', 'name')
-#     elif sort == 'newest':
-#         qs = qs.order_by('-created_at', 'name')
-#     else:
-#         if sort_by_relevance:
-#             qs = qs.order_by(
-#                 '-is_best_seller',
-#                 '-is_featured',
-#                 '-is_special_offer',
-#                 '-is_limited_deal',
-#                 F('deal_end_date').desc(nulls_last=True),
-#                 'name'
-#             )
-#         else:
-#             qs = qs.order_by('name')
-    
-
-#     # PAGINATION — FLIPKART STYLE
-#     PAGE_SIZE = 50  # Change to 10 for testing
-#     paginator = Paginator(qs, PAGE_SIZE)
-#     page_number = request.GET.get('page', 1)
-#     page_obj = paginator.get_page(page_number)
-
-#     context.update({
-#         'products': page_obj,
-#         'query': original_q,
-#         'applied_filters': applied_filters,
-#         'search_terms': search_terms,
-#         'filter_type': filter_type or '',
-#         'current_category': Category.objects.filter(slug=request.GET.get('category')).first(),
-#         'current_store': Store.objects.filter(slug=request.GET.get('store')).first(),
-#         'today': today,
-#         'categories_all': Category.objects.all().order_by('name'),
-#         'stores_all': Store.objects.filter(is_active=True),
-#     })
-
-#     return render(request, 'TMS/public/allproducts.html', context)
 
 def all_products(request):
     context = get_common_context()
@@ -668,97 +339,6 @@ from django.http import JsonResponse
 from django.utils import timezone
 from datetime import timedelta
 
-# def product_detail(request, store_slug, product_slug):
-#     client_ip = request.META.get('REMOTE_ADDR', 'unknown')
-   
-#     context = get_common_context()
-    
-#     product = get_object_or_404(
-#         Product.objects.prefetch_related('specifications', 'images'),
-#         slug=product_slug, 
-#         store__slug=store_slug, 
-#         store__is_active=True
-#     )
-#     Product.objects.filter(pk=product.pk).update(views_count=F('views_count') + 1)
-#     product.refresh_from_db()
-    
-#     images = product.images.all()
-#     similar = Product.objects.filter(store__is_active=True).exclude(id=product.id)[:15]
-#     if not similar.exists():
-#         similar = Product.objects.filter(is_featured=True)[:15]
-    
-#     phone_raw = product.store.whatsapp or "919629828969"
-#     clean_phone = ''.join(filter(str.isdigit, phone_raw))
-#     phone = "91" + clean_phone if len(clean_phone) == 10 else clean_phone
-#     if not phone.startswith("91"): phone = "919629828969"
-#     message = f"Hi {product.store.name}!%0A%0AI am interested in:%0A%0A*{product.name}*%0APrice: ₹{product.offer_price or product.regular_price}%0AStore: {product.store.name}, {product.store.city}%0ALink: {request.build_absolute_uri()}"
-#     whatsapp_url = f"https://wa.me/{phone}?text={message}"
-    
-#     # Check if user already enquired in last 24 hours (by IP + phone if POST, else just show form)
-#     already_enquired = False
-#     if request.method == "POST":
-#         form = EnquiryForm(request.POST)
-#         if form.is_valid():
-#             # Check honeypot
-#             if form.cleaned_data.get('website'):
-#                 # Spam detected
-#                 return JsonResponse({
-#                     'success': False,
-#                     'message': 'Spam detected. Please try again.'
-#                 })
-            
-#             phone_input = form.cleaned_data['phone'].strip()
-#             twenty_four_hours_ago = timezone.now() - timedelta(hours=24)
-#             duplicate = Lead.objects.filter(
-#                 product=product,
-#                 phone=phone_input,
-#                 created_at__gte=twenty_four_hours_ago
-#             ).exists()
-            
-#             if duplicate:
-#                 return JsonResponse({
-#                     'success': False,
-#                     'already': True,
-#                     'message': 'You have already enquired for this product today. Try again tomorrow!',
-#                     'whatsapp_url': whatsapp_url
-#                 })
-#             else:
-#                 Lead.objects.create(
-#                     store=product.store,
-#                     product=product,
-#                     customer_name=form.cleaned_data['customer_name'],
-#                     phone=phone_input,
-#                     city=form.cleaned_data['city'],
-#                     source='website_form'
-#                 )
-                
-#                 public_logger.info("NEW LEAD", extra={
-#                         'client_ip': client_ip,
-#                         'customer_name': form.cleaned_data['customer_name'],  
-#                         'phone': phone_input,
-#                         'product': product.name,
-#                         'store': product.store.name,
-#                         'time_ist': dj_timezone.localtime(dj_timezone.now()).strftime('%d %b %Y %I:%M %p')
-#                     })
-                
-#                 return JsonResponse({
-#                     'success': True,
-#                     'message': 'Enquiry sent successfully!',
-#                     'whatsapp_url': whatsapp_url
-#                 })
-#     else:
-#         form = EnquiryForm()
-    
-#     context.update({
-#         'product': product,
-#         'images': images,
-#         'similar': similar,
-#         'form': form,
-#         'whatsapp_url': whatsapp_url,
-#         'already_enquired': already_enquired,  # Always False on GET
-#     })
-#     return render(request, 'TMS/public/productdetail.html', context)
-
 def product_detail(request, store_slug, product_slug):
     client_ip = request.META.get('REMOTE_ADDR', 'unknown')
     username = request.user.username if request.user.is_authenticated else 'guest'
@@ -766,13 +346,16 @@ def product_detail(request, store_slug, product_slug):
     context = get_common_context()
     
     product = get_object_or_404(
-        Product.objects.prefetch_related('specifications', 'images'),
+        Product.objects.prefetch_related(
+            'specifications', 'images',
+            'variant_attributes', 'variants__values__attribute', 'variants__image'
+        ),
         slug=product_slug, 
         store__slug=store_slug, 
         store__is_active=True
     )
 
-    # Log product view
+    # Log view
     Product.objects.filter(pk=product.pk).update(views_count=F('views_count') + 1)
     product.refresh_from_db()
 
@@ -785,38 +368,46 @@ def product_detail(request, store_slug, product_slug):
         'store_city': product.store.city,
     })
 
-    images = product.images.all()
+    # All images
+    all_images = list(product.images.all())
+    variant_images = [v.image for v in product.variants.all() if v.image]
+    all_images.extend([img for img in variant_images if img])
+
+    # Variants data for JS
+    variants_data = []
+    for variant in product.variants.all():
+        values = {val.attribute.name.lower(): val.value for val in variant.values.all()}
+        variants_data.append({
+            'id': variant.id,
+            'regular_price': int(variant.regular_price),
+            'offer_price': int(variant.offer_price) if variant.offer_price else None,
+            'in_stock': variant.in_stock,
+            'image_url': variant.image.url if variant.image else None,
+            'values': values,
+            'title': variant.get_display_title(),
+        })
+
+    # Similar products
     similar = Product.objects.filter(store__is_active=True).exclude(id=product.id)[:15]
     if not similar.exists():
         similar = Product.objects.filter(is_featured=True)[:15]
-    
+
+    # WhatsApp base
     phone_raw = product.store.whatsapp or "919629828969"
     clean_phone = ''.join(filter(str.isdigit, phone_raw))
     phone = "91" + clean_phone if len(clean_phone) == 10 else clean_phone
     if not phone.startswith("91"): phone = "919629828969"
-    message = f"Hi {product.store.name}!%0A%0AI am interested in:%0A%0A*{product.name}*%0APrice: ₹{product.offer_price or product.regular_price}%0AStore: {product.store.name}, {product.store.city}%0ALink: {request.build_absolute_uri()}"
-    whatsapp_url = f"https://wa.me/{phone}?text={message}"
-    
+
     if request.method == "POST":
         form = EnquiryForm(request.POST)
         if form.is_valid():
-            # Honeypot spam check
             if form.cleaned_data.get('website'):
-                public_logger.warning("SPAM ATTEMPT DETECTED", extra={
-                    'client_ip': client_ip,
-                    'user': username,
-                    'product': product.name,
-                    'store': product.store.name,
-                    'form_data': form.cleaned_data,
-                })
-                return JsonResponse({
-                    'success': False,
-                    'message': 'Spam detected. Please try again.'
-                })
+                return JsonResponse({'success': False, 'message': 'Spam detected.'})
             
             phone_input = form.cleaned_data['phone'].strip()
             customer_name = form.cleaned_data['customer_name']
             city = form.cleaned_data['city']
+            selected_variant_id = request.POST.get('selected_variant')  # From hidden input
 
             twenty_four_hours_ago = timezone.now() - timedelta(hours=24)
             duplicate = Lead.objects.filter(
@@ -826,32 +417,39 @@ def product_detail(request, store_slug, product_slug):
             ).exists()
             
             if duplicate:
-                public_logger.info("DUPLICATE ENQUIRY BLOCKED", extra={
-                    'client_ip': client_ip,
-                    'user': username,
-                    'customer_name': customer_name,
-                    'phone': phone_input,
-                    'product': product.name,
-                    'store': product.store.name,
-                    
-                })
                 return JsonResponse({
                     'success': False,
                     'already': True,
-                    'message': 'You have already enquired for this product today. Try again tomorrow!',
+                    'message': 'You have already enquired today. Try tomorrow!',
                     'whatsapp_url': whatsapp_url
                 })
             else:
-                # Create lead
+                # Get variant
+                variant = None
+                if selected_variant_id:
+                    try:
+                        variant = ProductVariant.objects.get(id=selected_variant_id, product=product)
+                    except ProductVariant.DoesNotExist:
+                        pass
+
+                # Create lead with variant
                 lead = Lead.objects.create(
                     store=product.store,
                     product=product,
+                    variant=variant,
                     customer_name=customer_name,
                     phone=phone_input,
                     city=city,
                     source='website_form'
                 )
                 
+                # WhatsApp message with variant
+                variant_text = f" — {variant.get_display_title()}" if variant else ""
+                price_text = f"₹{variant.offer_price or variant.regular_price}" if variant else f"₹{product.offer_price or product.regular_price}"
+                
+                message = f"Hi {product.store.name}!%0A%0AI am interested in:%0A%0A*{product.name}{variant_text}*%0APrice: {price_text}%0AStore: {product.store.name}, {product.store.city}%0ALink: {request.build_absolute_uri()}"
+                whatsapp_url = f"https://wa.me/{phone}?text={message}"
+
                 public_logger.info("NEW LEAD CREATED", extra={
                     'client_ip': client_ip,
                     'user': username,
@@ -859,6 +457,7 @@ def product_detail(request, store_slug, product_slug):
                     'phone': phone_input,
                     'city': city or 'Not provided',
                     'product': product.name,
+                    'variant': variant.get_display_title() if variant else 'None',
                     'product_id': product.id,
                     'store': product.store.name,
                     'store_city': product.store.city,
@@ -870,25 +469,22 @@ def product_detail(request, store_slug, product_slug):
                     'message': 'Enquiry sent successfully!',
                     'whatsapp_url': whatsapp_url
                 })
-        else:
-            # Invalid form
-            public_logger.warning("INVALID ENQUIRY FORM", extra={
-                'client_ip': client_ip,
-                'user': username,
-                'product': product.name,
-                'store': product.store.name,
-                'errors': form.errors,
-            })
     else:
         form = EnquiryForm()
     
+    # Default WhatsApp (no variant selected yet)
+    message = f"Hi {product.store.name}!%0A%0AI am interested in:%0A%0A*{product.name}*%0APrice: ₹{product.offer_price or product.regular_price}%0AStore: {product.store.name}, {product.store.city}%0ALink: {request.build_absolute_uri()}"
+    whatsapp_url = f"https://wa.me/{phone}?text={message}"
+
     context.update({
         'product': product,
-        'images': images,
+        'all_images': all_images,
         'similar': similar,
         'form': form,
         'whatsapp_url': whatsapp_url,
-        'already_enquired': False,
+        'variants_data': variants_data,
+        'variant_attributes': product.variant_attributes.all(),
+        'has_variants': product.variants.exists(),
     })
     return render(request, 'TMS/public/productdetail.html', context)
 

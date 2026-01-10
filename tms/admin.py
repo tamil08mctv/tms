@@ -3,66 +3,76 @@ from django.utils.html import format_html
 from django.shortcuts import redirect
 from .models import (
     Store, StoreAdmin, Category, Product, ProductImage,
-    Lead, StoreBanner, ProductSpecification, SiteSettings, SocialLink
+    Lead, StoreBanner, ProductSpecification, SiteSettings, SocialLink,
+    VariantAttribute, ProductVariant, VariantValue, ProductVariantImage, VariantSpecification
 )
 
-# ======================================================
-# INLINE: STORE ADMINS
-# ======================================================
+# ======================= INLINES =======================
+
 class StoreAdminInline(admin.TabularInline):
     model = StoreAdmin
     extra = 1
     raw_id_fields = ('user',)
 
-
-# ======================================================
-# INLINE: STORE BANNERS
-# ======================================================
 class StoreBannerInline(admin.TabularInline):
     model = StoreBanner
     extra = 1
-    fields = (
-        'image_desktop', 'image_tablet', 'image_mobile',
-        'link', 'caption', 'is_active', 'order'
-    )
-    verbose_name = "Homepage Banner"
-    verbose_name_plural = "Homepage Banners"
+    fields = ('image_desktop', 'image_tablet', 'image_mobile', 'link', 'caption', 'is_active', 'order')
 
-
-# ======================================================
-# INLINE: PRODUCT IMAGES
-# ======================================================
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
-    extra = 3
+    extra = 2
     fields = ('image', 'image_preview', 'is_main', 'sort_order')
     readonly_fields = ('image_preview',)
 
     def image_preview(self, obj):
         if obj.image:
             return format_html(
-                '<img src="{}" style="height:80px;border-radius:8px;object-fit:cover;" />',
+                '<img src="{}" style="height:80px; border-radius:8px; object-fit:cover;" />',
                 obj.image.url
             )
         return "(No image)"
-
     image_preview.short_description = "Preview"
 
-
-# ======================================================
-# INLINE: PRODUCT SPECIFICATIONS
-# ======================================================
 class ProductSpecificationInline(admin.TabularInline):
     model = ProductSpecification
-    extra = 5
+    extra = 3
     fields = ('name', 'value')
-    verbose_name = "Specification"
-    verbose_name_plural = "Specifications"
 
+# Variant Inlines - FULLY NESTED
+class VariantValueInline(admin.TabularInline):
+    model = VariantValue
+    extra = 2
+    fields = ('attribute', 'value')
 
-# ======================================================
-# STORE ADMIN
-# ======================================================
+class VariantSpecificationInline(admin.TabularInline):
+    model = VariantSpecification
+    extra = 3
+    fields = ('name', 'value')
+
+class ProductVariantImageInline(admin.TabularInline):
+    model = ProductVariantImage
+    extra = 3
+    fields = ('image', 'is_main', 'sort_order')
+    readonly_fields = ('image',)  # Optional: make image preview if needed
+
+class ProductVariantInline(admin.TabularInline):
+    model = ProductVariant
+    extra = 1
+    fields = ('regular_price', 'offer_price', 'in_stock', 'image')
+    inlines = [
+        VariantValueInline,          # Values like Color: Red
+        VariantSpecificationInline,  # Specs like Weight: 15kg
+        ProductVariantImageInline    # Additional images per variant
+    ]
+
+class VariantAttributeInline(admin.TabularInline):
+    model = VariantAttribute
+    extra = 1
+    fields = ('name',)
+
+# ======================= ADMIN CLASSES =======================
+
 @admin.register(Store)
 class StoreAdminPanel(admin.ModelAdmin):
     list_display = ('name', 'city', 'whatsapp', 'is_active', 'created_at')
@@ -71,10 +81,6 @@ class StoreAdminPanel(admin.ModelAdmin):
     inlines = (StoreAdminInline, StoreBannerInline)
     prepopulated_fields = {'slug': ('name',)}
 
-
-# ======================================================
-# CATEGORY ADMIN
-# ======================================================
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'store', 'get_product_count')
@@ -84,73 +90,45 @@ class CategoryAdmin(admin.ModelAdmin):
 
     def get_product_count(self, obj):
         return obj.products.count()
-
     get_product_count.short_description = "Products"
 
-
-# ======================================================
-# PRODUCT ADMIN (MATCHES MODELS EXACTLY)
-# ======================================================
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = (
-        'name', 'store', 'category',
-        'admin_price',
-        'discount_percent',
-        'call_for_price',
-        'in_stock',
-        'is_best_seller',
-        'is_limited_deal',
-        'is_special_offer',
-        'is_featured',
-        'views_count',
+        'name', 'store', 'category', 'admin_price', 'discount_percent',
+        'call_for_price', 'in_stock', 'is_best_seller', 'is_limited_deal',
+        'is_special_offer', 'is_featured', 'views_count'
     )
-
     list_filter = (
-        'store',
-        'category',
-        'call_for_price',
-        'in_stock',
-        'is_best_seller',
-        'is_limited_deal',
-        'is_special_offer',
-        'is_featured',
-        'deal_end_date',
+        'store', 'category', 'call_for_price', 'in_stock', 'is_best_seller',
+        'is_limited_deal', 'is_special_offer', 'is_featured', 'deal_end_date'
     )
-
     search_fields = ('name', 'short_desc', 'description')
     readonly_fields = ('discount_percent', 'views_count', 'enquiry_count')
     prepopulated_fields = {'slug': ('name',)}
-    inlines = (ProductImageInline, ProductSpecificationInline)
+
+    inlines = (
+        ProductImageInline,
+        ProductSpecificationInline,
+        VariantAttributeInline,       # ← Variant Types (Color, Size)
+        ProductVariantInline          # ← Full variants with values, specs, images
+    )
 
     fieldsets = (
         ('Basic Info', {
-            'fields': (
-                'store', 'category', 'name', 'slug',
-                'short_desc', 'description'
-            )
+            'fields': ('store', 'category', 'name', 'slug', 'short_desc', 'description')
         }),
         ('Pricing', {
-            'fields': (
-                'regular_price', 'offer_price',
-                'deal_end_date', 'call_for_price'
-            )
+            'fields': ('regular_price', 'offer_price', 'deal_end_date', 'call_for_price')
         }),
         ('Status & Badges', {
             'fields': (
-                'in_stock',
-                'is_featured',
-                'is_best_seller',
-                'is_limited_deal',
-                'is_special_offer',
+                'in_stock', 'is_featured', 'is_best_seller',
+                'is_limited_deal', 'is_special_offer', 'is_new_arrival'
             )
         }),
         ('Statistics', {
-            'fields': (
-                'views_count',
-                'enquiry_count',
-                'discount_percent'
-            ),
+            'fields': ('views_count', 'enquiry_count', 'discount_percent'),
             'classes': ('collapse',)
         }),
         ('Media', {
@@ -162,57 +140,33 @@ class ProductAdmin(admin.ModelAdmin):
     def admin_price(self, obj):
         if obj.call_for_price:
             return "Call for Best Price"
-        return obj.get_price_display()
-
+        price = obj.offer_price or obj.regular_price
+        return f"₹{price}" if price is not None else "—"
     admin_price.short_description = "Price"
 
-
-# ======================================================
-# STORE BANNER ADMIN
-# ======================================================
 @admin.register(StoreBanner)
 class StoreBannerAdmin(admin.ModelAdmin):
     list_display = ('store', 'caption', 'is_active', 'order', 'created_at')
     list_filter = ('store', 'is_active')
     search_fields = ('store__name', 'caption')
 
-
-# ======================================================
-# LEAD ADMIN
-# ======================================================
 @admin.register(Lead)
 class LeadAdmin(admin.ModelAdmin):
-    list_display = (
-        'customer_name', 'phone', 'store',
-        'product', 'status', 'created_at'
-    )
+    list_display = ('customer_name', 'phone', 'store', 'product', 'status', 'created_at')
     list_filter = ('store', 'status', 'created_at')
     search_fields = ('customer_name', 'phone', 'city')
     readonly_fields = ('created_at',)
 
-    def created_at_ist(self, obj):
-        return obj.created_at_ist()
-    created_at_ist.short_description = 'Enquiry Time'
-
-
-# ======================================================
-# PRODUCT SPECIFICATION ADMIN (OPTIONAL)
-# ======================================================
 @admin.register(ProductSpecification)
 class ProductSpecificationAdmin(admin.ModelAdmin):
     list_display = ('product', 'name', 'value')
     list_filter = ('product__store',)
     search_fields = ('name', 'value', 'product__name')
 
-
-# ======================= SITE SETTINGS ADMIN =======================
 class SocialLinkInline(admin.TabularInline):
     model = SocialLink
     extra = 1
     fields = ('platform', 'url', 'order')
-    verbose_name = "Social Link"
-    verbose_name_plural = "Social Links"
-
 
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
@@ -220,14 +174,12 @@ class SiteSettingsAdmin(admin.ModelAdmin):
     inlines = [SocialLinkInline]
 
     def has_add_permission(self, request):
-        # Only allow one instance
         return not SiteSettings.objects.exists()
 
     def has_delete_permission(self, request, obj=None):
         return False
 
     def changelist_view(self, request, extra_context=None):
-        # If no SiteSettings exists, redirect to add page
         if not SiteSettings.objects.exists():
             return redirect('admin:tms_sitesettings_add')
         return super().changelist_view(request, extra_context=extra_context)
