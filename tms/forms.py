@@ -90,16 +90,22 @@ SocialLinkFormSet = inlineformset_factory(
     }
 )
 
+from django import forms
+from django.forms import inlineformset_factory, BaseInlineFormSet
+from .models import (
+    Product, ProductSpecification, VariantAttribute,
+    ProductVariant, VariantValue, VariantSpecification
+)
 
 class ProductForm(forms.ModelForm):
     extra_images = forms.FileField(
         required=False,
-        label="Upload Additional Images (Multiple)",
+        label="Additional Images (Multiple)",
         widget=forms.FileInput(attrs={'accept': 'image/*', 'multiple': '', 'class': 'form-control'})
     )
     video = forms.FileField(
         required=False,
-        label="Product Video",
+        label="Product Video (optional)",
         widget=forms.FileInput(attrs={'accept': 'video/*', 'class': 'form-control'})
     )
 
@@ -117,69 +123,63 @@ class ProductForm(forms.ModelForm):
             'category': forms.Select(attrs={'class': 'form-select form-select-lg'}),
             'short_desc': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'description': forms.Textarea(attrs={'rows': 7, 'class': 'form-control'}),
-            'regular_price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '25000'}),
-            'offer_price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '19999'}),
+            'regular_price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'offer_price': forms.NumberInput(attrs={'class': 'form-control'}),
             'deal_end_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
         has_variants = kwargs.pop('has_variants', False)
         super().__init__(*args, **kwargs)
-
         if has_variants:
-            self.fields['regular_price'].required = False
-            self.fields['offer_price'].required = False
-            self.fields['deal_end_date'].required = False
-            self.fields['regular_price'].widget.attrs.update({
-                'placeholder': 'Managed by variants',
-                'readonly': 'readonly'
-            })
-            self.fields['offer_price'].widget.attrs.update({
-                'placeholder': 'Managed by variants',
-                'readonly': 'readonly'
-            })
-            self.fields['deal_end_date'].widget.attrs['disabled'] = True
+            for f in ['regular_price', 'offer_price', 'deal_end_date']:
+                self.fields[f].required = False
+                self.fields[f].widget.attrs.update({
+                    'readonly': 'readonly',
+                    'placeholder': 'Managed by variants'
+                })
 
 
-# Specifications
+# === Formsets ===
+
 ProductSpecFormSet = inlineformset_factory(
     Product, ProductSpecification,
-    fields=('name', 'value'), extra=5, can_delete=True,
+    fields=('name', 'value'),
+    extra=5,
+    can_delete=True,
     widgets={
         'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Material'}),
         'value': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Teak Wood'}),
-    }
+    },
+   
 )
 
-
-# Variant Attributes
 VariantAttributeFormSet = inlineformset_factory(
     Product, VariantAttribute,
-    fields=('name',), extra=1, can_delete=True,
-    widgets={
-        'name': forms.TextInput(attrs={
-            'class': 'form-control rounded-pill',
-            'placeholder': 'e.g. Color, Size, Material'
-        }),
-    }
-)
-
-
-# Product Variants
-ProductVariantFormSet = inlineformset_factory(
-    Product,
-    ProductVariant,
-    fk_name='product',
-    fields=('regular_price', 'offer_price', 'in_stock', 'image'),
+    fields=('name',),
     extra=1,
     can_delete=True,
     widgets={
-        'regular_price': forms.NumberInput(attrs={'class': 'form-control rounded-pill', 'placeholder': '25000'}),
-        'offer_price': forms.NumberInput(attrs={'class': 'form-control rounded-pill', 'placeholder': '19999'}),
-        'in_stock': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-        'image': forms.FileInput(attrs={'class': 'form-control rounded-pill'}),
-    }
+        'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Color, Size'})
+    },
 )
+
+class ProductVariantForm(forms.ModelForm):
+    extra_images = forms.FileField(
+        required=False,
+        label="Additional Images (Multiple)",
+        widget=forms.FileInput(attrs={'accept': 'image/*', 'multiple': '', 'class': 'form-control'})
+    )
+
+    class Meta:
+        model = ProductVariant
+        fields = ['regular_price', 'offer_price', 'in_stock', 'image']
+        widgets = {
+            'regular_price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'offer_price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'in_stock': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'image': forms.FileInput(attrs={'class': 'form-control'})
+        }
 
 
 class VariantValueForm(forms.ModelForm):
@@ -187,13 +187,9 @@ class VariantValueForm(forms.ModelForm):
         model = VariantValue
         fields = ('attribute', 'value')
         widgets = {
-            'attribute': forms.Select(attrs={'class': 'form-select rounded-pill'}),
-            'value': forms.TextInput(attrs={
-                'class': 'form-control rounded-pill',
-                'placeholder': 'e.g. Red, Large'
-            }),
+            'attribute': forms.Select(attrs={'class': 'form-select'}),
+            'value': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Red'})
         }
-
 
 class VariantValueInlineFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
@@ -203,32 +199,26 @@ class VariantValueInlineFormSet(BaseInlineFormSet):
             for form in self.forms:
                 form.fields['attribute'].queryset = self.product.variant_attributes.all()
 
-
-def get_variant_value_formset(product=None, extra=3):
+def get_variant_value_formset(product=None, extra=0):
     return inlineformset_factory(
-        ProductVariant,
-        VariantValue,
+        ProductVariant, VariantValue,
         form=VariantValueForm,
         formset=VariantValueInlineFormSet,
         extra=extra,
         can_delete=True,
     )
 
-
-# Variant Specifications
 VariantSpecFormSet = inlineformset_factory(
-    ProductVariant,
-    VariantSpecification,
+    ProductVariant, VariantSpecification,
     fields=('name', 'value'),
-    extra=3,  # increased a bit for usability
+    extra=3,
     can_delete=True,
     widgets={
-        'name': forms.TextInput(attrs={'class': 'form-control rounded-pill', 'placeholder': 'e.g. Weight'}),
-        'value': forms.TextInput(attrs={'class': 'form-control rounded-pill', 'placeholder': 'e.g. 5 kg'}),
-    }
+        'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Weight'}),
+        'value': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 5 kg'})
+    },
+   
 )
-
-
 
 class CategoryForm(forms.ModelForm):
     class Meta:

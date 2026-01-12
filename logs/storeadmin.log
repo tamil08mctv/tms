@@ -375,3 +375,89 @@ AttributeError: 'ProductVariantImage' object has no attribute 'product'
 INFO 2026-01-10 08:13:36,861 storeadmin Uploaded 4 images to variant 4
 WARNING 2026-01-10 08:13:36,864 storeadmin Failed to upload for variant_extra_images_6: ProductVariant matching query does not exist.
 INFO 2026-01-10 09:00:17,464 storeadmin Dashboard accessed (cache hit)
+ERROR 2026-01-11 23:55:35,446 storeadmin Variant save failed: save() prohibited to prevent data loss due to unsaved related object 'variant'.
+Traceback (most recent call last):
+  File "C:\Users\Tamiltech08\PycharmProjects\tmsgroups\tms\views\storeadmin.py", line 382, in edit_variant
+    value_formset.save()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\forms\models.py", line 796, in save
+    return self.save_existing_objects(commit) + self.save_new_objects(commit)
+                                                ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\forms\models.py", line 959, in save_new_objects
+    self.new_objects.append(self.save_new(form, commit=commit))
+                            ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\forms\models.py", line 1157, in save_new
+    return super().save_new(form, commit=commit)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\forms\models.py", line 769, in save_new
+    return form.save(commit=commit)
+           ~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\forms\models.py", line 554, in save
+    self.instance.save()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 857, in save
+    self._prepare_related_fields_for_save(operation_name="save")
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 1242, in _prepare_related_fields_for_save
+    raise ValueError(
+    ...<2 lines>...
+    )
+ValueError: save() prohibited to prevent data loss due to unsaved related object 'variant'.
+ERROR 2026-01-11 23:57:08,154 storeadmin Variant save failed: save() prohibited to prevent data loss due to unsaved related object 'variant'.
+Traceback (most recent call last):
+  File "C:\Users\Tamiltech08\PycharmProjects\tmsgroups\tms\views\storeadmin.py", line 382, in edit_variant
+    value_formset.save()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\forms\models.py", line 796, in save
+    return self.save_existing_objects(commit) + self.save_new_objects(commit)
+                                                ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\forms\models.py", line 959, in save_new_objects
+    self.new_objects.append(self.save_new(form, commit=commit))
+                            ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\forms\models.py", line 1157, in save_new
+    return super().save_new(form, commit=commit)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\forms\models.py", line 769, in save_new
+    return form.save(commit=commit)
+           ~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\forms\models.py", line 554, in save
+    self.instance.save()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 857, in save
+    self._prepare_related_fields_for_save(operation_name="save")
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 1242, in _prepare_related_fields_for_save
+    raise ValueError(
+    ...<2 lines>...
+    )
+ValueError: save() prohibited to prevent data loss due to unsaved related object 'variant'.
+ERROR 2026-01-11 23:57:50,859 storeadmin Variant save failed: save() prohibited to prevent data loss due to unsaved related object 'variant'.
+Traceback (most recent call last):
+  File "C:\Users\Tamiltech08\PycharmProjects\tmsgroups\tms\views\storeadmin.py", line 382, in edit_variant
+    value_formset.save()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\forms\models.py", line 796, in save
+    return self.save_existing_objects(commit) + self.save_new_objects(commit)
+                                                ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\forms\models.py", line 959, in save_new_objects
+    self.new_objects.append(self.save_new(form, commit=commit))
+                            ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\forms\models.py", line 1157, in save_new
+    return super().save_new(form, commit=commit)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\forms\models.py", line 769, in save_new
+    return form.save(commit=commit)
+           ~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\forms\models.py", line 554, in save
+    self.instance.save()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 857, in save
+    self._prepare_related_fields_for_save(operation_name="save")
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tamiltech08\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 1242, in _prepare_related_fields_for_save
+    raise ValueError(
+    ...<2 lines>...
+    )
+ValueError: save() prohibited to prevent data loss due to unsaved related object 'variant'.
+INFO 2026-01-12 00:08:32,043 storeadmin Dashboard accessed (cache hit)
+INFO 2026-01-12 00:26:10,528 storeadmin Dashboard accessed (cache hit)

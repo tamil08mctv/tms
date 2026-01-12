@@ -81,6 +81,8 @@ def product_image_path(instance, filename):
     safe_filename = slugify(name_part)[:100] + ext.lower()
 
     return f"{store_slug}/products/{variant_part}{safe_filename}"
+
+
 def banner_desktop_path(instance, filename):
     return f"{instance.store.slug}/banners/desktop/{safe_filename(filename)}"
 

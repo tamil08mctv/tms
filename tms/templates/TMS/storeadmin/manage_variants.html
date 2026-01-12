@@ -1,0 +1,141 @@
+{% extends 'TMS/storeadmin/base.html' %}
+{% load static %}
+
+{% block title %}Manage Variants - {{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 px-3">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-11">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-success text-white py-4 text-center">
+                    <h3 class="mb-0 fw-bold"><i class="fas fa-layer-group me-3"></i>Manage Variants: {{ product.name }}</h3>
+                </div>
+
+                <div class="card-body p-4 p-lg-5 bg-light">
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-pill mb-4" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Variant Types -->
+                    <div class="bg-white rounded-4 shadow p-4 mb-5">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="fw-bold text-primary mb-0">Variant Types (common)</h5>
+                            <button type="button" class="btn btn-primary rounded-pill px-4" id="add-type">
+                                <i class="fas fa-plus me-2"></i>Add Type
+                            </button>
+                        </div>
+
+                        <form method="post" id="attrForm">
+                            {% csrf_token %}
+                            {{ attr_formset.management_form }}
+                            <div id="type-container">
+                                {% for form in attr_formset %}
+                                <div class="input-group mb-3 type-row align-items-center">
+                                    {{ form.id }}
+                                    <span class="input-group-text bg-light">Type</span>
+                                    {{ form.name }}
+                                    <button type="button" class="btn btn-outline-danger remove-type">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="text-end mt-3">
+                                <button type="submit" name="save_types" class="btn btn-success rounded-pill px-5">
+                                    Save Types
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Variants List -->
+                    <div class="bg-white rounded-4 shadow p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="fw-bold text-success mb-0">All Variants ({{ variants.count }})</h5>
+                            <a href="{% url 'edit_variant' product.id 0 %}" class="btn btn-primary rounded-pill px-4">
+                                <i class="fas fa-plus me-2"></i>Add New Variant
+                            </a>
+                        </div>
+
+                        {% if variants %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Variant</th>
+                                        <th>Price</th>
+                                        <th>Stock</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for v in variants %}
+                                    <tr>
+                                        <td><strong>{{ v.get_display_title|default:"Unnamed" }}</strong></td>
+                                        <td>₹{{ v.offer_price|default:v.regular_price|floatformat:0 }}</td>
+                                        <td>{% if v.in_stock %}Yes{% else %}No{% endif %}</td>
+                                        <td>
+                                            <a href="{% url 'edit_variant' product.id v.id %}" class="btn btn-sm btn-primary">Edit</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info text-center py-5">
+                            No variants yet. Click "Add New Variant" to create one.
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="text-center mt-5">
+                        <a href="{% url 'edit_product' product.id %}" class="btn btn-outline-secondary btn-lg rounded-pill px-5">
+                            Back to Product
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Add type (same as before)
+document.getElementById('add-type')?.addEventListener('click', function () {
+    const container = document.getElementById('type-container');
+    const total = document.querySelector('#id_attr-TOTAL_FORMS');
+    const count = parseInt(total.value || '0');
+    const row = document.createElement('div');
+    row.className = 'input-group mb-3 type-row align-items-center';
+    row.innerHTML = `
+        <span class="input-group-text bg-light">Type</span>
+        <input type="text" name="attr-${count}-name" class="form-control" placeholder="e.g. Color" required>
+        <button type="button" class="btn btn-outline-danger remove-type"><i class="fas fa-trash"></i></button>
+    `;
+    container.appendChild(row);
+    total.value = count + 1;
+});
+
+document.addEventListener('click', e => {
+    if (e.target.closest('.remove-type')) {
+        const row = e.target.closest('.type-row');
+        const del = row.querySelector('input[name$="-DELETE"]');
+        if (del) {
+            del.checked = true;
+            row.style.opacity = '0.5';
+        } else {
+            row.remove();
+            document.querySelector('#id_attr-TOTAL_FORMS').value--;
+        }
+    }
+});
+</script>
+{% endblock %}
