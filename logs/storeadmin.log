@@ -461,3 +461,12 @@ Traceback (most recent call last):
 ValueError: save() prohibited to prevent data loss due to unsaved related object 'variant'.
 INFO 2026-01-12 00:08:32,043 storeadmin Dashboard accessed (cache hit)
 INFO 2026-01-12 00:26:10,528 storeadmin Dashboard accessed (cache hit)
+INFO 2026-01-14 16:50:45,932 storeadmin Dashboard accessed (cache hit)
+INFO 2026-01-14 21:13:50,428 storeadmin Dashboard accessed (cache hit)
+INFO 2026-01-14 21:28:22,381 storeadmin Dashboard accessed (cache hit)
+INFO 2026-01-15 20:10:05,968 storeadmin Category ADDED: 'Corner Sofa' | Store: TMS FURNITURE | User: admin@tms.com
+INFO 2026-01-15 20:10:32,781 storeadmin Product DELETED: 'Chairs' | Store: TMS FURNITURE | User: admin@tms.com | IP: 127.0.0.1
+INFO 2026-01-15 23:13:53,587 storeadmin Dashboard accessed (cache hit)
+INFO 2026-01-16 01:52:02,677 storeadmin Lead status updated: New Enquiry → Converted | Lead ID: 9 | Customer: tamil | Product: Corner Sofa | Store: TMS FURNITURE | User: admin@tms.com
+INFO 2026-01-16 01:52:12,617 storeadmin Lead status updated: New Enquiry → Converted | Lead ID: 7 | Customer: asdfa | Product: Chairs | Store: TMS FURNITURE | User: admin@tms.com
+INFO 2026-01-16 01:52:15,699 storeadmin Dashboard accessed (cache hit)

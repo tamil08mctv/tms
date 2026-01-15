@@ -135,42 +135,48 @@ def all_leads(request):
 
     if store_filter:
         leads = leads.filter(store_id=store_filter)
+
     if from_date:
         try:
             from_dt = datetime.strptime(from_date, '%Y-%m-%d')
             leads = leads.filter(created_at__date__gte=from_dt.date())
         except:
             pass
+
     if to_date:
         try:
             to_dt = datetime.strptime(to_date, '%Y-%m-%d')
             leads = leads.filter(created_at__date__lte=to_dt.date())
         except:
             pass
+
     if status_filter:
         leads = leads.filter(status=status_filter)
 
-    # === PAGINATION ADDED HERE ===
-    paginator = Paginator(leads, 100)  # 100 leads per page – fast & clean
+    # Pagination - 100 leads per page
+    paginator = Paginator(leads, 100)
     page_number = request.GET.get('page')
     leads_page = paginator.get_page(page_number)
 
     context = {
-        'leads': leads_page,  # Now paginated!
+        'leads': leads_page,
         'stores': stores,
         'current_store': store_filter,
         'from_date': from_date,
         'to_date': to_date,
         'current_status': status_filter,
     }
+
     return render(request, 'TMS/superadmin/allleads.html', context)
+
 
 @superuser_required
 def export_all_leads(request):
-    superadmin_logger.info(f"Superuser {request.user.username} exported filtered leads CSV")
-    
+    superadmin_logger.info(f"Superuser {request.user.username} exported all leads CSV")
+
     leads = Lead.objects.select_related('store', 'product').order_by('-created_at')
-    
+
+    # Apply same filters as in all_leads view
     store_filter = request.GET.get('store')
     from_date = request.GET.get('from')
     to_date = request.GET.get('to')
@@ -194,27 +200,46 @@ def export_all_leads(request):
         leads = leads.filter(status=status_filter)
 
     response = HttpResponse(content_type='text/csv')
+    
     filename = "tms_all_leads"
     if from_date or to_date:
-        filename += f"_{from_date or 'start'}_to_{to_date or 'end'}"
-    response['Content-Disposition'] = f'attachment; filename="{filename}.csv"'
+        filename += f"_{from_date or 'all'}_to_{to_date or 'today'}"
+    filename += f"_{timezone.now().strftime('%Y%m%d_%H%M')}.csv"
+    
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
 
     writer = csv.writer(response)
-    writer.writerow(['Date', 'Store', 'Customer', 'Phone','City', 'Product', 'Status', 'Source'])
+    writer.writerow([
+        'Date (IST)',
+        'Store',
+        'Customer Name',
+        'Phone',
+        'City',
+        'Product (with Variant if any)',
+        'Status',
+        'Source',
+        'Notes'
+    ])
 
     for lead in leads:
+        product_info = lead.product_display_name or \
+                      (lead.product.name if lead.product else 'General Enquiry')
+
         writer.writerow([
-            lead.created_at.strftime('%d-%m-%Y %H:%M'),
+            lead.created_at_ist(),
             lead.store.name,
             lead.customer_name,
             lead.phone,
-            lead.city,
-            lead.product.name if lead.product else 'General',
+            lead.city or '-',
+            product_info,
             lead.get_status_display(),
-            lead.source
+            lead.source,
+            lead.notes or '-'
         ])
 
     return response
+
+
 
 @superuser_required
 def site_settings(request):

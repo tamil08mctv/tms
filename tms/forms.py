@@ -113,7 +113,7 @@ class ProductForm(forms.ModelForm):
         model = Product
         fields = [
             'category', 'name', 'short_desc', 'description',
-            'regular_price', 'offer_price', 'deal_end_date',
+            'regular_price', 'offer_price', 'deal_end_date',          # <--- these must stay here
             'in_stock', 'is_featured', 'is_best_seller',
             'is_limited_deal', 'is_special_offer', 'is_new_arrival',
             'call_for_price'
@@ -122,30 +122,35 @@ class ProductForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
             'category': forms.Select(attrs={'class': 'form-select form-select-lg'}),
             'short_desc': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
-            'description': forms.Textarea(attrs={'rows': 7, 'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'rows': 5, 'class': 'form-control'}),
             'regular_price': forms.NumberInput(attrs={'class': 'form-control'}),
             'offer_price': forms.NumberInput(attrs={'class': 'form-control'}),
             'deal_end_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'in_stock': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
     def __init__(self, *args, **kwargs):
         has_variants = kwargs.pop('has_variants', False)
         super().__init__(*args, **kwargs)
+
+        # Only make them read-only + placeholder when variants exist
+        # But NEVER remove them from the form
         if has_variants:
             for f in ['regular_price', 'offer_price', 'deal_end_date']:
-                self.fields[f].required = False
-                self.fields[f].widget.attrs.update({
-                    'readonly': 'readonly',
-                    'placeholder': 'Managed by variants'
-                })
-
+                if f in self.fields:
+                    self.fields[f].required = False
+                    self.fields[f].widget.attrs.update({
+                        'readonly': 'readonly',
+                        'class': 'form-control bg-light',  # light background to indicate disabled
+                        'placeholder': 'Managed by variants'
+                    })
 
 # === Formsets ===
 
 ProductSpecFormSet = inlineformset_factory(
     Product, ProductSpecification,
     fields=('name', 'value'),
-    extra=5,
+    extra=1,
     can_delete=True,
     widgets={
         'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Material'}),
@@ -183,6 +188,14 @@ class ProductVariantForm(forms.ModelForm):
 
 
 class VariantValueForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+   
+        if 'instance' in kwargs and kwargs['instance'].variant:
+            product = kwargs['instance'].variant.product
+            self.fields['attribute'].queryset = VariantAttribute.objects.filter(product=product)
+        
+
     class Meta:
         model = VariantValue
         fields = ('attribute', 'value')
@@ -211,7 +224,7 @@ def get_variant_value_formset(product=None, extra=0):
 VariantSpecFormSet = inlineformset_factory(
     ProductVariant, VariantSpecification,
     fields=('name', 'value'),
-    extra=3,
+    extra=1,
     can_delete=True,
     widgets={
         'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Weight'}),

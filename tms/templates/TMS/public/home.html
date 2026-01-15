@@ -3,15 +3,15 @@
 
 {% block title %}
     TMS Furnitures - Premium Furniture | Best Prices in Tamil Nadu
-    {% if has_deals %} | Deals of the Day{% endif %}
-    {% if has_best_sellers %} | Best Sellers{% endif %}
-    {% if has_limited_deals %} | Limited Deals{% endif %}
-    {% if has_special_offers %} | Special Offers{% endif %}
-    {% if has_new_arrivals %} | New Arrivals{% endif %}
+    {% if deals_of_day %} | Deals of the Day{% endif %}
+    {% if best_sellers %} | Best Sellers{% endif %}
+    {% if limited_deals %} | Limited Deals{% endif %}
+    {% if special_offers %} | Special Offers{% endif %}
+    {% if new_arrivals %} | New Arrivals{% endif %}
 {% endblock %}
 
 {% block extra_head %}
-<!-- PRECONNECT & PRELOAD FOR MAXIMUM SPEED -->
+<!-- PRECONNECT & PRELOAD -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -20,8 +20,8 @@
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style">
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
-<!-- DYNAMIC SEO FOR HOMEPAGE ONLY -->
-<meta name="description" content="TMS Furniture - Premium Furniture at best prices across Tamil Nadu. Shop{% if has_deals %} Deals of the Day,{% endif %}{% if has_best_sellers %} Best Sellers,{% endif %}{% if has_limited_deals %} Limited Deals,{% endif %}{% if has_special_offers %} Special Offers,{% endif %}{% if has_new_arrivals %} New Arrivals,{% endif %} and more!">
+<!-- DYNAMIC SEO -->
+<meta name="description" content="TMS Furniture - Premium Furniture at best prices across Tamil Nadu. Shop{% if deals_of_day %} Deals of the Day,{% endif %}{% if best_sellers %} Best Sellers,{% endif %}{% if limited_deals %} Limited Deals,{% endif %}{% if special_offers %} Special Offers,{% endif %}{% if new_arrivals %} New Arrivals,{% endif %} and more!">
 <meta name="keywords" content="furniture tamil nadu, premium furniture, tms furniture, sofa,teapoy, diwan bed, dining table, wardrobe">
 <meta property="og:title" content="TMS Furniture - Premium Furniture in Tamil Nadu">
 <meta property="og:description" content="Discover premium quality furniture at unbeatable prices. Shop deals, best sellers, new arrivals & more across Tamil Nadu stores.">
@@ -29,40 +29,135 @@
 <meta property="og:url" content="{{ request.build_absolute_uri }}">
 
 <style>
-    /* OPTIMIZED HOVER - SMOOTH & LIGHTWEIGHT */
+    /* === SHARED CARD STYLES === */
     .hover-card {
         transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.35s ease;
         will-change: transform;
         overflow: hidden;
+        border-radius: 16px;
+        background: white;
     }
     .hover-card:hover {
         transform: translateY(-8px) scale(1.02);
         box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
     }
-    /* RIBBON BADGES - LIGHTER */
-    .ribbon-deal, .ribbon-featured {
-        font-size: 0.85rem;
-        padding: 5px 16px;
+
+    .card-img-top {
+        background: #f0f0f0;
+        object-fit: cover;
+        transition: transform 0.4s ease;
     }
-    /* SWIPER ARROWS - LIGHTER */
-    .swiper-button-next,
-    .swiper-button-prev {
-        width: 40px !important;
-        height: 40px !important;
-        background: rgba(255,255,255,0.9);
-        border-radius: 50%;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        color: #333 !important;
-        opacity: 0.8;
+    .hover-card:hover .card-img-top {
+        transform: scale(1.05);
     }
-    .swiper-button-next:hover,
-    .swiper-button-prev:hover {
-        background: #25D366;
-        color: white !important;
-        opacity: 1;
-        transform: scale(1.1);
+
+    .product-title {
+        font-size: 1.05rem;
+        line-height: 1.35;
+        height: 2.7em;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        line-clamp: 2;
+        margin-bottom: 0.4rem;
     }
-    /* HERO ARROWS - ONLY SHOW ON HOVER */
+
+    .price-section {
+        min-height: 55px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .offer-badge {
+        font-size: 0.8rem;
+        padding: 4px 10px;
+        font-weight: 600;
+    }
+
+    @media (max-width: 576px) {
+        section { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+        .container-fluid { padding-left: 8px !important; padding-right: 8px !important; }
+        
+        .product-title { 
+            font-size: 0.95rem !important; 
+            line-height: 1.3 !important; 
+            height: 2.6em !important; 
+        }
+        .card-body { 
+            padding: 10px !important; 
+        }
+        .card-img-top { 
+            height: 170px !important; 
+        }
+        .price-section { 
+            flex-direction: column !important; 
+            gap: 4px !important; 
+            min-height: auto !important; 
+        }
+        .price-section .text-success { 
+            font-size: 1.1rem !important; 
+        }
+        .price-section .text-muted { 
+            font-size: 0.85rem !important; 
+        }
+        .offer-badge { 
+            font-size: 0.75rem !important; 
+            padding: 3px 8px !important; 
+        }
+        .hover-card:hover { 
+            transform: translateY(-4px) scale(1.01) !important; 
+        }
+
+        /* Force tighter spacing on mobile scroll sections */
+        .product-scroll {
+            gap: 10px !important;
+            grid-auto-columns: calc((100% - 10px) / 1.6) !important;
+            padding-left: 4px !important;
+            padding-right: 4px !important;
+        }
+
+        /* Force tighter grid sections on mobile */
+        .row-cols-2, .row {
+            --bs-gutter-x: 0.75rem !important;
+            --bs-gutter-y: 0.75rem !important;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .card-img-top { height: 150px !important; }
+        .product-title { font-size: 0.9rem !important; }
+        .price-section .text-success { font-size: 1rem !important; }
+    }
+
+    /* === SCROLL STYLES (desktop/tablet unchanged) === */
+    .product-scroll {
+        display: grid;
+        grid-auto-flow: column;
+        gap: 20px;
+        grid-auto-columns: calc((100% - (4 * 20px)) / 5);
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        padding-bottom: 8px;
+    }
+    .product-card { scroll-snap-align: start; }
+    .product-scroll::-webkit-scrollbar { height: 4px; }
+    .product-scroll::-webkit-scrollbar-thumb { background: #d1d1d1; border-radius: 5px; }
+
+    @media (min-width: 577px) {
+        @media (max-width: 1200px) {
+            .product-scroll { gap: 12px; grid-auto-columns: calc((100% - (3 * 12px)) / 4); }
+        }
+        @media (max-width: 768px) {
+            .product-scroll { gap: 12px; grid-auto-columns: calc((100% - (1 * 12px)) / 2); }
+        }
+    }
+
+   /* HERO ARROWS - ONLY SHOW ON HOVER */
     .hero-swiper .arrow-btn {
         opacity: 0;
         transition: opacity 0.4s ease;
@@ -161,7 +256,7 @@
     .hero-swiper,
     .swiper-slide,
     .swiper-slide img {
-        height: 470px; /* Desktop */
+        height: 460px; /* Desktop */
     }
     @media (max-width: 991.98px) {
         .hero-swiper,
@@ -246,97 +341,99 @@
     });
 </script>
 
-<!-- FLASH DEALS -->
-{% if has_deals %}
-<section class="py-3" style="background: rgb(21, 47, 70)">
-  <div class="container-fluid px-4 py-2">
-    <h2 class="text-center text-white mb-3 fw-bold fs-1">
-      FLASH DEALS
-    </h2>
-    <div class="position-relative">
-      <div class="product-scroll">
-        {% for p in deals_of_day|slice:":20" %}
-        <div class="product-card">
-          <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/"
-             class="text-decoration-none text-dark">
-            <div class="card h-100 shadow hover-card border-0 position-relative">
-              <div class="position-absolute top-0 end-0 p-2" style="z-index:10;">
-                <span class="badge fw-bold text-white px-3 py-2 rounded-pill"
-                      style="background: orangered;">
-                  DEAL
-                </span>
-              </div>
-              <img
-                src="{{ p.main_image.0.image.url|default:'https://via.placeholder.com/300' }}"
-                class="card-img-top"
-                style="height:230px;object-fit:cover;"
-                loading="lazy"
-                alt="{{ p.name }}">
-              <div class="card-body text-center d-flex flex-column">
-                <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ p.name }}</h6>
-                {% if p.short_desc %}<p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>{% endif %}
-                <div class="mt-auto text-center">
-                  {% if p.offer_price and p.offer_price < p.regular_price %}
-                  <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                    <span class="text-success fs-5 fw-medium">&#8377; {{ p.offer_price }}</span>
-                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">&#8377; {{ p.regular_price }}</span>
-                    <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
-                  </div>
-                  {% else %}
-                  <span class="text-success fs-5 fw-bold">&#8377; {{ p.regular_price }}</span>
-                  {% endif %}
+
+<!-- FLASH DEALS - SCROLL -->
+{% if deals_of_day %}
+<section class="py-3 py-sm-5" style="background: rgb(21, 47, 70)">
+    <div class="container-fluid px-2 px-sm-3 px-lg-5 py-2">
+        <h2 class="text-center text-white mb-3 mb-sm-4 fw-bold fs-1">FLASH DEALS</h2>
+        <div class="position-relative">
+            <div class="product-scroll">
+                {% for item in deals_of_day|slice:":20" %}
+                <div class="product-card">
+                    <a href="/store/{{ item.product.store.slug }}/product/{{ item.product.slug }}/" class="text-decoration-none text-dark">
+                        <div class="card h-100 shadow hover-card border-0 position-relative">
+                            <div class="position-absolute top-0 end-0 p-2" style="z-index:10;">
+                                <span class="badge fw-bold text-white px-3 py-2 rounded-pill" style="background: orangered;">
+                                    DEAL
+                                </span>
+                            </div>
+                            <img src="{{ item.main_image }}"
+                                 class="card-img-top"
+                                 style="height:230px; object-fit:cover;"
+                                 loading="lazy" fetchpriority="high"
+                                 alt="{{ item.product.name }}">
+                            <div class="card-body text-center p-3 d-flex flex-column">
+                                <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ item.product.name }}</h6>
+                                {% if item.product.short_desc %}
+                                    <p class="text-muted small mb-2 line-clamp-1">{{ item.product.short_desc }}</p>
+                                {% endif %}
+                                <div class="mt-auto text-center">
+                                    {% if item.has_offer %}
+                                        <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                                            <span class="text-success fs-5 fw-medium">{{ item.display_price }}</span>
+                                            <span style="font-size: 14px; color: #878787; text-decoration: line-through;">&#8377;{{ item.old_price }}</span>
+                                            <span class="badge bg-danger fs-6 px-3">{{ item.discount_percent }}% OFF</span>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-success fs-5 fw-bold">{{ item.display_price }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="mt-auto text-center pt-2">
+                                    <small class="text-muted d-block fw-medium">{{ item.product.store.name }} | {{ item.product.store.city }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
                 </div>
-                <div class="mt-auto text-center pt-2">
-                  <small class="text-muted d-block fw-medium">{{ p.store.name }} | {{ p.store.city }}</small>
-                </div>
-              </div>
+                {% endfor %}
             </div>
-          </a>
         </div>
-        {% endfor %}
-      </div>
+        <div class="text-center mt-4 mt-sm-5">
+            <a href="{% url 'all_products' %}?filter=deals" class="btn btn-light btn-lg px-5 py-2 rounded-pill shadow fw-bold">
+                View All Deals
+            </a>
+        </div>
     </div>
-    <div class="text-center mt-3">
-      <a href="{% url 'all_products' %}?filter=deals"
-         class="btn btn-light btn-lg px-5 py-2 rounded-pill shadow fw-bold">
-        View All Deals
-      </a>
-    </div>
-  </div>
 </section>
 {% endif %}
 
-<!-- BEST SELLERS -->
-{% if has_best_sellers %}
-<section class="py-3 bg-white">
-    <div class="container-fluid px-4">
-        <h2 class="text-center mb-3 text-dark fw-bold fs-1" data-aos="zoom-in">BEST SELLERS</h2>
-        <div class="row g-3 justify-content-center">
-            {% for p in best_sellers|slice:":10" %}
+<!-- BEST SELLERS - GRID -->
+{% if best_sellers %}
+<section class="py-3 py-sm-5 bg-white">
+    <div class="container-fluid px-2 px-sm-3 px-lg-5">
+        <h2 class="text-center mb-3 mb-sm-4 text-dark fw-bold fs-1" data-aos="zoom-in">BEST SELLERS</h2>
+        <div class="row g-3 g-sm-4 justify-content-center">
+            {% for item in best_sellers|slice:":10" %}
             <div class="col-6 col-sm-4 col-md-3 col-lg-2-4" data-aos="fade-up">
-                <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none ">
+                <a href="/store/{{ item.product.store.slug }}/product/{{ item.product.slug }}/" class="text-decoration-none">
                     <div class="card h-100 shadow hover-card border-0 position-relative">
                         <div class="position-absolute top-0 start-0 p-2">
                             <span class="badge bg-warning text-dark px-4 py-2 rounded-pill shadow-lg fw-bold">BEST SELLER</span>
                         </div>
-                        <img src="{{ p.main_image.0.image.url|default:'https://via.placeholder.com/300' }}"
-                             class="card-img-top" style="height:230px;object-fit:cover;" loading="lazy" fetchpriority="high" alt="{{ p.name }}">
+                        <img src="{{ item.main_image }}"
+                             class="card-img-top"
+                             style="height:230px;object-fit:cover;"
+                             loading="lazy" fetchpriority="high"
+                             alt="{{ item.product.name }}">
                         <div class="card-body text-center p-3 d-flex flex-column">
-                            <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ p.name }}</h6>
-                            {% if p.short_desc %}<p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>{% endif %}
+                            <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ item.product.name }}</h6>
+                            {% if item.product.short_desc %}
+                                <p class="text-muted small mb-2 line-clamp-1">{{ item.product.short_desc }}</p>
+                            {% endif %}
                             <div class="mt-auto text-center">
-                                {% if p.offer_price and p.offer_price < p.regular_price %}
-                                <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                                    <span class="text-success fs-5 fw-medium">&#8377; {{ p.offer_price }}</span>
-                                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">&#8377; {{ p.regular_price }}</span>
-                                    <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
-                                </div>
+                                {% if item.has_offer %}
+                                    <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                                        <span class="text-success fs-5 fw-medium">{{ item.display_price }}</span>
+                                        <span style="font-size: 14px;color: #878787;text-decoration: line-through;">&#8377;{{ item.old_price }}</span>
+                                        <span class="badge bg-danger fs-6 px-3">{{ item.discount_percent }}% OFF</span>
+                                    </div>
                                 {% else %}
-                                <span class="text-success fs-5 fw-bold">&#8377; {{ p.regular_price }}</span>
+                                    <span class="text-success fs-5 fw-bold">{{ item.display_price }}</span>
                                 {% endif %}
                             </div>
                             <div class="mt-auto text-center pt-2">
-                                <small class="text-muted d-block fw-medium">{{ p.store.name }} | {{ p.store.city }}</small>
+                                <small class="text-muted d-block fw-medium">{{ item.product.store.name }} | {{ item.product.store.city }}</small>
                             </div>
                         </div>
                     </div>
@@ -344,7 +441,7 @@
             </div>
             {% endfor %}
         </div>
-        <div class="text-center mt-3">
+        <div class="text-center mt-4 mt-sm-5">
             <a href="{% url 'all_products' %}?filter=bestselling" class="btn btn-light btn-lg px-5 py-2 rounded-pill shadow-lg text-dark fw-bold ripple">
                 View All Best Sellers
             </a>
@@ -353,92 +450,106 @@
 </section>
 {% endif %}
 
-<!-- LIMITED DEALS -->
-{% if has_limited_deals %}
-<section class="py-3" style="background: rgb(21, 47, 70)">
-  <div class="container-fluid px-4 py-2">
-    <h2 class="text-center text-white mb-3 fw-bold fs-1">
-      LIMITED DEALS - ENDS SOON
-    </h2>
-    <div class="position-relative">
-      <div class="product-scroll">
-        {% for p in limited_deals|slice:":20" %}
-        <div class="product-card">
-          <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/"
-             class="text-decoration-none text-dark">
-            <div class="card h-100 shadow hover-card border-0 position-relative">
-              <div class="position-absolute top-0 start-0 p-2" style="z-index:10;">
-                <span class="badge bg-danger px-4 py-2 rounded-pill fw-bold">
-                  LIMITED DEAL
-                </span>
-              </div>
-              <img src="{{ p.main_image.0.image.url|default:'https://via.placeholder.com/300' }}"
-                   class="card-img-top" style="height:230px;object-fit:cover;" loading="lazy" fetchpriority="high" alt="{{ p.name }}">
-              <div class="card-body text-center p-3 d-flex flex-column">
-                <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ p.name }}</h6>
-                {% if p.short_desc %}<p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>{% endif %}
-                <div class="mt-auto text-center">
-                  {% if p.offer_price and p.offer_price < p.regular_price %}
-                  <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                    <span class="text-success fs-5 fw-medium">&#8377; {{ p.offer_price }}</span>
-                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">&#8377; {{ p.regular_price }}</span>
-                    <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
-                  </div>
-                  {% else %}
-                  <span class="text-success fs-5 fw-bold">&#8377; {{ p.regular_price }}</span>
-                  {% endif %}
+<!-- LIMITED DEALS - SCROLL -->
+{% if limited_deals %}
+<section class="py-3 py-sm-5" style="background: rgb(21, 47, 70)">
+    <div class="container-fluid px-2 px-sm-3 px-lg-5 py-2">
+        <h2 class="text-center text-white mb-3 mb-sm-4 fw-bold fs-1">LIMITED DEALS - ENDS SOON</h2>
+        <div class="position-relative">
+            <div class="product-scroll">
+                {% for item in limited_deals|slice:":20" %}
+                <div class="product-card">
+                    <a href="/store/{{ item.product.store.slug }}/product/{{ item.product.slug }}/"
+                       class="text-decoration-none text-dark">
+                        <div class="card h-100 shadow hover-card border-0 position-relative">
+                            <div class="position-absolute top-0 start-0 p-2" style="z-index:10;">
+                                <span class="badge bg-danger px-4 py-2 rounded-pill fw-bold">
+                                    LIMITED DEAL
+                                </span>
+                            </div>
+                            <img src="{{ item.main_image }}"
+                                 class="card-img-top"
+                                 style="height:230px; object-fit:cover;"
+                                 loading="lazy" fetchpriority="high"
+                                 alt="{{ item.product.name }}">
+                            <div class="card-body text-center p-3 d-flex flex-column">
+                                <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ item.product.name }}</h6>
+                                {% if item.product.short_desc %}
+                                    <p class="text-muted small mb-2 line-clamp-1">{{ item.product.short_desc }}</p>
+                                {% endif %}
+                                <div class="mt-auto text-center">
+                                    {% if item.has_offer %}
+                                        <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                                            <span class="text-success fs-5 fw-medium">{{ item.display_price }}</span>
+                                            <span style="font-size: 14px; color: #878787; text-decoration: line-through;">
+                                                &#8377; {{ item.old_price }}
+                                            </span>
+                                            <span class="badge bg-danger fs-6 px-3">{{ item.discount_percent }}% OFF</span>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-success fs-5 fw-bold">{{ item.display_price }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="mt-auto text-center pt-2">
+                                    <small class="text-muted d-block fw-medium">
+                                        {{ item.product.store.name }} | {{ item.product.store.city }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
                 </div>
-                <div class="mt-auto text-center pt-2">
-                  <small class="text-muted d-block fw-medium">{{ p.store.name }} | {{ p.store.city }}</small>
-                </div>
-              </div>
+                {% endfor %}
             </div>
-          </a>
         </div>
-        {% endfor %}
-      </div>
+        <div class="text-center mt-4 mt-sm-5">
+            <a href="{% url 'all_products' %}?filter=limited"
+               class="btn btn-outline-danger rounded-pill px-5 py-2 fw-bold">
+                View All Limited Deals
+            </a>
+        </div>
     </div>
-    <div class="text-center mt-3">
-      <a href="{% url 'all_products' %}?filter=limited"
-         class="btn btn-outline-danger rounded-pill px-5 py-2 fw-bold">
-        View All Limited Deals
-      </a>
-    </div>
-  </div>
 </section>
 {% endif %}
 
-<!-- SPECIAL OFFERS -->
-{% if has_special_offers %}
-<section class="py-3 bg-light">
-    <div class="container-fluid px-4">
-        <h2 class="text-center mb-3 text-dark fw-bold fs-1" data-aos="zoom-in">SPECIAL OFFERS</h2>
-        <div class="row g-4 justify-content-center">
-            {% for p in special_offers|slice:":10" %}
+<!-- SPECIAL OFFERS - GRID -->
+{% if special_offers %}
+<section class="py-3 py-sm-5 bg-light">
+    <div class="container-fluid px-2 px-sm-3 px-lg-5">
+        <h2 class="text-center mb-3 mb-sm-4 text-dark fw-bold fs-1" data-aos="zoom-in">SPECIAL OFFERS</h2>
+        <div class="row g-3 g-sm-4 justify-content-center">
+            {% for item in special_offers|slice:":10" %}
             <div class="col-6 col-sm-4 col-md-3 col-lg-2-4" data-aos="fade-up">
-                <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none ripple">
+                <a href="/store/{{ item.product.store.slug }}/product/{{ item.product.slug }}/" class="text-decoration-none ripple">
                     <div class="card h-100 shadow hover-card position-relative overflow-hidden border-0">
                         <div class="position-absolute top-0 start-0 p-2 z-10">
                             <span class="badge text-white px-4 py-2 rounded-pill shadow-lg fw-bold" style="background: linear-gradient(45deg, #9C27B0, #E91E63);">SPECIAL OFFER</span>
                         </div>
-                        <img src="{{ p.main_image.0.image.url|default:'https://via.placeholder.com/300' }}"
-                             class="card-img-top" style="height:230px;object-fit:cover;" loading="lazy" fetchpriority="high" alt="{{ p.name }}">
+                        <img src="{{ item.main_image }}"
+                             class="card-img-top"
+                             style="height:230px; object-fit:cover;"
+                             loading="lazy" fetchpriority="high"
+                             alt="{{ item.product.name }}">
                         <div class="card-body text-center p-3 d-flex flex-column">
-                            <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ p.name }}</h6>
-                            {% if p.short_desc %}<p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>{% endif %}
+                            <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ item.product.name }}</h6>
+                            {% if item.product.short_desc %}
+                                <p class="text-muted small mb-2 line-clamp-1">{{ item.product.short_desc }}</p>
+                            {% endif %}
                             <div class="mt-auto text-center">
-                                {% if p.offer_price and p.offer_price < p.regular_price %}
-                                <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                                    <span class="text-success fs-5 fw-medium">&#8377; {{ p.offer_price }}</span>
-                                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">&#8377; {{ p.regular_price }}</span>
-                                    <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
-                                </div>
+                                {% if item.has_offer %}
+                                    <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                                        <span class="text-success fs-5 fw-medium">{{ item.display_price }}</span>
+                                        <span style="font-size: 14px; color: #878787; text-decoration: line-through;">
+                                            &#8377; {{ item.old_price }}
+                                        </span>
+                                        <span class="badge bg-danger fs-6 px-3">{{ item.discount_percent }}% OFF</span>
+                                    </div>
                                 {% else %}
-                                <span class="text-success fs-5 fw-bold">&#8377; {{ p.regular_price }}</span>
+                                    <span class="text-success fs-5 fw-bold">{{ item.display_price }}</span>
                                 {% endif %}
                             </div>
                             <div class="mt-auto text-center pt-2">
-                                <small class="text-muted d-block fw-medium">{{ p.store.name }} | {{ p.store.city }}</small>
+                                <small class="text-muted d-block fw-medium">{{ item.product.store.name }} | {{ item.product.store.city }}</small>
                             </div>
                         </div>
                     </div>
@@ -446,7 +557,7 @@
             </div>
             {% endfor %}
         </div>
-        <div class="text-center mt-3">
+        <div class="text-center mt-4 mt-sm-5">
             <a href="{% url 'all_products' %}?filter=special" class="btn btn-light btn-lg px-5 py-2 rounded-pill shadow-lg text-dark fw-bold ripple">
                 View All Special Offers
             </a>
@@ -455,38 +566,46 @@
 </section>
 {% endif %}
 
-<!-- NEW ARRIVALS -->
-{% if has_new_arrivals %}
-<section class="py-3 text-white" style="background-color: rgb(21, 47, 70);">
-    <div class="container-fluid px-4">
-        <h2 class="text-center mb-3 fw-bold fs-1" data-aos="zoom-in">NEW ARRIVALS</h2>
-        <div class="row g-4 justify-content-center">
-            {% for p in new_arrivals|slice:":10" %}
+<!-- NEW ARRIVALS - GRID -->
+{% if new_arrivals %}
+<section class="py-3 py-sm-5 text-white" style="background-color: rgb(21, 47, 70);">
+    <div class="container-fluid px-2 px-sm-3 px-lg-5">
+        <h2 class="text-center mb-3 mb-sm-4 fw-bold fs-1" data-aos="zoom-in">NEW ARRIVALS</h2>
+        <div class="row g-3 g-sm-4 justify-content-center">
+            {% for item in new_arrivals|slice:":10" %}
             <div class="col-6 col-sm-4 col-md-3 col-lg-2-4" data-aos="fade-up">
-                <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none text-white ">
+                <a href="/store/{{ item.product.store.slug }}/product/{{ item.product.slug }}/" class="text-decoration-none text-white">
                     <div class="card h-100 shadow hover-card border-0 bg-white text-dark">
-                        {% if p.is_new_arrival %}
+                        {% if item.product.is_new_arrival %}
                         <div class="position-absolute top-0 end-0 p-2">
                             <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow-lg fw-bold">NEW</span>
                         </div>
                         {% endif %}
-                        <img src="{{ p.main_image.0.image.url|default:'https://via.placeholder.com/300' }}" class="card-img-top" style="height:230px;object-fit:cover;" loading="lazy" fetchpriority="high" alt="{{ p.name }}">
+                        <img src="{{ item.main_image }}"
+                             class="card-img-top"
+                             style="height:230px; object-fit:cover;"
+                             loading="lazy" fetchpriority="high"
+                             alt="{{ item.product.name }}">
                         <div class="card-body text-center p-3 d-flex flex-column">
-                            <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ p.name }}</h6>
-                            {% if p.short_desc %}<p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>{% endif %}
+                            <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ item.product.name }}</h6>
+                            {% if item.product.short_desc %}
+                                <p class="text-muted small mb-2 line-clamp-1">{{ item.product.short_desc }}</p>
+                            {% endif %}
                             <div class="mt-auto text-center">
-                                {% if p.offer_price and p.offer_price < p.regular_price %}
-                                <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                                    <span class="text-success fs-5 fw-medium">&#8377; {{ p.offer_price }}</span>
-                                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">&#8377; {{ p.regular_price }}</span>
-                                    <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
-                                </div>
+                                {% if item.has_offer %}
+                                    <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                                        <span class="text-success fs-5 fw-medium">{{ item.display_price }}</span>
+                                        <span style="font-size: 14px; color: #878787; text-decoration: line-through;">
+                                            &#8377; {{ item.old_price }}
+                                        </span>
+                                        <span class="badge bg-danger fs-6 px-3">{{ item.discount_percent }}% OFF</span>
+                                    </div>
                                 {% else %}
-                                <span class="text-success fs-5 fw-bold">&#8377; {{ p.regular_price }}</span>
+                                    <span class="text-success fs-5 fw-bold">{{ item.display_price }}</span>
                                 {% endif %}
                             </div>
                             <div class="mt-auto text-center pt-2">
-                                <small class="text-muted d-block fw-medium">{{ p.store.name }} | {{ p.store.city }}</small>
+                                <small class="text-muted d-block fw-medium">{{ item.product.store.name }} | {{ item.product.store.city }}</small>
                             </div>
                         </div>
                     </div>
@@ -494,8 +613,8 @@
             </div>
             {% endfor %}
         </div>
-        <div class="text-center mt-3">
-            <a href="{% url 'all_products' %}?filter=new" class="btn btn-outline-danger rounded-pill px-4 py-2 fw-bold ripple">
+        <div class="text-center mt-4 mt-sm-5">
+            <a href="{% url 'all_products' %}?filter=new" class="btn btn-outline-danger rounded-pill px-5 py-2 fw-bold ripple">
                 View All New Arrivals
             </a>
         </div>
@@ -503,207 +622,202 @@
 </section>
 {% endif %}
 
-<!-- FEATURED PRODUCTS -->
+<!-- FEATURED PRODUCTS - SCROLL -->
 {% if featured_products %}
-<section class="py-3 bg-white">
-  <div class="container-fluid px-4 py-2">
-    <h2 class="text-center mb-3 fw-bold fs-1">FEATURED PRODUCTS</h2>
-    <div class="position-relative">
-      <div class="product-scroll">
-        {% for p in featured_products|slice:":20" %}
-        <div class="product-card">
-          <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
-            <div class="card h-100 shadow hover-card border-0 position-relative">
-              {% if p.discount_percent > 0 %}
-              <div class="position-absolute bg-warning fw-bold px-3 py-1"
-                   style="top:15px;left:-10px;z-index:10;">
-                -{{ p.discount_percent }}%
-              </div>
-              {% endif %}
-              <img
-                src="{{ p.main_image.0.image.url|default:'https://via.placeholder.com/300' }}"
-                class="card-img-top"
-                style="height:220px;object-fit:cover;"
-                loading="lazy"
-                alt="{{ p.name }}">
-              <div class="card-body text-center d-flex flex-column">
-                <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ p.name }}</h6>
-                {% if p.short_desc %}<p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>{% endif %}
-                <div class="mt-auto text-center">
-                  {% if p.offer_price and p.offer_price < p.regular_price %}
-                  <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                    <span class="text-success fs-5 fw-medium">&#8377; {{ p.offer_price }}</span>
-                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">&#8377; {{ p.regular_price }}</span>
-                    <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
-                  </div>
-                  {% else %}
-                  <span class="text-success fs-5 fw-bold">&#8377; {{ p.regular_price }}</span>
-                  {% endif %}
+<section class="py-3 py-sm-5 bg-white">
+    <div class="container-fluid px-2 px-sm-3 px-lg-5 py-2">
+        <h2 class="text-center mb-3 mb-sm-4 fw-bold fs-1">FEATURED PRODUCTS</h2>
+        <div class="position-relative">
+            <div class="product-scroll">
+                {% for item in featured_products|slice:":20" %}
+                <div class="product-card">
+                    <a href="/store/{{ item.product.store.slug }}/product/{{ item.product.slug }}/" class="text-decoration-none">
+                        <div class="card h-100 shadow hover-card border-0 position-relative">
+                            {% if item.discount_percent > 0 %}
+                            <div class="position-absolute bg-warning fw-bold px-3 py-1" style="top:15px;left:-10px;z-index:10;">
+                                -{{ item.discount_percent }}%
+                            </div>
+                            {% endif %}
+                            <img src="{{ item.main_image }}"
+                                 class="card-img-top"
+                                 style="height:220px; object-fit:cover;"
+                                 loading="lazy"
+                                 alt="{{ item.product.name }}">
+                            <div class="card-body text-center p-3 d-flex flex-column">
+                                <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ item.product.name }}</h6>
+                                {% if item.product.short_desc %}
+                                    <p class="text-muted small mb-2 line-clamp-1">{{ item.product.short_desc }}</p>
+                                {% endif %}
+                                <div class="mt-auto text-center">
+                                    {% if item.has_offer %}
+                                        <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                                            <span class="text-success fs-5 fw-medium">{{ item.display_price }}</span>
+                                            <span style="font-size: 14px; color: #878787; text-decoration: line-through;">
+                                                &#8377; {{ item.old_price }}
+                                            </span>
+                                            <span class="badge bg-danger fs-6 px-3">{{ item.discount_percent }}% OFF</span>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-success fs-5 fw-bold">{{ item.display_price }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="mt-auto text-center pt-2">
+                                    <small class="text-muted d-block fw-medium">{{ item.product.store.name }} | {{ item.product.store.city }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
                 </div>
-                <div class="mt-auto text-center pt-2">
-                  <small class="text-muted d-block fw-medium">{{ p.store.name }} | {{ p.store.city }}</small>
-                </div>
-              </div>
+                {% endfor %}
             </div>
-          </a>
         </div>
-        {% endfor %}
-      </div>
+        <div class="text-center mt-4 mt-sm-5">
+            <a href="{% url 'all_products' %}?filter=featured"
+               class="btn btn-light btn-lg px-5 py-2 rounded-pill shadow fw-bold">
+                View All Featured
+            </a>
+        </div>
     </div>
-    <div class="text-center mt-3">
-      <a href="{% url 'all_products' %}?filter=featured"
-         class="btn btn-light btn-lg px-5 rounded-pill shadow fw-bold">
-        View All Featured
-      </a>
-    </div>
-  </div>
 </section>
 {% endif %}
 
-<style>/* EXACT 5 CARDS - NO PARTIAL EVER */
+<!-- PRODUCT SCROLL STYLES -->
+<style>
 .product-scroll {
-  display: grid;
-  grid-auto-flow: column;
-  gap: 20px;
-  grid-auto-columns: calc((100% - (4 * 20px)) / 5);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  padding-bottom: 8px;
+    display: grid;
+    grid-auto-flow: column;
+    gap: 20px;
+    grid-auto-columns: calc((100% - (4 * 20px)) / 5);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding-bottom: 8px;
 }
 .product-card {
-  scroll-snap-align: start;
+    scroll-snap-align: start;
 }
-/* Scrollbar */
 .product-scroll::-webkit-scrollbar {
-  height: 4px;
+    height: 4px;
 }
 .product-scroll::-webkit-scrollbar-thumb {
-  background: #d1d1d1;
-  border-radius: 5px;
+    background: #d1d1d1;
+    border-radius: 5px;
 }
-/* Hover effect */
 .hover-card {
-  transition: transform .25s ease, box-shadow .25s ease;
+    transition: transform .25s ease, box-shadow .25s ease;
 }
 .hover-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 14px 28px rgba(0,0,0,.14);
+    transform: translateY(-5px);
+    box-shadow: 0 14px 28px rgba(0,0,0,.14);
 }
-/* RESPONSIVE TUNING */
 @media (max-width: 1200px) {
-  .product-scroll {
-    gap: 12px;
-    grid-auto-columns: calc((100% - (3 * 12px)) / 4);
-  }
+    .product-scroll {
+        gap: 12px;
+        grid-auto-columns: calc((100% - (3 * 12px)) / 4);
+    }
 }
 @media (max-width: 768px) {
-  .product-scroll {
-    gap: 12px;
-    grid-auto-columns: calc((100% - (1 * 12px)) / 2);
-  }
+    .product-scroll {
+        gap: 12px;
+        grid-auto-columns: calc((100% - (1 * 12px)) / 2);
+    }
 }
 </style>
 
-<!-- CATEGORIES -->
-<section class="py-3" style="background-color: rgb(21, 47, 70);">
-  <div class="container-fluid px-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h2 class="text-white fw-bold fs-2 mb-0">Shop by Category</h2>
-      <a href="{% url 'categories_page' %}"
-         class="btn btn-outline-danger fw-bold rounded-pill px-4 ripple">
-        View All
-      </a>
-    </div>
-    <div class="position-relative">
-      <div class="category-scroll">
-        {% for cat in categories_all %}
-        <div class="category-card">
-          <a href="{% url 'all_products' %}?category={{ cat.slug }}"
-             class="d-flex flex-column align-items-center text-decoration-none">
-            {% if cat.image %}
-            <img
-              src="{{ cat.image.url }}"
-              loading="lazy"
-              class="rounded-circle shadow-lg border border-4 border-white"
-              alt="{{ cat.name }}">
-            {% else %}
-            <div class="fallback-circle d-flex align-items-center justify-content-center rounded-circle shadow-lg border border-4 border-white">
-              <i class="fas fa-tags text-white fs-3"></i>
-            </div>
-            {% endif %}
-            <h6 class="fw-bold text-white mt-3 text-center">{{ cat.name }}</h6>
-          </a>
+<!-- CATEGORIES - SCROLL -->
+<section class="py-3 py-sm-5" style="background-color: rgb(21, 47, 70);">
+    <div class="container-fluid px-2 px-sm-3 px-lg-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="text-white fw-bold fs-2 mb-0">Shop by Category</h2>
+            <a href="{% url 'categories_page' %}"
+               class="btn btn-outline-danger fw-bold rounded-pill px-4 ripple">
+                View All
+            </a>
         </div>
-        {% endfor %}
-      </div>
+        <div class="position-relative">
+            <div class="category-scroll">
+                {% for cat in categories_all %}
+                <div class="category-card">
+                    <a href="{% url 'all_products' %}?category={{ cat.slug }}"
+                       class="d-flex flex-column align-items-center text-decoration-none">
+                        {% if cat.image %}
+                        <img
+                            src="{{ cat.image.url }}"
+                            loading="lazy"
+                            class="rounded-circle shadow-lg border border-4 border-white"
+                            alt="{{ cat.name }}">
+                        {% else %}
+                        <div class="fallback-circle d-flex align-items-center justify-content-center rounded-circle shadow-lg border border-4 border-white">
+                            <i class="fas fa-tags text-white fs-3"></i>
+                        </div>
+                        {% endif %}
+                        <h6 class="fw-bold text-white mt-3 text-center">{{ cat.name }}</h6>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
-  </div>
 </section>
 
-<style>/* CATEGORY SCROLL - NO PARTIAL EVER */
+<style>
 .category-scroll {
-  display: grid;
-  grid-auto-flow: column;
-  gap: 24px;
-  grid-auto-columns: calc((100% - (7 * 24px)) / 8);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  padding-bottom: 10px;
+    display: grid;
+    grid-auto-flow: column;
+    gap: 24px;
+    grid-auto-columns: calc((100% - (7 * 24px)) / 8);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding-bottom: 10px;
 }
 .category-card {
-  scroll-snap-align: start;
-  text-align: center;
+    scroll-snap-align: start;
+    text-align: center;
 }
-/* Category image size */
 .category-card img,
 .fallback-circle {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
 }
-/* Fallback gradient */
 .fallback-circle {
-  background: linear-gradient(135deg, #ec4899, #f43f5e);
+    background: linear-gradient(135deg, #ec4899, #f43f5e);
 }
-/* Scrollbar */
 .category-scroll::-webkit-scrollbar {
-  height: 4px;
+    height: 4px;
 }
 .category-scroll::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.4);
-  border-radius: 5px;
+    background: rgba(255,255,255,0.4);
+    border-radius: 5px;
 }
-/* Hover */
 .category-card a:hover img {
-  transform: scale(1.06);
+    transform: scale(1.06);
 }
 .category-card img {
-  transition: transform .25s ease;
+    transition: transform .25s ease;
 }
-/* RESPONSIVE */
 @media (max-width: 1200px) {
-  .category-scroll {
-    grid-auto-columns: calc((100% - (5 * 20px)) / 6);
-    gap: 20px;
-  }
+    .category-scroll {
+        grid-auto-columns: calc((100% - (5 * 20px)) / 6);
+        gap: 20px;
+    }
 }
 @media (max-width: 768px) {
-  .category-scroll {
-    grid-auto-columns: calc((100% - (3 * 16px)) / 3);
-    gap: 16px;
-  }
+    .category-scroll {
+        grid-auto-columns: calc((100% - (3 * 16px)) / 3);
+        gap: 16px;
+    }
 }
 </style>
 
 <!-- OUR STORES -->
-<section class="py-3 bg-light">
-    <div class="container-fluid px-4">
-        <h2 class="text-center mb-3 text-dark fw-bold fs-1" data-aos="zoom-in">Our Stores</h2>
-        <div class="row g-4 justify-content-center">
+<section class="py-3 py-sm-5 bg-light">
+    <div class="container-fluid px-2 px-sm-3 px-lg-5">
+        <h2 class="text-center mb-3 mb-sm-4 text-dark fw-bold fs-1" data-aos="zoom-in">Our Stores</h2>
+        <div class="row g-3 g-sm-4 justify-content-center">
             {% for store in stores %}
-            <div class="col-lg-3 col-md-4 col-6" data-aos="flip-left">
+            <div class="col-6 col-sm-4 col-md-4 col-lg-3" data-aos="flip-left">
                 <div class="card h-100 text-center shadow-sm border-0 hover-card ripple">
                     {% if store.logo %}
                     <img src="{{ store.logo.url }}" class="card-img-top p-3" style="height:160px;object-fit:contain;" loading="lazy" fetchpriority="high" alt="{{ store.name }}">
@@ -717,7 +831,7 @@
             </div>
             {% endfor %}
         </div>
-        <div class="text-center mt-3">
+        <div class="text-center mt-4 mt-sm-5">
             <a href="/stores/" class="btn btn-light btn-lg px-5 py-3 rounded-pill shadow-lg text-dark fw-bold ripple">View All Stores</a>
         </div>
     </div>

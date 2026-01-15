@@ -521,41 +521,65 @@ class StoreBanner(models.Model):
     def __str__(self):
         return f"{self.store.name} - Banner"
 
-
 class Lead(models.Model):
     STATUS_CHOICES = [
         ('new', 'New Enquiry'),
         ('contacted', 'Contacted'),
         ('converted', 'Converted'),
-        ('just enquiry', 'Just Enquiry')
+        ('just enquiry', 'Just Enquiry'),
     ]
-    
+
     uid = models.UUIDField(default=uuid.uuid4, editable=False)
-    store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='leads')
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True, related_name='leads')
-    variant = models.ForeignKey(ProductVariant, on_delete=models.SET_NULL, null=True, blank=True, related_name='leads')  # NEW FIELD
-    
+    store = models.ForeignKey(
+        'Store',
+        on_delete=models.CASCADE,
+        related_name='leads'
+    )
+    product = models.ForeignKey(
+        'Product',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='leads'
+    )
+
+    product_display_name = models.CharField(
+        max_length=500,
+        blank=True,
+        null=True,
+        help_text="Combined product name + selected variant (if any)"
+    )
+
     customer_name = models.CharField(max_length=100)
     phone = models.CharField(max_length=15)
     city = models.CharField(max_length=100, blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
+    
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='new'
+    )
+    
     source = models.CharField(max_length=20, default='form')
     notes = models.TextField(blank=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
 
     def created_at_ist(self):
         return localtime(self.created_at).strftime('%d %b %Y, %I:%M %p')
     created_at_ist.short_description = 'Enquiry Time (IST)'
 
-    def __str__(self):
-        variant_name = f" ({self.variant.get_display_title()})" if self.variant else ""
-        return f"{self.customer_name} - {self.product.name if self.product else 'General'}{variant_name} ({self.store.name})"
-
     def get_product_display(self):
-        if self.variant:
-            return f"{self.product.name} — {self.variant.get_display_title()}"
-        return self.product.name if self.product else "General Enquiry"
+        if self.product_display_name:
+            return self.product_display_name.strip()
+        if self.product and self.product.name:
+            return self.product.name.strip()
+        return "General Enquiry"
 
+    def __str__(self):
+        product_part = self.get_product_display()
+        return f"{self.customer_name} - {product_part} ({self.store.name})"
+    
     def get_status_display(self):
         return dict(self.STATUS_CHOICES).get(self.status, self.status)
 
@@ -564,9 +588,12 @@ class Lead(models.Model):
             models.Index(fields=['-created_at']),
             models.Index(fields=['status', 'store']),
             models.Index(fields=['product']),
-            models.Index(fields=['variant']),  # For filtering by variant
+            models.Index(fields=['phone']),           # useful for duplicate checks
+            models.Index(fields=['created_at', 'store']),
         ]
         ordering = ['-created_at']
+        verbose_name = 'Lead / Enquiry'
+        verbose_name_plural = 'Leads / Enquiries'
 
 
 class SiteSettings(models.Model):

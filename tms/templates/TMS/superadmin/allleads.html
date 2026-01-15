@@ -1,13 +1,13 @@
 {% extends 'TMS/superadmin/base_superadmin.html' %}
-{% block title %}All Leads{% endblock %}
+{% block title %}All Leads - TMS Superadmin{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-2">
 
-
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
         <div>
-            <h3 class="mb-1">All Leads</h3>
+            <h3 class="mb-1">All Leads Management</h3>
+            <small class="text-muted">Total: {{ leads.paginator.count }}</small>
         </div>
         <div class="d-flex gap-2 mt-2 mt-md-0 flex-wrap">
             <button class="btn btn-outline-secondary btn-sm rounded-pill position-relative" onclick="toggleFilter()">
@@ -18,65 +18,65 @@
                     </span>
                 {% endif %}
             </button>
-
             <a href="{% url 'export_all_leads' %}?{{ request.GET.urlencode }}" class="btn btn-success btn-sm rounded-pill">
-                <i class="fas fa-download"></i> Export
+                <i class="fas fa-download"></i> Export CSV
             </a>
-
-            {% if request.GET.store or request.GET.from or request.GET.to or request.GET.status %}
-            <a href="{% url 'all_leads' %}" class="btn btn-outline-danger btn-sm rounded-pill">
-                <i class="fas fa-times me-1"></i> Clear Filters
-            </a>
+            {% if request.GET %}
+                <a href="{% url 'all_leads' %}" class="btn btn-outline-danger btn-sm rounded-pill">
+                    <i class="fas fa-times me-1"></i> Clear All
+                </a>
             {% endif %}
         </div>
     </div>
 
     <!-- FILTER CARD -->
-    <div id="filterCard" class="card border-0 shadow-sm rounded-4 mb-3 d-none">
+    <div id="filterCard" class="card border-0 shadow-sm rounded-4 mb-4 d-none">
         <div class="card-body">
             <form method="get" class="row g-3 align-items-end" id="filterForm">
                 <div class="col-md-3">
-                    <label class="form-label small">Store</label>
+                    <label class="form-label small fw-bold">Store</label>
                     <select name="store" class="form-select form-select-sm">
                         <option value="">All Stores</option>
                         {% for s in stores %}
-                        <option value="{{ s.id }}" {% if current_store == s.id|stringformat:"s" %}selected{% endif %}>{{ s.name }}</option>
+                            <option value="{{ s.id }}" {% if current_store == s.id|stringformat:"s" %}selected{% endif %}>
+                                {{ s.name }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label small">From</label>
+                    <label class="form-label small fw-bold">From Date</label>
                     <input type="date" name="from" value="{{ from_date }}" class="form-control form-control-sm">
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label small">To</label>
+                    <label class="form-label small fw-bold">To Date</label>
                     <input type="date" name="to" value="{{ to_date }}" class="form-control form-control-sm">
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label small">Status</label>
+                    <label class="form-label small fw-bold">Status</label>
                     <select name="status" class="form-select form-select-sm">
-                        <option value="">All</option>
-                        <option value="new" {% if current_status == "new" %}selected{% endif %}>New</option>
+                        <option value="">All Status</option>
+                        <option value="new" {% if current_status == "new" %}selected{% endif %}>New Enquiry</option>
                         <option value="contacted" {% if current_status == "contacted" %}selected{% endif %}>Contacted</option>
                         <option value="converted" {% if current_status == "converted" %}selected{% endif %}>Converted</option>
                         <option value="just_enquiry" {% if current_status == "just_enquiry" %}selected{% endif %}>Just Enquiry</option>
                     </select>
                 </div>
-                <div class="col-md-2 text-end">
-                    <button type="submit" class="btn btn-primary btn-sm w-100 rounded-pill">Apply</button>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary btn-sm w-100 rounded-pill">
+                        <i class="fas fa-check"></i> Apply
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- SEARCH -->
-    <div class="mb-2">
-        <input type="text" id="searchInput"
-               class="form-control rounded-pill px-4"
-               placeholder="Search leads by name, phone, product or store">
+    <!-- CLIENT-SIDE SEARCH -->
+    <div class="mb-4">
+        <input type="text" id="searchInput" class="form-control rounded-pill px-4 shadow-sm"
+               placeholder="Search by customer name, phone, product/variant, store...">
     </div>
 
-   
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0" id="leadsTable">
@@ -86,49 +86,58 @@
                         <th class="text-nowrap">Store</th>
                         <th class="text-nowrap">Customer</th>
                         <th class="text-nowrap">Phone</th>
-                        <th class="text-nowrap">Place</th>
-                        <th class="text-nowrap">Product</th>
-                        <th class="text-center text-nowrap" style="width: 110px;">Status</th>
+                        <th class="text-nowrap">City</th>
+                        <th class="text-nowrap">Product / Variant</th>
+                        <th class="text-center text-nowrap" style="width: 120px;">Status</th>
                     </tr>
                 </thead>
                 <tbody>
                 {% for lead in leads %}
                 <tr class="lead-row"
-                    data-name="{{ lead.customer_name|lower }}"
-                    data-phone="{{ lead.phone }}"
-                    data-product="{{ lead.product.name|default:''|lower }}"
-                    data-store="{{ lead.store.name|lower }}">
+                    data-name="{{ lead.customer_name|lower|default:'' }}"
+                    data-phone="{{ lead.phone|default:'' }}"
+                    data-product="{% if lead.product %}{{ lead.product_display_name|default:lead.product.name|default:''|lower }}{% else %}general enquiry{% endif %}"
+                    data-store="{% if lead.store %}{{ lead.store.name|default:''|lower }}{% else %}no store{% endif %}">
                     <td class="text-nowrap align-top">
                         <div class="fw-semibold">{{ lead.created_at|date:"d M Y" }}</div>
                         <small class="text-muted">{{ lead.created_at|time:"h:i A" }}</small>
                     </td>
                     <td class="align-top" style="min-width: 140px;">
-                        <div class="text-wrap">{{ lead.store.name }}</div>
+                        {% if lead.store %}
+                            {{ lead.store.name }}
+                        {% else %}
+                            (No Store)
+                        {% endif %}
                     </td>
                     <td class="align-top" style="min-width: 150px;">
-                        <div class="fw-semibold text-wrap">{{ lead.customer_name }}</div>
+                        <div class="fw-semibold">{{ lead.customer_name|default:"-" }}</div>
                     </td>
                     <td class="text-nowrap align-top">
-                        <a href="tel:{{ lead.phone }}" class="text-decoration-none fw-semibold">
-                            {{ lead.phone }}
+                        <a href="tel:{{ lead.phone|default:'' }}" class="text-decoration-none fw-semibold text-dark">
+                            {{ lead.phone|default:"-" }}
                         </a>
                     </td>
                     <td class="align-top" style="min-width: 100px;">
-                        <div class="text-wrap">{{ lead.city|default:"-" }}</div>
+                        {{ lead.city|default:"-" }}
                     </td>
-                    <td class="align-top" style="min-width: 180px;">
-                        <div class="text-wrap">{{ lead.product.name|default:"General Enquiry" }}</div>
+                    <td class="align-top" style="min-width: 220px;">
+                        {% if lead.product %}
+                            {{ lead.product_display_name|default:lead.product.name|default:"-" }}
+                        {% else %}
+                            General Enquiry
+                        {% endif %}
                     </td>
                     <td class="text-center align-top">
-                        <span class="status-pill status-{{ lead.status }} px-3 py-1 small text-nowrap">
-                            {{ lead.get_status_display }}
+                        <span class="status-pill status-{{ lead.status|default:'unknown' }} px-3 py-1 small text-nowrap">
+                            {{ lead.get_status_display|default:"Unknown" }}
                         </span>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
                     <td colspan="7" class="text-center py-5 text-muted">
-                        No leads found
+                        <i class="fas fa-inbox fs-1 opacity-50 mb-3"></i><br>
+                        No leads found with current filters
                     </td>
                 </tr>
                 {% endfor %}
@@ -136,27 +145,24 @@
             </table>
         </div>
 
-     
         {% if leads.has_other_pages %}
         <div class="card-footer bg-white border-0 py-4">
             <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center mb-3">
+                <ul class="pagination justify-content-center mb-0">
                     {% if leads.has_previous %}
                         <li class="page-item"><a class="page-link rounded-pill mx-1" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode|slice:":-&page=" }}{% endif %}&page=1">First</a></li>
                         <li class="page-item"><a class="page-link rounded-pill mx-1" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode|slice:":-&page=" }}{% endif %}&page={{ leads.previous_page_number }}">Prev</a></li>
                     {% endif %}
-
                     <li class="page-item active">
                         <span class="page-link rounded-pill bg-primary border-primary mx-1">{{ leads.number }}</span>
                     </li>
-
                     {% if leads.has_next %}
                         <li class="page-item"><a class="page-link rounded-pill mx-1" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode|slice:":-&page=" }}{% endif %}&page={{ leads.next_page_number }}">Next</a></li>
                         <li class="page-item"><a class="page-link rounded-pill mx-1" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode|slice:":-&page=" }}{% endif %}&page={{ leads.paginator.num_pages }}">Last</a></li>
                     {% endif %}
                 </ul>
-                <p class="text-center text-muted small mb-0">
-                    Showing {{ leads.start_index }} - {{ leads.end_index }} of {{ leads.paginator.count }} leads
+                <p class="text-center text-muted small mt-3 mb-0">
+                    Showing {{ leads.start_index }}–{{ leads.end_index }} of {{ leads.paginator.count }} leads
                 </p>
             </nav>
         </div>
@@ -171,13 +177,13 @@ function toggleFilter() {
 
 document.getElementById('searchInput').addEventListener('input', function () {
     const q = this.value.toLowerCase().trim();
-    document.querySelectorAll('.lead-row').forEach(r => {
-        const matches = 
-            r.dataset.name.includes(q) ||
-            r.dataset.phone.includes(q) ||
-            r.dataset.product.includes(q) ||
-            r.dataset.store.includes(q);
-        r.style.display = matches || q === '' ? '' : 'none';
+    document.querySelectorAll('.lead-row').forEach(row => {
+        const matches =
+            (row.dataset.name || '').includes(q) ||
+            (row.dataset.phone || '').includes(q) ||
+            (row.dataset.product || '').includes(q) ||
+            (row.dataset.store || '').includes(q);
+        row.style.display = matches || q === '' ? '' : 'none';
     });
 });
 </script>
@@ -188,64 +194,32 @@ document.getElementById('searchInput').addEventListener('input', function () {
     font-weight: 600;
     font-size: 0.9rem;
     vertical-align: middle;
+    background: #f1f3f5;
 }
-
 .table tbody td {
     vertical-align: top;
-    font-size: 0.9rem;
-    padding: 0.75rem 0.5rem;
+    font-size: 0.92rem;
+    padding: 0.85rem 0.6rem;
 }
-
-
 .text-wrap {
     word-break: break-word;
-    hyphens: auto;
 }
-
 .table tbody tr:hover {
-    background: #f8fbff !important;
+    background: #f8f9ff !important;
 }
-
 .status-pill {
     display: inline-block;
-    padding: 5px 14px;
+    padding: 6px 14px;
     border-radius: 20px;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 600;
-    min-width: 95px;
+    min-width: 100px;
     text-align: center;
 }
 .status-new { background: #fff3cd; color: #856404; }
 .status-contacted { background: #e7f1ff; color: #084298; }
 .status-converted { background: #d4edda; color: #155724; }
 .status-just_enquiry { background: #f8f9fa; color: #495057; }
-
-
-@media (min-width: 992px) {
-    .table-responsive {
-        overflow-x: hidden !important;
-    }
-    
-   
-    td:nth-child(2), td:nth-child(3), td:nth-child(6) {
-        min-width: 160px;
-    }
-}
-
-
-@media (max-width: 991px) {
-    .table-responsive {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-}
-.position-relative .bg-danger {
-    animation: pulse 2s infinite;
-}
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
-    70% { box-shadow: 0 0 0 8px rgba(220, 53, 69, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
-}
+.status-unknown { background: #e2e3e5; color: #495057; }
 </style>
 {% endblock %}

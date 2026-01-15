@@ -64,24 +64,37 @@
         <div class="col">
             <div class="card h-100 border-0 rounded-4 overflow-hidden shadow-sm hover-lift transition-all">
                 <div class="ratio ratio-1x1 bg-light position-relative">
-                    <!-- Image Logic -->
+                    <!-- Improved Image Logic: Variant → fallback to product main image -->
                     {% if p.has_variants %}
-                        <!-- Variable product: prefer first variant image -->
-                        {% if p.variants.exists and p.variants.first.image %}
-                            <img src="{{ p.variants.first.image.url }}" loading="lazy" decoding="async" 
-                                 class="object-fit-cover w-100 h-100" alt="{{ p.name }}">
+                        {% if p.variants.exists %}
+                            {% with first_variant_image=p.variants.first.image %}
+                                {% if first_variant_image %}
+                                    <img src="{{ first_variant_image.url }}" loading="lazy" decoding="async" 
+                                         class="object-fit-cover w-100 h-100" alt="{{ p.name }}">
+                                {% else %}
+                                    <!-- FALLBACK: No variant image → use product's main/first image -->
+                                    {% if p.main_image_cached and p.main_image_cached.0 %}
+                                        <img src="{{ p.main_image_cached.0.image.url }}" loading="lazy" decoding="async" 
+                                             class="object-fit-cover w-100 h-100" alt="{{ p.name }}">
+                                    {% else %}
+                                        <div class="d-flex align-items-center justify-content-center h-100 bg-light">
+                                            <i class="fas fa-layer-group text-muted opacity-50" style="font-size: 4rem;"></i>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endwith %}
                         {% else %}
-                            <div class="d-flex align-items-center justify-content-center h-100">
+                            <div class="d-flex align-items-center justify-content-center h-100 bg-light">
                                 <i class="fas fa-layer-group text-muted opacity-50" style="font-size: 4rem;"></i>
                             </div>
                         {% endif %}
                     {% else %}
-                        <!-- Simple product: use main image -->
-                        {% if p.main_image_cached %}
+                        <!-- Simple product: always use main image -->
+                        {% if p.main_image_cached and p.main_image_cached.0 %}
                             <img src="{{ p.main_image_cached.0.image.url }}" loading="lazy" decoding="async" 
                                  class="object-fit-cover w-100 h-100" alt="{{ p.name }}">
                         {% else %}
-                            <div class="d-flex align-items-center justify-content-center h-100">
+                            <div class="d-flex align-items-center justify-content-center h-100 bg-light">
                                 <i class="fas fa-image text-muted opacity-50" style="font-size: 4rem;"></i>
                             </div>
                         {% endif %}
@@ -99,7 +112,7 @@
                         {% if p.call_for_price %}
                             <span class="badge text-white px-3 py-2 rounded-pill shadow" style="background: #ff6b6b;">Call for Price</span>
                         {% elif p.has_variants and p.min_variant_price %}
-                            <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow">From ₹{{ p.min_variant_price|floatformat:0 }}</span>
+                            <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow">From &#8377; {{ p.min_variant_price|floatformat:0 }}</span>
                         {% elif p.offer_price and p.offer_price < p.regular_price %}
                             <span class="badge bg-danger text-white px-3 py-2 rounded-pill shadow">OFFER</span>
                         {% elif p.is_best_seller %}
@@ -125,16 +138,16 @@
                             <span class="text-primary fw-bold">Call for Price</span>
                         {% elif p.has_variants %}
                             {% if p.min_variant_price %}
-                                <span class="text-success fw-bold fs-5">From ₹{{ p.min_variant_price|floatformat:0 }}</span>
+                                <span class="text-success fw-bold fs-5">From &#8377; {{ p.min_variant_price|floatformat:0 }}</span>
                             {% else %}
                                 <span class="text-muted">Prices vary</span>
                             {% endif %}
                         {% else %}
                             {% if p.offer_price and p.offer_price < p.regular_price %}
-                                <span class="text-success fw-bold fs-5">₹{{ p.offer_price|floatformat:0 }}</span>
-                                <small class="text-muted text-decoration-line-through ms-1">₹{{ p.regular_price|floatformat:0 }}</small>
+                                <span class="text-success fw-bold fs-5">&#8377; {{ p.offer_price|floatformat:0 }}</span>
+                                <small class="text-muted text-decoration-line-through ms-1">&#8377;{{ p.regular_price|floatformat:0 }}</small>
                             {% else %}
-                                <span class="text-success fw-bold fs-5">₹{{ p.regular_price|floatformat:0 }}</span>
+                                <span class="text-success fw-bold fs-5">&#8377;{{ p.regular_price|floatformat:0 }}</span>
                             {% endif %}
                         {% endif %}
                     </p>
@@ -191,13 +204,12 @@
     {% endif %}
 </div>
 
-
-    <!-- ULTRA PREMIUM & COMPACT ADD PRODUCT MODAL -->
+<!-- ULTRA PREMIUM & COMPACT ADD PRODUCT MODAL -->
 <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
         <div class="modal-content overflow-hidden border-0" style="border-radius: 28px; box-shadow: 0 25px 80px rgba(0,0,0,0.18);">
             <!-- Premium Header -->
-            <div class="modal-header position-relative border-0 " style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 28px 28px 0 0;">
+            <div class="modal-header position-relative border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 28px 28px 0 0;">
                 <div class="text-center w-100">
                     <h4 class="modal-title text-white mb-0">
                         <i class="fas fa-plus-circle me-1"></i>Add New Product
@@ -245,11 +257,11 @@
                                 <h5 class="fw-bold text-primary mb-4"><i class="fas fa-tags me-2"></i>Pricing</h5>
 
                                 <div class="mb-4">
-                                    <label class="form-label fw-bold">Regular Price ()</label>
+                                    <label class="form-label fw-bold">Regular Price <span class="text-danger">*</span></label>
                                     {{ form.regular_price }}
                                 </div>
                                 <div class="mb-4">
-                                    <label class="form-label fw-bold">Offer Price () <small class="text-muted">optional</small></label>
+                                    <label class="form-label fw-bold">Offer Price <small class="text-muted">optional</small></label>
                                     {{ form.offer_price }}
                                 </div>
                                 <div class="mb-4">
@@ -294,46 +306,43 @@
                         </div>
                     </div>
 
-                    <!-- Specifications - PREMIUM & CLEAN -->
-                   <!-- Specifications -->
-                        <div class="bg-white rounded-4 shadow-sm p-3 mt-2">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="fw-bold text-primary mb-0"><i class="fas fa-th-list me-2"></i>Specifications</h5>
-                                <button type="button" class="btn btn-outline-success rounded-pill px-4 py-2" id="add-spec">
-                                    <i class="fas fa-plus me-2"></i>Add Specification
-                                </button>
-                            </div>
-
-                            {{ spec_formset.management_form }}
-                            <div id="spec-container">
-                                {% for form in spec_formset %}
-                                <div class="row g-3 mb-3 align-items-end spec-row">
-                                    {% if form.instance.pk %}
-                                        {{ form.id }}
-                                    {% endif %}
-                                    <div class="col-12 col-md-5">
-                                        <input type="text" class="form-control rounded-pill" placeholder="e.g. Material" name="{{ form.name.html_name }}" value="{{ form.name.value|default:'' }}">
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <input type="text" class="form-control rounded-pill" placeholder="e.g. Solid Teak Wood" name="{{ form.value.html_name }}" value="{{ form.value.value|default:'' }}">
-                                    </div>
-                                    <div class="col-12 col-md-1 text-md-end">
-                                        <button type="button" class="btn btn-outline-danger rounded-pill px-3 remove-spec">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                        {% if form.instance.pk %}
-                                            <div class="form-check mt-2">
-                                                {{ form.DELETE }}
-                                                <label class="form-check-label small text-danger">Delete</label>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
+                    <!-- Specifications -->
+                    <div class="bg-white rounded-4 shadow-sm p-3 mt-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold text-primary mb-0"><i class="fas fa-th-list me-2"></i>Specifications</h5>
+                            <button type="button" class="btn btn-outline-success rounded-pill px-4 py-2" id="add-spec">
+                                <i class="fas fa-plus me-2"></i>Add Specification
+                            </button>
                         </div>
 
-
+                        {{ spec_formset.management_form }}
+                        <div id="spec-container">
+                            {% for form in spec_formset %}
+                            <div class="row g-3 mb-3 align-items-end spec-row">
+                                {% if form.instance.pk %}
+                                    {{ form.id }}
+                                {% endif %}
+                                <div class="col-12 col-md-5">
+                                    <input type="text" class="form-control rounded-pill" placeholder="e.g. Material" name="{{ form.name.html_name }}" value="{{ form.name.value|default:'' }}">
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <input type="text" class="form-control rounded-pill" placeholder="e.g. Solid Teak Wood" name="{{ form.value.html_name }}" value="{{ form.value.value|default:'' }}">
+                                </div>
+                                <div class="col-12 col-md-1 text-md-end">
+                                    <button type="button" class="btn btn-outline-danger rounded-pill px-3 remove-spec">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                    {% if form.instance.pk %}
+                                        <div class="form-check mt-2">
+                                            {{ form.DELETE }}
+                                            <label class="form-check-label small text-danger">Delete</label>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
 
                     <!-- Media Upload -->
                     <div class="row g-4 mt-4">
@@ -360,7 +369,6 @@
     </div>
 </div>
 
-
 <style>
     .hover-lift { transition: all 0.3s ease; }
     .hover-lift:hover { transform: translateY(-12px); box-shadow: 0 25px 50px rgba(0,0,0,0.2)!important; }
@@ -370,7 +378,7 @@
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     const container = document.getElementById('spec-container');
     const addBtn = document.getElementById('add-spec');
     const totalForms = document.querySelector('input[name$="-TOTAL_FORMS"]');
@@ -399,7 +407,7 @@
         const newRow = getEmptyRow();
 
         newRow.querySelectorAll('input').forEach((input, i) => {
-            input.name = `form-${count}-${i === 0 ? 'name' : 'value'}`;
+            input.name = `spec-${count}-${i === 0 ? 'name' : 'value'}`;
         });
 
         container.appendChild(newRow);
@@ -422,7 +430,6 @@
         }
     });
 });
-
 
 document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('searchInput');

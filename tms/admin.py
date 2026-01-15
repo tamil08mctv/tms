@@ -39,7 +39,7 @@ class ProductSpecificationInline(admin.TabularInline):
     extra = 3
     fields = ('name', 'value')
 
-# Variant Inlines - FULLY NESTED
+# Variant Inlines - FULLY NESTED (kept from new)
 class VariantValueInline(admin.TabularInline):
     model = VariantValue
     extra = 2
@@ -54,7 +54,7 @@ class ProductVariantImageInline(admin.TabularInline):
     model = ProductVariantImage
     extra = 3
     fields = ('image', 'is_main', 'sort_order')
-    readonly_fields = ('image',)  # Optional: make image preview if needed
+    readonly_fields = ('image',)  # Optional: add preview if needed
 
 class ProductVariantInline(admin.TabularInline):
     model = ProductVariant
@@ -141,7 +141,7 @@ class ProductAdmin(admin.ModelAdmin):
         if obj.call_for_price:
             return "Call for Best Price"
         price = obj.offer_price or obj.regular_price
-        return f"₹{price}" if price is not None else "—"
+        return f"&#8377; {price}" if price is not None else "—"
     admin_price.short_description = "Price"
 
 @admin.register(StoreBanner)
@@ -183,3 +183,10 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         if not SiteSettings.objects.exists():
             return redirect('admin:tms_sitesettings_add')
         return super().changelist_view(request, extra_context=extra_context)
+
+# Register remaining models (simple, no customizations)
+admin.site.register(VariantAttribute)
+admin.site.register(ProductVariant)
+admin.site.register(VariantValue)
+admin.site.register(ProductVariantImage)
+admin.site.register(VariantSpecification)

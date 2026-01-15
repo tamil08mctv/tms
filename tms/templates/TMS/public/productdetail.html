@@ -1,9 +1,11 @@
 {% extends 'TMS/base.html' %}
 {% load static %}
+
 {% block title %}{{ product.name }} - {{ product.store.name }}{% endblock %}
 
 {% block content %}
 
+<!-- Structured Data -->
 {% block structured_data %}
 <script type="application/ld+json">
 {
@@ -11,17 +13,14 @@
     "@type": "Product",
     "name": "{{ product.name|escapejs }}",
     "description": "{{ product.short_desc|escapejs }}",
-    "image": "{{ product.images.first.image.url|default:'https://via.placeholder.com/600' }}",
-    "brand": {
-        "@type": "Brand",
-        "name": "{{ product.store.name|escapejs }}"
-    },
+    "image": "{% if has_variants %}{{ default_variant.main_image|default:'https://via.placeholder.com/600' }}{% else %}{{ product.images.first.image.url|default:'https://via.placeholder.com/600' }}{% endif %}",
+    "brand": { "@type": "Brand", "name": "{{ product.store.name|escapejs }}" },
     "offers": {
         "@type": "Offer",
         "url": "{{ request.build_absolute_uri }}",
         "priceCurrency": "INR",
-        "price": "{% if product.offer_price %}{{ product.offer_price }}{% else %}{{ product.regular_price }}{% endif %}",
-        "priceValidUntil": "{% if product.is_deal_active %}{{ product.deal_end_date|date:'Y-m-d' }}{% else %}{{ '2026-12-31' }}{% endif %}",
+        "price": "{% if has_variants %}{% if default_variant.offer_price %}{{ default_variant.offer_price }}{% else %}{{ default_variant.regular_price }}{% endif %}{% else %}{% if product.offer_price %}{{ product.offer_price }}{% else %}{{ product.regular_price }}{% endif %}{% endif %}",
+        "priceValidUntil": "{% if product.is_deal_active %}{{ product.deal_end_date|date:'Y-m-d' }}{% else %}2026-12-31{% endif %}",
         "availability": "https://schema.org/InStock",
         "seller": {
             "@type": "Organization",
@@ -39,76 +38,62 @@
         "ratingValue": "{% if product.average_rating %}{{ product.average_rating }}{% else %}4.5{% endif %}",
         "reviewCount": "{% if product.review_count %}{{ product.review_count }}{% else %}10{% endif %}"
     },
-     {% if product.category %}
+    {% if product.category %}
     "category": "{{ product.category.name|escapejs }}",
     {% endif %}
     "url": "{{ request.build_absolute_uri }}"
 }
 </script>
-{% endblock %}
-<style>
-    .variant-btn.active { background-color: #28a745 !important; border-color: #28a745 !important; }
-    .hover-lift:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
-</style>
+{% endblock structured_data %}
 
 <meta name="description" content="{{ product.short_desc|truncatewords:30 }}. Available at {{ product.store.name }}, {{ product.store.city }}.">
-<div class="container-fluid px-2 px-md-3 py-3 bg-white">
-    <div class="row g-3 bg-white px-1">
-        
-        <!-- LEFT: IMAGE GALLERY -->
-        <div class="col-12 col-lg-5 bg-white">
-            <div class="sticky-top" style="top: 10px;">
-                <div class="row g-3">
-                    <!-- VERTICAL THUMBNAILS (Desktop only) -->
-                    <div class="col-auto d-none d-lg-block pe-2">
+
+<!-- DESKTOP VIEW -->
+<div class="container-fluid px-2 px-md-3 py-3 bg-white d-none d-lg-block">
+    <div class="row g-3">
+        <!-- LEFT: STICKY IMAGE GALLERY -->
+        <div class="col-lg-5">
+            <div class="sticky-top" style="top: 80px;">
+                <div class="row g-2">
+                    <!-- Vertical Thumbnails -->
+                    <div class="col-auto pe-0">
                         <div class="d-flex flex-column gap-2" id="thumbnailStrip" style="height: 420px; overflow-y: auto;">
-                            <!-- Variant-specific image first if exists -->
-                            {% if selected_variant and selected_variant.image %}
-                            <img src="{{ selected_variant.image.url }}" 
-                                 class="rounded-2 border border-2 border-success flex-shrink-0"
-                                 style="width: 70px; height: 70px; object-fit: cover; cursor: pointer;"
-                                 onclick="changeMainImage('{{ selected_variant.image.url }}', this)"
-                                 alt="Variant Thumbnail">
+                            {% if not has_variants %}
+                                {% for img in product.images.all %}
+                                <img src="{{ img.image.url }}"
+                                     class="rounded-2 border border-2 flex-shrink-0 {% if forloop.first %}border-primary{% else %}border-light{% endif %}"
+                                     style="width: 60px; height: 60px; object-fit: cover; cursor: pointer; transition: all 0.2s;"
+                                     onclick="changeMainImage('{{ img.image.url }}', this)"
+                                     onmouseover="previewImage('{{ img.image.url }}')"
+                                     alt="Thumbnail">
+                                {% endfor %}
                             {% endif %}
-                            
-                            {% for img in product.images.all %}
-                            <img src="{{ img.image.url }}" 
-                                 class="rounded-2 border border-2 flex-shrink-0 {% if forloop.first and not selected_variant.image %}border-success{% else %}border-light{% endif %}"
-                                 style="width: 70px; height: 70px; object-fit: cover; cursor: pointer;"
-                                 onclick="changeMainImage('{{ img.image.url }}', this)"
-                                 onmouseover="previewImage('{{ img.image.url }}')"
-                                 alt="Thumbnail">
-                            {% endfor %}
-                            
+                           
                             {% if product.video %}
-                            <div class="position-relative rounded-2 border border-2 border-light flex-shrink-0" 
-                                 style="width: 70px; height: 70px; cursor: pointer;"
-                                 onclick="playVideo()"
-                                 onmouseover="previewVideo()">
+                            <div class="position-relative rounded-2 border border-2 border-light flex-shrink-0"
+                                 style="width: 60px; height: 60px; cursor: pointer; transition: all 0.2s;"
+                                 onclick="playVideo()" onmouseover="previewVideo()">
                                 <div class="w-100 h-100 bg-dark rounded-2 d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-play-circle text-white fs-4"></i>
-                                </div>
-                                <div class="position-absolute bottom-0 start-0 w-100 bg-dark bg-opacity-75 text-white text-center py-1">
-                                    <small>VIDEO</small>
+                                    <i class="fas fa-play-circle text-white fs-5"></i>
                                 </div>
                             </div>
                             {% endif %}
                         </div>
                     </div>
-                    
-                    <!-- MAIN IMAGE WITH ZOOM -->
+                  
+                    <!-- Main Image -->
                     <div class="col">
-                        <div class="position-relative overflow-hidden bg-white shadow" id="mainImageContainer" style="height: 420px;">
+                        <div class="position-relative overflow-hidden bg-white border rounded-3" id="mainImageContainer" style="height: 420px;">
                             <div id="zoomArea" style="width: 100%; height: 100%; overflow: hidden; position: relative;">
-                                <img id="mainImage" 
-                                     src="{{ variant_image }}"
+                                <img id="mainImage"
+                                     src="{% if has_variants %}{{ default_variant.main_image|default:'https://via.placeholder.com/600' }}{% else %}{{ product.images.first.image.url|default:'https://via.placeholder.com/600' }}{% endif %}"
                                      class="img-fluid"
                                      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; cursor: crosshair;"
-                                     alt="{{ product.name }}{% if variant_title %} - {{ variant_title }}{% endif %}"
+                                     alt="{{ product.name }}"
                                      onmousemove="handleZoom(event)"
                                      onmouseleave="resetZoom()">
                             </div>
-                            
+                          
                             {% if product.video %}
                             <div id="videoPlayer" class="w-100 h-100 d-none position-absolute top-0 start-0 bg-black">
                                 <video controls class="w-100 h-100" id="productVideo" style="object-fit: contain;">
@@ -119,185 +104,167 @@
                                 </button>
                             </div>
                             {% endif %}
-                            
-                            <!-- Discount Badge -->
+                          
+                            <!-- Badges - FIXED: Use variant discount when variants exist -->
                             <div class="position-absolute top-0 start-0 p-3">
-                                {% if discount and discount > 0 %}
-                                <span class="badge bg-danger fs-6 px-3 py-2 rounded-pill shadow">{{ discount }}% OFF</span>
-                                {% endif %}
-                            </div>
-                            
-                            <!-- Stock Status -->
-                            <div class="position-absolute top-0 end-0 p-3">
-                                {% if in_stock %}
-                                <span class="badge bg-success fs-6 px-3 py-2 rounded-pill shadow">In Stock</span>
+                                {% if has_variants %}
+                                    {% if default_variant.discount_percent and default_variant.discount_percent > 0 %}
+                                        <span class="badge bg-danger fs-6 px-3 py-2 rounded-pill shadow animate-pulse fw-bold"
+                                              id="mainDiscountBadge">
+                                            {{ default_variant.discount_percent }}% OFF
+                                        </span>
+                                    {% endif %}
                                 {% else %}
-                                <span class="badge bg-secondary fs-6 px-3 py-2 rounded-pill shadow">Out of Stock</span>
+                                    {% if product.discount_percent and product.discount_percent > 0 %}
+                                        <span class="badge bg-danger fs-6 px-3 py-2 rounded-pill shadow animate-pulse fw-bold"
+                                              id="mainDiscountBadge">
+                                            {{ product.discount_percent }}% OFF
+                                        </span>
+                                    {% endif %}
                                 {% endif %}
                             </div>
                             
-                            <div id="zoomLens" class="d-none position-absolute border border-2 border-success" 
+                            <div id="zoomLens" class="d-none position-absolute border border-2 border-primary"
                                  style="width: 100px; height: 100px; background: rgba(255,255,255,0.3); pointer-events: none; z-index: 10;"></div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- ENQUIRY BUTTON (Desktop) -->
-                <div class="d-none d-lg-block mt-3">
-                    <div class="bg-white p-3 shadow-sm border text-center rounded-4">
-                        <button type="button" class="btn btn-warning fw-bold w-75 py-3 text-center" data-bs-toggle="modal" data-bs-target="#enquiryModal">
-                            <h5><i class="fab fa-whatsapp me-2"></i> BUY NOW</h5>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- HORIZONTAL THUMBNAILS (Mobile) -->
-                <div class="d-lg-none mt-3">
-                    <div class="d-flex gap-3 overflow-x-auto pb-2" style="min-height: 85px;">
-                        {% if selected_variant and selected_variant.image %}
-                        <img src="{{ selected_variant.image.url }}" 
-                             class="rounded-3 border border-2 border-success flex-shrink-0"
-                             style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
-                             onclick="changeMainImage('{{ selected_variant.image.url }}', this)"
-                             alt="Variant">
-                        {% endif %}
-                        
-                        {% for img in product.images.all %}
-                        <img src="{{ img.image.url }}" 
-                             class="rounded-3 border border-2 flex-shrink-0 {% if forloop.first and not selected_variant.image %}border-success{% else %}border-light{% endif %}"
-                             style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
-                             onclick="changeMainImage('{{ img.image.url }}', this)"
-                             alt="Thumbnail">
-                        {% endfor %}
-                        
-                        {% if product.video %}
-                        <div class="position-relative rounded-3 border border-2 border-light flex-shrink-0" 
-                             style="width: 80px; height: 80px; cursor: pointer;"
-                             onclick="playVideo()">
-                            <div class="w-100 h-100 bg-dark rounded-3 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-play-circle text-white fs-4"></i>
-                            </div>
-                            <div class="position-absolute bottom-0 start-0 w-100 bg-dark bg-opacity-75 text-white text-center py-1">
-                                <small>VIDEO</small>
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
+              
+                <!-- Desktop Buy Button -->
+                <div class="mt-3">
+                    <button type="button" class="btn btn-warning w-100 py-3 fw-bold fs-5 shadow-sm hover-scale" data-bs-toggle="modal" data-bs-target="#enquiryModal">
+                        <i class="fab fa-whatsapp me-2"></i> BUY NOW
+                    </button>
                 </div>
             </div>
         </div>
-        
-        <!-- RIGHT: PRODUCT DETAILS -->
-        <div class="col-12 col-lg-7 bg-white">
-            <div class="sticky-top" style="top: 15px;">
-                <!-- Product Name + Variant Title -->
-                <h1 class="h4 fw-bold text-dark mb-2">
-                    {{ product.name }}
-                    {% if variant_title and variant_title != "Standard Variant" %}
-                        <small class="text-primary"> - {{ variant_title }}</small>
-                    {% endif %}
-                </h1>
-                
-                <!-- Short Description -->
-                <p class="text-muted mb-3">{{ product.short_desc }}</p>
-                
-               <!-- VARIANT SELECTOR -->
-                {% if has_variants %}
-                <div class="card border-0 shadow-sm p-4 mb-4">
-                    <h5 class="fw-bold text-primary mb-4">Choose Variant</h5>
-                    <div class="row g-4">
-                        {% for attr in variant_attributes %}
-                        <div class="col-12 col-md-6">
-                            <label class="form-label fw-bold">{{ attr.name }}</label>
-                            <div class="d-flex flex-wrap gap-2">
-                                {% for variant in product.variants.all %}
-                                    {% for val in variant.values.all %}
-                                        {% if val.attribute == attr %}
-                                        <button type="button" 
-                                                class="btn btn-outline-primary variant-selector rounded-pill px-4 py-2"
-                                                data-attribute="{{ attr.name|lower }}"
-                                                data-value="{{ val.value }}">
-                                            {{ val.value }}
-                                        </button>
-                                        {% endif %}
-                                    {% endfor %}
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
-                
-                <!-- Price Section -->
-                <div class="mb-4">
+      
+        <!-- RIGHT: SCROLLABLE CONTENT -->
+        <div class="col-lg-7">
+            <div class="product-details-scroll">
+                <h1 class="h3 fw-bold text-dark mb-2 fade-in">{{ product.name }}</h1>
+                <p class="text-muted mb-3 fade-in">{{ product.short_desc }}</p>
+              
+                <!-- Price Section - FIXED -->
+                <div class="mb-3 fade-in">
                     <div class="d-flex align-items-center gap-3 mb-2">
                         <div>
-                            {% if display_offer %}
-                                <div class="d-flex align-items-center gap-3">
-                                    <span style="font-size: 20px; color: #878787; text-decoration: line-through;">&#8377; {{ display_regular|floatformat:0 }}</span>
-                                    <span class="text-success fs-3 fw-bold">&#8377; {{ display_offer|floatformat:0 }}</span>
-                                    {% if discount %}
-                                    <span class="badge bg-danger fs-5 px-3 py-2">{{ discount }}% OFF</span>
+                            {% if has_variants %}
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <span id="oldPrice" style="font-size: 20px; color: #878787; text-decoration: line-through; {% if not default_variant.offer_price or default_variant.offer_price >= default_variant.regular_price %}display:none;{% endif %}">
+                                        &#8377; <span id="oldPriceValue">{{ default_variant.regular_price|floatformat:0 }}</span>
+                                    </span>
+                                    <span class="text-success fs-3 fw-bold" id="currentPrice">&#8377; {{ default_variant.offer_price|default:default_variant.regular_price|floatformat:0 }}</span>
+                                    {% if default_variant.discount_percent and default_variant.discount_percent > 0 %}
+                                    <span class="badge bg-success px-2 py-1" id="discountBadge">
+                                        {{ default_variant.discount_percent }}% OFF
+                                    </span>
                                     {% endif %}
                                 </div>
                             {% else %}
-                                <span class="text-success fs-3 fw-bold">&#8377; {{ display_regular|floatformat:0 }}</span>
+                                {% if product.discount_percent and product.discount_percent > 0 %}
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <span style="font-size: 20px; color: #878787; text-decoration: line-through;">&#8377; {{ product.regular_price|floatformat:0 }}</span>
+                                        <span class="text-success fs-3 fw-bold">&#8377; {{ product.offer_price|floatformat:0 }}</span>
+                                        <span class="badge bg-success px-2 py-1">{{ product.discount_percent }}% OFF</span>
+                                    </div>
+                                {% else %}
+                                    <span class="text-success fs-3 fw-bold">&#8377; {{ product.regular_price|floatformat:0 }}</span>
+                                {% endif %}
                             {% endif %}
                         </div>
-                        
-                        <!-- Share Button -->
-                        <button id="shareBtn" class="btn rounded-circle shadow-sm" style="width:45px;height:45px;background:#f1f3f6;">
-                            <i class="bi bi-share-fill text-dark fs-5"></i>
+                      
+                        <button id="shareBtn" class="btn btn-light rounded-circle shadow-sm hover-scale"
+                                style="width:45px;height:45px;">
+                            <i class="bi bi-share-fill fs-5"></i>
                         </button>
                     </div>
                 </div>
-                
-                <!-- Store Info -->
-                <div class="row g-3 mb-4">
-                    <div class="col-12 col-md-6">
-                        <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-4">
-                            <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
-                                <i class="fas fa-store text-primary fs-4"></i>
+
+                <!-- VARIANTS -->
+                {% if has_variants and grouped_variants %}
+                <div class="mb-3 fade-in">
+                    <h5 class="fw-bold mb-3">Select Variant</h5>
+                    {% for attr, items in grouped_variants.items %}
+                    <div class="mb-3 variant-group" data-attr="{{ attr }}">
+                        <h6 class="fw-semibold mb-3 text-muted">{{ attr|title }}</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for item in items %}
+                            <button type="button"
+                                    class="btn variant-btn px-4 py-2 rounded-pill border fw-medium
+                                           {% if item.is_default %}active border-primary bg-primary text-white{% else %}border-secondary{% endif %}"
+                                    data-variant-id="{{ item.variant_id }}"
+                                    data-price="{{ item.price }}"
+                                    data-old-price="{{ item.old_price }}"
+                                    data-has-offer="{{ item.has_offer|yesno:'true,false' }}"
+                                    data-stock="{{ item.stock|yesno:'true,false' }}"
+                                    data-discount="{{ item.discount_percent|default:0 }}"
+                                    data-main-image="{{ item.main_image|default:'https://via.placeholder.com/600' }}"
+                                    data-images="{{ item.images|join:'|'|safe }}"
+                                    data-value="{{ item.value }}">
+                                {{ item.value }}
+                            </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <!-- Store Info -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="d-flex align-items-center gap-2 p-2 bg-light rounded-3 hover-lift-sm">
+                                <i class="fas fa-store text-primary fs-5"></i>
+                                <div>
+                                    <a href="/store/{{ product.store.slug }}/" class="text-decoration-none">
+                                        <small class="fw-bold text-dark d-block">{{ product.store.name }}</small>
+                                        <small class="text-muted">{{ product.store.city }}</small>
+                                    </a>
+                                </div>
                             </div>
-                            <div>
-                                <a href="/store/{{ product.store.slug }}/" class="text-decoration-none">
-                                    <span class="fw-bold text-dark d-block">{{ product.store.name }}</span>
-                                    <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i>{{ product.store.city }}</small>
-                                </a>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center gap-2 p-2 bg-success bg-opacity-10 rounded-3">
+                                <i class="fas fa-shield-alt text-success fs-5"></i>
+                                <div>
+                                    <small class="fw-bold text-success d-block">Assured</small>
+                                    <small class="text-muted">Quality Guaranteed</small>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-md-6">
-                        <div class="d-flex align-items-center gap-3 p-3 bg-success bg-opacity-10 rounded-4">
-                            <div class="bg-success bg-opacity-25 p-3 rounded-circle">
-                                <i class="fas fa-shield-alt text-success fs-4"></i>
-                            </div>
-                            <div>
-                                <span class="fw-bold text-success d-block">Assured</span>
-                                <small class="text-muted">Quality Guaranteed</small>
+
+                    <!-- Variant Specifications -->
+                    <div class="card border-0 shadow-sm mt-4" id="variantSpecsCard" style="display: none;">
+                        <div class="card-header bg-white border-0 py-2">
+                            <h6 class="fw-semibold mb-0">
+                                <i class="bi bi-list-check text-primary me-2"></i>
+                                Variant Specifications
+                            </h6>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="row g-2" id="variantSpecsContainer">
+                                <!-- Dynamically filled via JS -->
                             </div>
                         </div>
                     </div>
                 </div>
+                {% endif %}
 
-                <!-- Specifications & Description (same as before) -->
+                <!-- MAIN PRODUCT SPECIFICATIONS -->
                 {% if product.specifications.exists %}
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h6 class="fw-semibold text-dark mb-0 d-flex align-items-center gap-2">
-                            <i class="bi bi-list-check text-primary fs-5"></i> Highlights and Specs
-                        </h6>
+                <div class="card border-0 shadow-sm mb-3 fade-in">
+                    <div class="card-header bg-white border-0 py-2">
+                        <h6 class="fw-semibold mb-0"><i class="bi bi-list-check text-primary me-2"></i>Highlights</h6>
                     </div>
-                    <div class="card-body p-4">
-                        <div class="row g-3">
+                    <div class="card-body p-3">
+                        <div class="row g-2">
                             {% for spec in product.specifications.all|slice:":6" %}
-                            <div class="col-12 col-md-6">
-                                <div class="d-flex align-items-start gap-3 p-3 border-bottom">
+                            <div class="col-md-6">
+                                <div class="d-flex gap-2 p-2 border-bottom">
                                     <i class="fas fa-check text-success mt-1"></i>
                                     <div>
-                                        <span class="fw-bold text-dark small">{{ spec.name|title }}:</span>
-                                        <span class="text-muted small ms-2">{{ spec.value }}</span>
+                                        <span class="fw-bold small">{{ spec.name|title }}:</span>
+                                        <span class="text-muted small ms-1">{{ spec.value }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -305,19 +272,20 @@
                         </div>
                         
                         {% if product.specifications.count > 6 %}
-                        <div class="mt-4 text-center">
-                            <button class="btn btn-outline-primary rounded-pill px-5" type="button" data-bs-toggle="collapse" data-bs-target="#allSpecs">
-                                <i class="fas fa-chevron-down me-2"></i> View All ({{ product.specifications.count }})
+                        <div class="mt-2">
+                            <button class="btn btn-outline-primary btn-sm w-100" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#allSpecs">
+                                View All ({{ product.specifications.count }})
                             </button>
-                            <div class="collapse mt-4" id="allSpecs">
-                                <div class="row g-3">
+                            <div class="collapse mt-3" id="allSpecs">
+                                <div class="row g-2">
                                     {% for spec in product.specifications.all %}
-                                    <div class="col-12 col-md-6">
-                                        <div class="d-flex align-items-start gap-3 p-3 border-bottom">
+                                    <div class="col-md-6">
+                                        <div class="d-flex gap-2 p-2 border-bottom">
                                             <i class="fas fa-check text-success mt-1"></i>
                                             <div>
-                                                <span class="fw-bold text-dark small">{{ spec.name|title }}:</span>
-                                                <span class="text-muted small ms-2">{{ spec.value }}</span>
+                                                <span class="fw-bold small">{{ spec.name|title }}:</span>
+                                                <span class="text-muted small ms-1">{{ spec.value }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -330,18 +298,15 @@
                 </div>
                 {% endif %}
 
+                <!-- DESCRIPTION -->
                 {% if product.description %}
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h6 class="fw-semibold text-dark mb-0 d-flex align-items-center gap-2">
-                            <i class="bi bi-file-text text-primary fs-5"></i> Product Description
-                        </h6>
+                <div class="card border-0 shadow-sm mb-3 fade-in">
+                    <div class="card-header bg-white border-0 py-2">
+                        <h6 class="fw-semibold mb-0"><i class="bi bi-file-text text-primary me-2"></i>Description</h6>
                     </div>
-                    <div class="card-body p-4">
+                    <div class="card-body p-3">
                         <div id="raw-description" class="d-none">{{ product.description|safe }}</div>
-                        <div class="bg-light rounded-4 p-4 border-start border-5 border-success">
-                            <ul class="list-unstyled mb-0 text-muted" id="descriptionList"></ul>
-                        </div>
+                        <ul class="list-unstyled mb-0" id="descriptionList"></ul>
                     </div>
                 </div>
                 {% endif %}
@@ -350,12 +315,206 @@
     </div>
 </div>
 
-<!-- ENQUIRY MODAL - FINAL CLEAN VERSION -->
+<!-- MOBILE VIEW -->
+<div class="d-lg-none">
+    <!-- Main Image Slider -->
+    <div class="position-relative bg-white overflow-hidden" style="height: 380px;">
+        <div id="mobileSlider" class="d-flex h-100 will-change-transform transition-transform duration-300 ease-out" style="transform: translateX(0);">
+            {% if has_variants and default_variant.images.exists %}
+                {% for img in default_variant.images.all %}
+                <div class="flex-shrink-0 w-100 h-100">
+                    <img src="{{ img.image.url }}" class="w-100 h-100 object-contain" alt="{{ product.name }}">
+                </div>
+                {% endfor %}
+            {% else %}
+                {% for img in product.images.all %}
+                <div class="flex-shrink-0 w-100 h-100">
+                    <img src="{{ img.image.url }}" class="w-100 h-100 object-contain" alt="{{ product.name }}">
+                </div>
+                {% endfor %}
+            {% endif %}
+           
+            {% if product.video %}
+            <div class="flex-shrink-0 w-100 h-100 bg-black d-flex align-items-center justify-content-center">
+                <video controls class="w-100 h-100 object-contain" id="productVideoMobile">
+                    <source src="{{ product.video.url }}" type="video/mp4">
+                </video>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Dots -->
+        <div class="position-absolute bottom-3 start-50 translate-middle-x flex gap-2 z-10" id="sliderDots"></div>
+
+        <!-- Discount Badge - FIXED -->
+        <div class="position-absolute top-0 start-0 p-3 z-10">
+            {% if has_variants %}
+                {% if default_variant.discount_percent and default_variant.discount_percent > 0 %}
+                    <span class="badge bg-danger px-3 py-2 rounded-pill shadow animate-pulse fw-bold"
+                          id="mainDiscountBadgeMobile">
+                        {{ default_variant.discount_percent }}% OFF
+                    </span>
+                {% endif %}
+            {% else %}
+                {% if product.discount_percent and product.discount_percent > 0 %}
+                    <span class="badge bg-danger px-3 py-2 rounded-pill shadow animate-pulse fw-bold"
+                          id="mainDiscountBadgeMobile">
+                        {{ product.discount_percent }}% OFF
+                    </span>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Horizontal Thumbnails -->
+    <div class="bg-white px-2 py-2">
+        <div class="d-flex gap-2 overflow-x-auto pb-2" id="mobileThumbnails" style="min-height: 85px; -webkit-overflow-scrolling: touch;">
+            {% if not has_variants %}
+                {% for img in product.images.all %}
+                <img src="{{ img.image.url }}"
+                     class="rounded-3 border border-2 flex-shrink-0 {% if forloop.first %}border-primary{% else %}border-light{% endif %}"
+                     style="width: 70px; height: 70px; object-fit: cover; cursor: pointer;"
+                     onclick="changeMainImageMobile('{{ img.image.url }}', this)"
+                     alt="Thumbnail">
+                {% endfor %}
+            {% endif %}
+           
+            {% if product.video %}
+            <div class="position-relative rounded-3 border border-2 border-light flex-shrink-0"
+                 style="width: 70px; height: 70px; cursor: pointer;"
+                 onclick="playVideoMobile()">
+                <div class="w-100 h-100 bg-dark rounded-3 d-flex align-items-center justify-content-center">
+                    <i class="fas fa-play-circle text-white fs-5"></i>
+                </div>
+                <div class="position-absolute bottom-0 start-0 w-100 bg-dark bg-opacity-75 text-white text-center py-1">
+                    <small style="font-size: 9px;">VIDEO</small>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+   
+    <!-- Mobile Product Info -->
+    <div class="bg-white p-3">
+        <h1 class="h5 fw-bold mb-2">{{ product.name }}</h1>
+        <p class="text-muted small mb-2">{{ product.short_desc }}</p>
+       
+        <!-- Price - FIXED -->
+        <div class="mb-3">
+            {% if has_variants %}
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span id="oldPriceMobile" style="font-size: 16px; color: #878787; text-decoration: line-through; {% if not default_variant.offer_price %}display:none;{% endif %}">
+                        &#8377; <span id="oldPriceValueMobile">{{ default_variant.regular_price|floatformat:0 }}</span>
+                    </span>
+                    <span class="text-success fs-4 fw-bold" id="currentPriceMobile">
+                        &#8377; {{ default_variant.offer_price|default:default_variant.regular_price|floatformat:0 }}
+                    </span>
+                    {% if default_variant.discount_percent and default_variant.discount_percent > 0 %}
+                    <span class="badge bg-success small px-2 py-1" id="discountBadgeMobile">
+                        {{ default_variant.discount_percent }}% OFF
+                    </span>
+                    {% endif %}
+                </div>
+                <div id="stockStatusMobile" class="fw-bold small {% if default_variant.in_stock %}text-success{% else %}text-danger{% endif %} mt-1">
+                    <i class="fas fa-circle me-1" style="font-size: 6px;"></i>{{ default_variant.in_stock|yesno:"In Stock,Out of Stock" }}
+                </div>
+            {% else %}
+                {% if product.discount_percent and product.discount_percent > 0 %}
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <span style="font-size: 16px; color: #878787; text-decoration: line-through;">
+                            &#8377; {{ product.regular_price|floatformat:0 }}
+                        </span>
+                        <span class="text-success fs-4 fw-bold">
+                            &#8377; {{ product.offer_price|floatformat:0 }}
+                        </span>
+                        <span class="badge bg-success small px-2 py-1">
+                            {{ product.discount_percent }}% OFF
+                        </span>
+                    </div>
+                {% else %}
+                    <span class="text-success fs-4 fw-bold">
+                        &#8377; {{ product.regular_price|floatformat:0 }}
+                    </span>
+                {% endif %}
+            {% endif %}
+        </div>
+       
+        <!-- Store -->
+        <div class="d-flex align-items-center gap-2 p-2 bg-light rounded-3 mb-3">
+            <i class="fas fa-store text-primary"></i>
+            <div>
+                <small class="fw-bold d-block">{{ product.store.name }}</small>
+                <small class="text-muted">{{ product.store.city }}</small>
+            </div>
+        </div>
+       
+        <!-- Variants Mobile -->
+        {% if has_variants and grouped_variants %}
+        <div class="mb-3">
+            {% for attr, items in grouped_variants.items %}
+            <div class="mb-3">
+                <h6 class="fw-semibold small text-muted mb-2">{{ attr|title }}</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for item in items %}
+                    <button type="button"
+                            class="btn variant-btn-mobile btn-sm px-3 py-2 rounded-pill border {% if item.is_default %}active border-primary bg-primary text-white{% endif %}"
+                            data-variant-id="{{ item.variant_id }}"
+                            data-price="{{ item.price }}"
+                            data-old-price="{{ item.old_price }}"
+                            data-has-offer="{{ item.has_offer|yesno:'true,false' }}"
+                            data-stock="{{ item.stock|yesno:'true,false' }}"
+                            data-discount="{{ item.discount_percent|default:0 }}"
+                            data-main-image="{{ item.main_image }}"
+                            data-images="{{ item.images|join:'|'|safe }}"
+                            data-value="{{ item.value }}">
+                        {{ item.value }}
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+       
+        <!-- Variant Specifications – mobile version -->
+        <div class="border-top pt-3 mb-3" id="variantSpecsMobileWrapper" style="display: none;">
+            <h6 class="fw-bold mb-2">
+                <i class="bi bi-list-check text-primary me-2"></i>Variant Specifications
+            </h6>
+            <div class="row g-2" id="variantSpecsMobile">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+       
+        <!-- Main Product Specs (mobile) -->
+        {% if product.specifications.exists %}
+        <div class="border-top pt-3 mb-3">
+            <h6 class="fw-bold mb-2"><i class="bi bi-list-check text-primary me-2"></i>Highlights</h6>
+            {% for spec in product.specifications.all|slice:":4" %}
+            <div class="d-flex gap-2 mb-2 px-2">
+                <i class="fas fa-check text-success mt-1 small"></i>
+                <small><span class="fw-bold">{{ spec.name }}:</span> {{ spec.value }}</small>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+       
+        {% if product.description %}
+        <div class="border-top pt-3">
+            <h6 class="fw-bold mb-2"><i class="bi bi-file-text text-primary me-2"></i>Description</h6>
+            <div id="raw-description-mobile" class="d-none px-2">{{ product.description|safe }}</div>
+            <ul class="list-unstyled small mb-0" id="descriptionListMobile"></ul>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ENQUIRY MODAL -->
 <div class="modal fade" id="enquiryModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content rounded-4 overflow-hidden">
-            <div class="modal-header bg-success text-white text-center border-0 py-4">
-                <h5 class="modal-title w-100 fw-bold">Get Enquiry Instantly</h5>
+        <div class="modal-content rounded-4">
+            <div class="modal-header bg-success text-white border-0 py-3">
+                <h5 class="modal-title w-100 text-center fw-bold">Get Best Price</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
@@ -363,17 +522,16 @@
                     <form id="enquiryForm" autocomplete="off">
                         {% csrf_token %}
                         <div class="mb-3">
-                            <input type="text" name="customer_name" class="form-control form-control-lg rounded-pill" autocomplete="off" placeholder="Your Name" required>
+                            <input type="text" name="customer_name" class="form-control form-control-lg rounded-pill" placeholder="Your Name" required>
                         </div>
                         <div class="mb-3">
-                            <input type="tel" name="phone" class="form-control form-control-lg rounded-pill" autocomplete="off" placeholder="Phone Number" required>
+                            <input type="tel" name="phone" class="form-control form-control-lg rounded-pill" placeholder="Phone Number" required>
                         </div>
                         <div class="mb-3">
-                            <input type="text" name="city" class="form-control form-control-lg rounded-pill" autocomplete="off" placeholder="Your City" required>
+                            <input type="text" name="city" class="form-control form-control-lg rounded-pill" placeholder="Your City" required>
                         </div>
-                        <input type="text" name="website" style="display:none;" value="">
-                        <input type="hidden" name="selected_variant" id="selected-variant-input" value="">
-                        <button type="submit" class="btn btn-warning w-100 py-3 fw-bold fs-5">
+                        <input type="text" name="website" style="display:none;">
+                        <button type="submit" class="btn btn-warning w-100 py-3 fw-bold fs-5 shadow">
                             <i class="fab fa-whatsapp me-2"></i> BUY NOW
                         </button>
                     </form>
@@ -384,40 +542,41 @@
 </div>
 
 <!-- SIMILAR PRODUCTS -->
-{% if similar %}
-<section class="container-fluid px-2 px-md-3 pt-4 border-top">
-    <h2 class="text-center h4 fw-bold text-dark mb-4">Similar Products</h2>
-    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
-        {% for p in similar %}
+{% if similar_display %}
+<section class="container-fluid px-2 px-md-3 py-4 bg-light">
+    <h2 class="h5 fw-bold mb-3 text-center">Similar Products</h2>
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-2 g-md-3">
+        {% for item in similar_display %}
         <div class="col">
-            <a href="/store/{{ p.store.slug }}/product/{{ p.slug }}/" class="text-decoration-none">
-                <div class="card h-100 border-0 shadow-sm hover-lift">
-                    <img src="{{ p.images.first.image.url|default:'https://via.placeholder.com/300' }}" 
-                         class="card-img-top" style="height: 220px; object-fit: cover;">
-                    {% if p.discount_percent > 0 %}
-                    <div class="position-absolute top-0 start-0 p-3">
-                        <span class="badge bg-success px-3 py-2 rounded-pill">{{ p.discount_percent }}% OFF</span>
+            <a href="/store/{{ item.product.store.slug }}/product/{{ item.product.slug }}/" class="text-decoration-none">
+                <div class="card h-100 shadow hover-card border-0 position-relative">
+                    <div class="position-absolute top-0 start-0 p-2">
+                        <span class="badge bg-warning text-dark px-4 py-2 rounded-pill shadow-lg fw-bold">BEST SELLER</span>
                     </div>
-                    {% endif %}
-                      <div class="card-body text-center p-3">
-                        <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ p.name }}</h6>
-                        {% if p.short_desc %}<p class="text-muted small mb-2 line-clamp-1">{{ p.short_desc }}</p>{% endif %}
-
-                        <div class="mt-2">
-                            {% if p.offer_price and p.offer_price < p.regular_price %}
+                    <img src="{{ item.main_image }}"
+                         class="card-img-top"
+                         style="height:230px;object-fit:cover;"
+                         loading="lazy" fetchpriority="high"
+                         alt="{{ item.product.name }}">
+                    <div class="card-body text-center p-3 d-flex flex-column">
+                        <h6 class="fw-bold text-dark mb-2 line-clamp-2 fs-6">{{ item.product.name }}</h6>
+                        {% if item.product.short_desc %}
+                            <p class="text-muted small mb-2 line-clamp-1">{{ item.product.short_desc }}</p>
+                        {% endif %}
+                        <div class="mt-auto text-center">
+                            {% if item.has_offer %}
                                 <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                                     <span class="text-success fs-5 fw-medium">&#8377; {{ p.offer_price }}</span>
-                                       <span style=" font-size: 14px;color: #878787;text-decoration: line-through;">&#8377; {{ p.regular_price }}</span>
-                                         <span class="badge bg-danger fs-6 px-3">{{ p.discount_percent }}% OFF</span>
-                               </div>
+                                    <span class="text-success fs-5 fw-medium">{{ item.display_price }}</span>
+                                    <span style="font-size: 14px;color: #878787;text-decoration: line-through;">&#8377; {{ item.old_price }}</span>
+                                    <span class="badge bg-danger fs-6 px-3">{{ item.discount_percent }}% OFF</span>
+                                </div>
                             {% else %}
-                                <span class="text-success fs-5 fw-bold">&#8377; {{ p.regular_price }}</span>
+                                <span class="text-success fs-5 fw-bold">{{ item.display_price }}</span>
                             {% endif %}
                         </div>
-
-                        <small class="text-muted d-block mt-2 fw-medium">
-                            {{ p.store.name }} | {{ p.store.city }}
-                        </small>
+                        <div class="mt-auto text-center pt-2">
+                            <p class="text-muted d-block fw-medium" style="font-size: 12px;">{{ item.product.store.name }} | {{ item.product.store.city }}</p>
+                        </div>
                     </div>
                 </div>
             </a>
@@ -427,133 +586,164 @@
 </section>
 {% endif %}
 
-<!-- MOBILE FIXED BOTTOM BAR -->
-<div class="d-lg-none fixed-bottom bg-white border-top shadow-lg py-3 px-4" style="z-index: 1000;">
-    <div class="row g-2">
-    
-        <div class="col-12">
-            <button type="button" class="btn btn-warning w-100 py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#enquiryModal">
-                 <h3><i class="fab fa-whatsapp me-2"></i> BUY NOW </h3>
-            </button>
-        </div>
-    </div>
+<!-- MOBILE FIXED BOTTOM -->
+<div class="d-lg-none fixed-bottom bg-white border-top shadow-lg py-2 px-3" style="z-index: 1000;">
+    <button type="button" class="btn btn-warning w-100 py-3 fw-bold shadow" data-bs-toggle="modal" data-bs-target="#enquiryModal">
+        <i class="fab fa-whatsapp me-2"></i> BUY NOW
+    </button>
 </div>
 
 <style>
-    /* Scrollbar */
-    #thumbnailStrip::-webkit-scrollbar { width: 3px; }
-    #thumbnailStrip::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-    #thumbnailStrip::-webkit-scrollbar-thumb { background: #25D366; border-radius: 10px; }
-    
-    /* Horizontal scrollbar for mobile */
-    .d-lg-none .overflow-x-auto::-webkit-scrollbar { height: 6px; }
-    .d-lg-none .overflow-x-auto::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-    .d-lg-none .overflow-x-auto::-webkit-scrollbar-thumb { background: #25D366; border-radius: 10px; }
-    
-    /* Hover effects */
-    .hover-lift { transition: all 0.2s ease; }
-    .hover-lift:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-    
-    /* Button styles */
-    .btn-success { background: linear-gradient(45deg, #25D366, #128C7E); border: none; }
-    .btn-success:hover { background: linear-gradient(45deg, #128C7E, #075E54); transform: translateY(-2px); }
-    
-    /* Form focus */
-    .form-control:focus { border-color: #25D366; box-shadow: 0 0 0 0.2rem rgba(37,211,102,0.25); }
-    
-    /* Active thumbnail */
-    .border-success { border-color: #25D366 !important; }
-    
-    /* Zoom lens */
-    #zoomLens { 
-        box-shadow: 0 0 10px rgba(0,0,0,0.3); 
-        border: 2px solid #25D366 !important;
-    }
-    
-    /* Full main image */
-    #mainImageContainer { 
-        width: 100%; 
-        max-width: 100%;
-    }
-    
-    /* Responsive */
-    @media (max-width: 992px) {
-        .sticky-top { position: static !important; }
-        #mainImageContainer { height: 350px; }
-        .fixed-bottom .row { margin-bottom: 0; }
-    }
-    
-   
-    /* Description list */
-    .fa-check-circle { color: #25D366; }
-    
-    /* Thumbnail hover */
-    #thumbnailStrip img:hover, .d-lg-none .overflow-x-auto img:hover {
-        border-color: #25D366 !important;
-        transform: scale(1.05);
-        transition: all 0.2s ease;
-    }
-    
-    /* Share button styling */
-    #shareBtn {
-        transition: all 0.2s ease;
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-    }
-    #shareBtn:hover {
-        background-color: #f8f9fa;
-        transform: scale(0.9);
-    }
-    #shareBtn i {
-        font-size: 1.1rem;
-        display: block !important;
-    }
-    
-    /* Gap between thumbnails and main image */
-    .pe-3 { 
-        padding-right: 0.8rem !important; 
-    }
-    
-
-   
-    /* Mobile layout - full width */
-    @media (max-width: 992px) {
-        .col-12 {
-            width: 100%;
-            max-width: 100%;
-        }
-    }
+/* Animations */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .7; } }
+.fade-in { animation: fadeIn 0.4s ease-out; }
+.animate-pulse { animation: pulse 2s ease-in-out infinite; }
+.hover-scale { transition: transform 0.2s; }
+.hover-scale:hover { transform: scale(1.02); }
+.hover-lift { transition: all 0.2s; }
+.hover-lift:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+.hover-lift-sm:hover { transform: translateY(-2px); }
+/* Scrollbars */
+#thumbnailStrip::-webkit-scrollbar { width: 4px; }
+#thumbnailStrip::-webkit-scrollbar-thumb { background: #0d6efd; border-radius: 10px; }
+.overflow-x-auto::-webkit-scrollbar { display: none; }
+/* Variant Buttons */
+.variant-btn, .variant-btn-mobile {
+    transition: all 0.2s;
+    font-weight: 500;
+}
+.variant-btn:hover, .variant-btn-mobile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+.variant-btn.active, .variant-btn-mobile.active {
+    border-color: #0d6efd !important;
+    background: #0d6efd !important;
+    color: white !important;
+}
+/* Mobile Image Slider */
+#mobileSlider {
+    transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+}
+.slider-dot {
+    width: 8px;
+    height: 8px;
+    background: rgba(255,255,255,0.6);
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+.slider-dot.active {
+    background: white;
+    border-color: #0d6efd;
+    transform: scale(1.4);
+}
+/* Product Details Scroll */
+.product-details-scroll {
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    padding-right: 10px;
+}
+.product-details-scroll::-webkit-scrollbar { width: 6px; }
+.product-details-scroll::-webkit-scrollbar-thumb {
+    background: #e0e0e0;
+    border-radius: 10px;
+}
+.product-details-scroll::-webkit-scrollbar-thumb:hover { background: #bdbdbd; }
+/* Zoom Lens */
+#zoomLens {
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    border: 2px solid #0d6efd !important;
+}
+/* Form Focus */
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.25);
+}
+/* Mobile Spacing */
+@media (max-width: 991px) {
+    body { padding-bottom: 80px; }
+}
+/* Variant Specs - Match Main Specs */
+#variantSpecsContainer .d-flex,
+#variantSpecsMobile .d-flex {
+    align-items: flex-start;
+}
+#variantSpecsContainer .border-bottom,
+#variantSpecsMobile .border-bottom {
+    border-color: #dee2e6 !important;
+}
 </style>
 
 <script>
-// Zoom functionality with proper hover
+// Global variables
+const hasVariants = {{ has_variants|yesno:"true,false" }};
+const variantSpecs = {{ variant_specs_data|default:"{}"|safe }};
+
+// ── MOBILE IMAGE SLIDER ────────────────────────────────────────────────────────
+let currentSlide = 0;
+let touchStartX = 0;
+const slider = document.getElementById('mobileSlider');
+const sliderDots = document.getElementById('sliderDots');
+
+function updateSlider() {
+    if (!slider) return;
+    slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+    if (sliderDots) {
+        sliderDots.querySelectorAll('.slider-dot').forEach((dot, i) =>
+            dot.classList.toggle('active', i === currentSlide)
+        );
+    }
+}
+
+function createDots(count) {
+    if (!sliderDots) return;
+    sliderDots.innerHTML = '';
+    if (count <= 1) return;
+    for (let i = 0; i < count; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'slider-dot' + (i === 0 ? ' active' : '');
+        dot.addEventListener('click', () => { currentSlide = i; updateSlider(); });
+        sliderDots.appendChild(dot);
+    }
+}
+
+if (slider) {
+    slider.addEventListener('touchstart', e => touchStartX = e.touches[0].clientX, { passive: true });
+    slider.addEventListener('touchend', e => {
+        const diff = touchStartX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 60) {
+            currentSlide = diff > 0 
+                ? Math.min(currentSlide + 1, slider.children.length - 1)
+                : Math.max(currentSlide - 1, 0);
+            updateSlider();
+        }
+    }, { passive: true });
+}
+
+// Zoom functionality
 let zoomEnabled = true;
 let isZooming = false;
 const mainImage = document.getElementById('mainImage');
 const zoomLens = document.getElementById('zoomLens');
 const zoomArea = document.getElementById('zoomArea');
 
-// Hover preview on thumbnails (Desktop only) - for both images and video
 function previewImage(imgUrl) {
-    if (window.innerWidth >= 992) { // Only on desktop
+    if (window.innerWidth >= 992) {
         mainImage.src = imgUrl;
         zoomEnabled = true;
-        
-        // Hide video if playing
         const videoPlayer = document.getElementById('videoPlayer');
         if (videoPlayer) videoPlayer.classList.add('d-none');
         mainImage.style.display = 'block';
     }
 }
 
-// Preview video on hover
 function previewVideo() {
-    if (window.innerWidth >= 992) { // Only on desktop
-        // Show video thumbnail preview
+    if (window.innerWidth >= 992) {
         const videoPlayer = document.getElementById('videoPlayer');
         if (videoPlayer) {
-            // Just preview, don't play yet
             videoPlayer.classList.remove('d-none');
             mainImage.style.display = 'none';
             zoomEnabled = false;
@@ -562,40 +752,25 @@ function previewVideo() {
     }
 }
 
-// Handle zoom on mouse move
 function handleZoom(event) {
     if (!zoomEnabled || window.innerWidth < 768) return;
-    
     isZooming = true;
     const rect = zoomArea.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
-    
-    // Show zoom lens
     zoomLens.classList.remove('d-none');
-    
-    // Calculate lens position
     const lensSize = 100;
-    const lensX = x - lensSize / 2;
-    const lensY = y - lensSize / 2;
-    
-    // Boundary check
-    let finalX = lensX;
-    let finalY = lensY;
-    
-    if (lensX < 0) finalX = 0;
-    if (lensX + lensSize > rect.width) finalX = rect.width - lensSize;
-    if (lensY < 0) finalY = 0;
-    if (lensY + lensSize > rect.height) finalY = rect.height - lensSize;
-    
-    zoomLens.style.left = finalX + 'px';
-    zoomLens.style.top = finalY + 'px';
-    
-    // Calculate zoom (2.5x zoom)
+    let lensX = x - lensSize / 2;
+    let lensY = y - lensSize / 2;
+    if (lensX < 0) lensX = 0;
+    if (lensX + lensSize > rect.width) lensX = rect.width - lensSize;
+    if (lensY < 0) lensY = 0;
+    if (lensY + lensSize > rect.height) lensY = rect.height - lensSize;
+    zoomLens.style.left = lensX + 'px';
+    zoomLens.style.top = lensY + 'px';
     const zoomLevel = 2.5;
     const xPercent = (x / rect.width) * 100;
     const yPercent = (y / rect.height) * 100;
-    
     mainImage.style.transform = `scale(${zoomLevel})`;
     mainImage.style.transformOrigin = `${xPercent}% ${yPercent}%`;
 }
@@ -608,38 +783,70 @@ function resetZoom() {
     isZooming = false;
 }
 
-// Image gallery functions
 function changeMainImage(imgUrl, element) {
     zoomEnabled = true;
     mainImage.src = imgUrl;
-    
-    // Reset zoom
     resetZoom();
+    document.querySelectorAll('#thumbnailStrip img').forEach(item => {
+        item.classList.remove('border-primary');
+        item.classList.add('border-light');
+    });
+    element.classList.remove('border-light');
+    element.classList.add('border-primary');
+    const videoPlayer = document.getElementById('videoPlayer');
+    if (videoPlayer) videoPlayer.classList.add('d-none');
+    mainImage.style.display = 'block';
+}
+
+// Mobile image change
+function changeMainImageMobile(imgUrl, element) {
+    const mainImageMobile = document.getElementById('mainImageMobile');
+    if (mainImageMobile) mainImageMobile.src = imgUrl;
     
-    // Update active thumbnail
-    document.querySelectorAll('#thumbnailStrip img, #thumbnailStrip .position-relative, .d-lg-none .overflow-x-auto img, .d-lg-none .overflow-x-auto .position-relative').forEach(item => {
-        if (item.classList.contains('border-success')) {
-            item.classList.remove('border-success');
+    document.querySelectorAll('#mobileThumbnails img, #mobileThumbnails .position-relative').forEach(item => {
+        if (item.classList.contains('border-primary')) {
+            item.classList.remove('border-primary');
             item.classList.add('border-light');
         }
     });
     
-    if (element.classList.contains('border-light')) {
-        element.classList.remove('border-light');
-    }
-    element.classList.add('border-success');
+    element.classList.remove('border-light');
+    element.classList.add('border-primary');
     
-    // Hide video if playing
-    const videoPlayer = document.getElementById('videoPlayer');
-    if (videoPlayer) videoPlayer.classList.add('d-none');
-    mainImage.style.display = 'block';
+    const videoPlayerMobile = document.getElementById('videoPlayerMobile');
+    if (videoPlayerMobile) videoPlayerMobile.classList.add('d-none');
+    if (mainImageMobile) mainImageMobile.style.display = 'block';
+}
+
+function playVideoMobile() {
+    const videoPlayerMobile = document.getElementById('videoPlayerMobile');
+    const videoMobile = document.getElementById('productVideoMobile');
+    const mainImageMobile = document.getElementById('mainImageMobile');
+    
+    if (videoPlayerMobile) {
+        videoPlayerMobile.classList.remove('d-none');
+        if (mainImageMobile) mainImageMobile.style.display = 'none';
+        videoMobile.play();
+    }
+}
+
+function closeVideoMobile() {
+    const videoPlayerMobile = document.getElementById('videoPlayerMobile');
+    const videoMobile = document.getElementById('productVideoMobile');
+    const mainImageMobile = document.getElementById('mainImageMobile');
+    
+    if (videoPlayerMobile) {
+        videoPlayerMobile.classList.add('d-none');
+        if (mainImageMobile) mainImageMobile.style.display = 'block';
+        videoMobile.pause();
+        videoMobile.currentTime = 0;
+    }
 }
 
 function playVideo() {
     zoomEnabled = false;
     const videoPlayer = document.getElementById('videoPlayer');
     const video = document.getElementById('productVideo');
-    
     if (videoPlayer) {
         videoPlayer.classList.remove('d-none');
         mainImage.style.display = 'none';
@@ -652,7 +859,6 @@ function closeVideo() {
     zoomEnabled = true;
     const videoPlayer = document.getElementById('videoPlayer');
     const video = document.getElementById('productVideo');
-    
     if (videoPlayer) {
         videoPlayer.classList.add('d-none');
         mainImage.style.display = 'block';
@@ -661,396 +867,434 @@ function closeVideo() {
     }
 }
 
-// Format description as bullet points
-function formatDescription() {
-    const descriptionList = document.getElementById('descriptionList');
-    const rawElement = document.getElementById('raw-description');
+// Mobile thumbnails update
+function updateMobileThumbnails(images) {
+    const container = document.getElementById('mobileThumbnails');
+    if (!container) return;
     
-    if (!descriptionList || !rawElement) return;
+    container.innerHTML = '';
+    
+    if (!images) return;
+    
+    const imgArray = images.split('|').filter(Boolean);
+    imgArray.forEach((url, index) => {
+        const img = document.createElement('img');
+        img.src = url;
+        img.className = `rounded-3 border border-2 flex-shrink-0 ${index === 0 ? 'border-primary' : 'border-light'}`;
+        img.style = 'width:70px;height:70px;object-fit:cover;cursor:pointer;';
+        img.onclick = () => changeMainImageMobile(url, img);
+        container.appendChild(img);
+    });
+    
+    const mainMobile = document.getElementById('mainImageMobile');
+    if (mainMobile && imgArray.length > 0) {
+        mainMobile.src = imgArray[0];
+    }
+}
 
+// Description formatting
+function formatDescription(elementId) {
+    const descriptionList = document.getElementById(elementId);
+    const rawElement = document.getElementById(elementId === 'descriptionList' ? 'raw-description' : 'raw-description-mobile');
+    if (!descriptionList || !rawElement) return;
     const description = rawElement.textContent.trim();
     if (!description) return;
-
     descriptionList.innerHTML = '';
-
     let lines = description
         .replace(/<br\s*\/?>/gi, '\n')
         .replace(/&nbsp;/g, ' ')
         .split('\n')
-        .map(line => line
-            .replace(/^['\-\*\u2022]\s*/, '')
-            .trim()
-        )
+        .map(line => line.replace(/^['\-\*\u2022]\s*/, '').trim())
         .filter(line => line.length > 0);
-
-    // Fallback: split by sentences
     if (lines.length === 0) {
-        lines = description
-            .split(/[\.\!\?]\s+/)
-            .map(s => s.trim())
-            .filter(s => s.length > 0);
+        lines = description.split(/[\.\!\?]\s+/).map(s => s.trim()).filter(s => s.length > 0);
     }
-
     lines.forEach(line => {
         const li = document.createElement('li');
-        li.className = 'd-flex mb-2 align-items-start';
-        li.innerHTML = `
-            <i class="fas fa-check-circle text-success me-3 mt-1 flex-shrink-0"></i>
-            <span class="fs-6 text-dark">${line}</span>
-        `;
+        li.className = 'd-flex gap-2 mb-2';
+        li.innerHTML = `<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i><span>${line}</span>`;
         descriptionList.appendChild(li);
     });
-
-    // Final fallback
-    if (descriptionList.children.length === 0) {
-        const li = document.createElement('li');
-        li.className = 'd-flex mb-2 align-items-start';
-        li.innerHTML = `
-            <i class="fas fa-check-circle text-success me-3 mt-1 flex-shrink-0"></i>
-            <span class="fs-6 text-dark">${description}</span>
-        `;
-        descriptionList.appendChild(li);
-    }
 }
 
-// Call on page load
-document.addEventListener('DOMContentLoaded', formatDescription);
-
-
-// Share functionality - FIXED
-document.getElementById('shareBtn').addEventListener('click', function() {
-    const url = window.location.href;
-    const title = "{{ product.name }}";
-    const text = encodeURIComponent(title + "\n\n" + url);
-    
-    // Remove any existing share modal
-    const existingModal = document.querySelector('.share-modal-overlay');
-    if (existingModal) existingModal.remove();
-    
-    // Create Flipkart-style share modal
-    const modalHTML = `
-        <div class="share-modal-overlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:flex-end;justify-content:center;">
-            <div class="bg-white rounded-top-4 w-100" style="max-width:500px;">
-                <div class="p-3 text-center border-bottom">
-                    <h5 class="fw-bold mb-0">Share</h5>
-                    <button onclick="this.closest('.share-modal-overlay').remove()" class="btn btn-link position-absolute end-0 top-0 p-3 text-dark">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="p-3">
-                    <div class="row g-3 text-center">
-                        <div class="col-4">
-                            <a href="https://wa.me/?text=${text}" target="_blank" class="text-decoration-none text-dark">
-                                <div class="p-3 rounded-3 bg-light">
-                                    <i class="fab fa-whatsapp fs-3 text-success mb-2"></i>
-                                    <div class="small">WhatsApp</div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-4">
-                            <a href="https://www.facebook.com/sharer/sharer.php?u=${url}" target="_blank" class="text-decoration-none text-dark">
-                                <div class="p-3 rounded-3 bg-light">
-                                    <i class="fab fa-facebook fs-3 text-primary mb-2"></i>
-                                    <div class="small">Facebook</div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-4">
-                            <button onclick="copyLink('${url}')" class="border-0 bg-transparent w-100 text-decoration-none text-dark">
-                                <div class="p-3 rounded-3 bg-light">
-                                    <i class="fas fa-link fs-3 text-secondary mb-2"></i>
-                                    <div class="small">Copy Link</div>
-                                </div>
-                            </button>
+// Share functionality
+const shareBtn = document.getElementById('shareBtn');
+if (shareBtn) {
+    shareBtn.addEventListener('click', function() {
+        const url = window.location.href;
+        const title = "{{ product.name|escapejs }}";
+        const text = encodeURIComponent(title + "\n\n" + url);
+        const existingModal = document.querySelector('.share-modal-overlay');
+        if (existingModal) existingModal.remove();
+        const modalHTML = `
+            <div class="share-modal-overlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:flex-end;justify-content:center;">
+                <div class="bg-white rounded-top-4 w-100" style="max-width:500px;animation:slideUp 0.3s ease-out;">
+                    <div class="p-3 text-center border-bottom">
+                        <h5 class="fw-bold mb-0">Share</h5>
+                        <button onclick="this.closest('.share-modal-overlay').remove()" class="btn btn-link position-absolute end-0 top-0 p-3 text-dark"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="p-3">
+                        <div class="row g-3 text-center">
+                            <div class="col-4">
+                                <a href="https://wa.me/?text=${text}" target="_blank" class="text-decoration-none text-dark">
+                                    <div class="p-3 rounded-3 bg-light hover-lift-sm"><i class="fab fa-whatsapp fs-3 text-success mb-2"></i><div class="small">WhatsApp</div></div>
+                                </a>
+                            </div>
+                            <div class="col-4">
+                                <a href="https://www.facebook.com/sharer/sharer.php?u=${url}" target="_blank" class="text-decoration-none text-dark">
+                                    <div class="p-3 rounded-3 bg-light hover-lift-sm"><i class="fab fa-facebook fs-3 text-primary mb-2"></i><div class="small">Facebook</div></div>
+                                </a>
+                            </div>
+                            <div class="col-4">
+                                <button onclick="copyLink('${url}')" class="border-0 bg-transparent w-100">
+                                    <div class="p-3 rounded-3 bg-light hover-lift-sm"><i class="fas fa-link fs-3 text-secondary mb-2"></i><div class="small">Copy Link</div></div>
+                                </button>
+                            </div>
                         </div>
                     </div>
+                    <div class="p-3 border-top">
+                        <button onclick="this.closest('.share-modal-overlay').remove()" class="btn btn-secondary w-100">Cancel</button>
+                    </div>
                 </div>
-                <div class="p-3 border-top text-center">
-                    <button onclick="this.closest('.share-modal-overlay').remove()" class="btn btn-light w-100">Cancel</button>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-});
+            </div>`;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    });
+}
 
 function copyLink(url) {
     navigator.clipboard.writeText(url).then(() => {
-        alert('Link copied to clipboard!');
+        alert('Link copied!');
         document.querySelector('.share-modal-overlay')?.remove();
     });
 }
 
+// Variant handling (Desktop & Mobile)
+if (hasVariants) {
+    const buttons = document.querySelectorAll('.variant-btn, .variant-btn-mobile');
+    const priceEl = document.getElementById('currentPrice');
+    const oldPriceEl = document.getElementById('oldPrice');
+    const oldPriceValue = document.getElementById('oldPriceValue');
+    const stockEl = document.getElementById('stockStatus');
+    const thumbnailStrip = document.getElementById('thumbnailStrip');
+    const variantSpecsCard = document.getElementById('variantSpecsCard');
+    const variantSpecsContainer = document.getElementById('variantSpecsContainer');
+    const variantSpecsMobileWrapper = document.getElementById('variantSpecsMobileWrapper');
+    const variantSpecsMobile = document.getElementById('variantSpecsMobile');
+    const mainDiscountBadge = document.getElementById('mainDiscountBadge');
+    const mainDiscountBadgeMobile = document.getElementById('mainDiscountBadgeMobile');
+    
+    // Mobile elements
+    const priceMobileEl = document.getElementById('currentPriceMobile');
+    const oldPriceMobileEl = document.getElementById('oldPriceMobile');
+    const oldPriceMobileValue = document.getElementById('oldPriceValueMobile');
+    const stockMobileEl = document.getElementById('stockStatusMobile');
 
-document.addEventListener('DOMContentLoaded', function () {
-
-  const modal = document.getElementById('enquiryModal');
-  const modalContent = document.getElementById('modalContent');
-
-  if (!modal || !modalContent) return;
-
-  
-  const originalFormHTML = modalContent.innerHTML;
-
-  function attachFormHandler() {
-    const form = document.getElementById('enquiryForm');
-    if (!form) return;
-
-   
-    form.reset();
-
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      const submitBtn = form.querySelector('button[type="submit"]');
-      const originalText = submitBtn.innerHTML;
-
-      form.querySelectorAll('.text-danger').forEach(el => el.remove());
-
-      const nameInput = form.querySelector('[name="customer_name"]');
-      const phoneInput = form.querySelector('[name="phone"]');
-      const cityInput = form.querySelector('[name="city"]');
-
-      const name = nameInput.value.trim();
-      const phoneRaw = phoneInput.value.trim();
-      const city = cityInput.value.trim();
-
-      let hasError = false;
-
-      // NAME
-      if (!name || name.length < 2 || !/^[a-zA-Z\s.\-]+$/.test(name)) {
-        showError(nameInput, "Enter a valid name");
-        hasError = true;
-      }
-
-      // PHONE
-      let phoneClean = phoneRaw.replace(/[\s\-\(\)]/g, '');
-      let phoneError = '';
-
-      if (!phoneClean) phoneError = "Phone number required";
-      else if (!/^\+?\d+$/.test(phoneClean)) phoneError = "Invalid number";
-      else if (phoneClean.length < 8) phoneError = "Number too short";
-      else if (phoneClean.length > 15) phoneError = "Number too long";
-      else if (phoneClean.length <= 11 && !/^[2-9]\d{8,10}$/.test(phoneClean))
-        phoneError = "Invalid Indian number";
-      else if (phoneClean.length > 11 && !phoneClean.startsWith('+'))
-        phoneError = "International must start with +";
-
-      if (phoneError) {
-        showError(phoneInput, phoneError);
-        hasError = true;
-      }
-
-      // CITY
-      if (!city || city.length < 3 || !/^[a-zA-Z\s.\-]+$/.test(city)) {
-        showError(cityInput, "Enter a valid city");
-        hasError = true;
-      }
-
-      if (hasError) return;
-
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
-
-      const formData = new FormData(form);
-
-      fetch(window.location.href, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-          'X-Requested-With': 'XMLHttpRequest'
+    function updateThumbnails(images) {
+        const imgArray = images ? images.split('|').filter(Boolean) : [];
+        if (thumbnailStrip) {
+            thumbnailStrip.innerHTML = '';
+            imgArray.forEach((url, i) => {
+                const img = document.createElement('img');
+                img.src = url;
+                img.className = `rounded-2 border border-2 flex-shrink-0 ${i === 0 ? 'border-primary' : 'border-light'}`;
+                img.style = 'width:60px;height:60px;object-fit:cover;cursor:pointer;transition:all 0.2s;';
+                img.onclick = () => changeMainImage(url, img);
+                img.onmouseover = () => previewImage(url);
+                thumbnailStrip.appendChild(img);
+            });
         }
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          modalContent.innerHTML = `
-            <div class="text-center py-3">
-              <i class="fas fa-check-circle text-success fs-1 mb-4"></i>
-              <h4 class="fw-bold text-success">Enquiry Sent Successfully!</h4>
-              <p class="text-muted">Thank you, ${escapeHtml(name)}</p>
-              <p> Our team will contact you soon.</p>
-
-            </div>
-          `;
-          window.open(data.whatsapp_url, '_blank');
-        } else if (data.already) {
-          modalContent.innerHTML = `
-            <div class="text-center py-3">
-              <i class="fas fa-info-circle text-warning fs-1 mb-4"></i>
-              <h4 class="fw-bold text-warning">Already Enquired Today</h4>
-              <p class="text-muted mb-4">
-                        You have already sent an enquiry for this product today.<br>
-                        <strong>Our Team will contact you soon. Explore Other Products!</strong>
-                    </p>
-              <a href="${data.whatsapp_url}" target="_blank"
-                 class="btn btn-success rounded-pill px-5 py-3 fw-bold">
-                <i class="fab fa-whatsapp me-2"></i>Chat on WhatsApp
-              </a>
-            </div>
-          `;
-        } else {
-          alert(data.message || "Something went wrong");
-        }
-      })
-      .catch(() => alert("Network error and Form submission failed"))
-      .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalText;
-      });
-    });
-  }
-
-
-  modal.addEventListener('hidden.bs.modal', function () {
-    modalContent.innerHTML = originalFormHTML;
-    attachFormHandler();
-  });
-
-  window.addEventListener('pageshow', function () {
-    const f = document.getElementById('enquiryForm');
-    if (f) f.reset();
-  });
-
-  attachFormHandler();
-});
-
-// Helpers
-function showError(input, msg) {
-  const small = document.createElement('small');
-  small.className = 'text-danger d-block mt-1 ps-3';
-  small.textContent = msg;
-  input.parentNode.appendChild(small);
-  input.focus();
-}
-
-function escapeHtml(text) {
-  const d = document.createElement('div');
-  d.textContent = text;
-  return d.innerHTML;
-}
-
-function showError(input, message) {
-  const err = document.createElement('small');
-  err.className = 'text-danger d-block mt-1 ps-3';
-  err.textContent = message;
-  input.parentNode.appendChild(err);
-}
-
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Set first thumbnail as active
-    const firstThumbDesktop = document.querySelector('#thumbnailStrip img');
-    if (firstThumbDesktop) {
-        firstThumbDesktop.classList.add('border-success');
-        firstThumbDesktop.classList.remove('border-light');
     }
-    
-    const firstThumbMobile = document.querySelector('.d-lg-none .overflow-x-auto img');
-    if (firstThumbMobile) {
-        firstThumbMobile.classList.add('border-success');
-        firstThumbMobile.classList.remove('border-light');
+
+    function updateWhatsAppURL(variantTitle, variantPrice) {
+        const storeName = "{{ product.store.name|escapejs }}";
+        const storeCity = "{{ product.store.city|escapejs }}";
+        const productName = "{{ product.name|escapejs }}";
+        const currentURL = window.location.href;
+        const phone = "{{ phone_raw|escapejs }}".replace(/\D/g, '');
+        const whatsappPhone = phone.length === 10 ? '91' + phone : (phone.startsWith('91') ? phone : '919629828969');
+        
+        const message = `Hi ${storeName}!%0A%0AI am interested in:%0A%0A*${productName}*%0AVariant: ${variantTitle}%0APrice: &#8377; ${variantPrice}%0AStore: ${storeName}, ${storeCity}%0ALink: ${currentURL}`;
+        
+        const newWhatsAppURL = `https://wa.me/${whatsappPhone}?text=${message}`;
+        window.currentWhatsAppURL = newWhatsAppURL;
+        return newWhatsAppURL;
     }
-    
-    // Format description as bullet points
-    formatDescription();
-    
-    // Add click handlers for mobile thumbnails
-    document.querySelectorAll('.d-lg-none .overflow-x-auto img').forEach(img => {
-        img.addEventListener('click', function() {
-            const imgUrl = this.src;
-            changeMainImage(imgUrl, this);
+
+    function updateVariantUI(btn) {
+        const vid = btn.dataset.variantId;
+        const variantTitle = btn.dataset.value;
+        
+        // Update active button state
+        buttons.forEach(b => {
+            if (b.dataset.variantId === vid) {
+                b.classList.add('active', 'border-primary', 'bg-primary', 'text-white');
+            } else {
+                b.classList.remove('active', 'border-primary', 'bg-primary', 'text-white');
+            }
         });
-    });
-    
-    // Add click handlers for mobile video thumbnail
-    const mobileVideoThumb = document.querySelector('.d-lg-none .overflow-x-auto .position-relative');
-    if (mobileVideoThumb) {
-        mobileVideoThumb.addEventListener('click', function() {
-            playVideo();
-        });
-    }
-});
-
-
-let currentVariant = null;
-
-// Update UI when variant selected
-function updateVariant() {
-    const selected = {};
-    document.querySelectorAll('.variant-selector').forEach(btn => {
-        if (btn.classList.contains('active')) {
-            selected[btn.dataset.attribute] = btn.dataset.value;
+        
+        const price = parseFloat(btn.dataset.price);
+        const oldPrice = parseFloat(btn.dataset.oldPrice);
+        const hasOffer = btn.dataset.hasOffer === 'true';
+        const discountPercent = parseInt(btn.dataset.discount || 0);
+        const mainImg = btn.dataset.mainImage || 'https://via.placeholder.com/600';
+        const imagesStr = btn.dataset.images || '';
+        
+        // Update price (desktop)
+        if (priceEl) priceEl.textContent = `&#8377; ${price.toFixed(0)}`;
+        if (oldPriceEl && oldPriceValue) {
+            if (hasOffer && oldPrice > price) {
+                oldPriceValue.textContent = oldPrice.toFixed(0);
+                oldPriceEl.style.display = 'inline';
+            } else {
+                oldPriceEl.style.display = 'none';
+            }
         }
-    });
-
-    const matched = variants.find(v => {
-        return Object.keys(selected).every(key => v.values[key] === selected[key]);
-    });
-
-    if (matched) {
-        currentVariant = matched;
-
-        // Update price
-        if (matched.offer_price) {
-            document.getElementById('variant-price').innerHTML = 
-                `₹${matched.offer_price} <del class="text-muted ms-3">₹${matched.regular_price}</del>`;
-        } else {
-            document.getElementById('variant-price').innerText = `₹${matched.regular_price}`;
+        
+        // Update price badge (desktop) - FIXED hide when no discount
+        const discountBadge = document.getElementById('discountBadge');
+        if (discountBadge) {
+            if (hasOffer && discountPercent > 0) {
+                discountBadge.textContent = `${discountPercent}% OFF`;
+                discountBadge.style.display = 'inline-block';
+            } else {
+                discountBadge.style.display = 'none';
+            }
         }
-
+        
+        // Update price (mobile)
+        if (priceMobileEl) priceMobileEl.textContent = `&#8377; ${price.toFixed(0)}`;
+        if (oldPriceMobileEl && oldPriceMobileValue) {
+            if (hasOffer && oldPrice > price) {
+                oldPriceMobileValue.textContent = oldPrice.toFixed(0);
+                oldPriceMobileEl.style.display = 'inline';
+            } else {
+                oldPriceMobileEl.style.display = 'none';
+            }
+        }
+        
+        // Update price badge (mobile) - FIXED hide when no discount
+        const discountBadgeMobile = document.getElementById('discountBadgeMobile');
+        if (discountBadgeMobile) {
+            if (hasOffer && discountPercent > 0) {
+                discountBadgeMobile.textContent = `${discountPercent}% OFF`;
+                discountBadgeMobile.style.display = 'inline-block';
+            } else {
+                discountBadgeMobile.style.display = 'none';
+            }
+        }
+        
         // Update stock
-        const badge = document.getElementById('stock-badge');
-        badge.textContent = matched.in_stock ? 'In Stock' : 'Out of Stock';
-        badge.className = matched.in_stock ? 'badge bg-success fs-6 px-4 py-2' : 'badge bg-danger fs-6 px-4 py-2';
-
+        const inStock = btn.dataset.stock === 'true';
+        if (stockEl) {
+            stockEl.textContent = inStock ? 'In Stock' : 'Out of Stock';
+            stockEl.className = inStock ? 'fw-bold fs-6 text-success mb-3' : 'fw-bold fs-6 text-danger mb-3';
+        }
+        if (stockMobileEl) {
+            stockMobileEl.textContent = inStock ? 'In Stock' : 'Out of Stock';
+            stockMobileEl.className = inStock ? 'fw-bold small text-success mt-1' : 'fw-bold small text-danger mt-1';
+        }
+        
         // Update main image
-        if (matched.image_url) {
-            document.getElementById('mainImage').src = matched.image_url;
+        if (mainImage) mainImage.src = mainImg;
+        updateThumbnails(imagesStr);
+        
+        // Update mobile thumbnails
+        updateMobileThumbnails(imagesStr);
+        
+        // Update MAIN IMAGE DISCOUNT BADGE (both desktop & mobile) - FIXED
+        const badgeText = (hasOffer && discountPercent > 0) ? `${discountPercent}% OFF` : '';
+        
+        if (mainDiscountBadge) {
+            mainDiscountBadge.textContent = badgeText;
+            mainDiscountBadge.style.display = badgeText ? 'inline-block' : 'none';
+        }
+        
+        if (mainDiscountBadgeMobile) {
+            mainDiscountBadgeMobile.textContent = badgeText;
+            mainDiscountBadgeMobile.style.display = badgeText ? 'inline-block' : 'none';
+        }
+        
+        updateWhatsAppURL(variantTitle, price.toFixed(0));
+        
+        // Variant Specifications
+        const specs = variantSpecs[vid] || [];
+        if (variantSpecsCard) variantSpecsCard.style.display = specs.length > 0 ? 'block' : 'none';
+        if (variantSpecsMobileWrapper) variantSpecsMobileWrapper.style.display = specs.length > 0 ? 'block' : 'none';
+        
+        if (variantSpecsContainer) {
+            variantSpecsContainer.innerHTML = '';
+            if (specs.length > 0) {
+                specs.forEach(spec => {
+                    const col = document.createElement('div');
+                    col.className = 'col-md-6';
+                    col.innerHTML = `
+                        <div class="d-flex gap-2 p-2 border-bottom">
+                            <i class="fas fa-check text-success mt-1"></i>
+                            <div>
+                                <span class="fw-bold small">${spec.name}:</span>
+                                <span class="text-muted small ms-1">${spec.value}</span>
+                            </div>
+                        </div>`;
+                    variantSpecsContainer.appendChild(col);
+                });
+            }
+        }
+        
+        if (variantSpecsMobile) {
+            variantSpecsMobile.innerHTML = '';
+            if (specs.length > 0) {
+                specs.forEach(spec => {
+                    const col = document.createElement('div');
+                    col.className = 'col-12';
+                    col.innerHTML = `
+                        <div class="d-flex gap-2 p-2 border-bottom">
+                            <i class="fas fa-check text-success mt-1"></i>
+                            <div>
+                                <span class="fw-bold small">${spec.name}:</span>
+                                <span class="text-muted small ms-1">${spec.value}</span>
+                            </div>
+                        </div>`;
+                    variantSpecsMobile.appendChild(col);
+                });
+            }
         }
 
-        // Update hidden input
-        document.getElementById('selected-variant-input').value = matched.id;
-
-        // Update WhatsApp link
-        const variantText = matched.title ? ` — ${matched.title}` : "";
-        const priceText = matched.offer_price ? matched.offer_price : matched.regular_price;
-        const message = encodeURIComponent(
-            `Hi ${"{{ product.store.name }}"}!\n\nI am interested in:\n\n*${"{{ product.name }}"}${variantText}*\nPrice: ₹${priceText}\n\nLink: ${window.location.href}`
-        );
-        document.getElementById('whatsapp-btn').href = `https://wa.me/{{"{{ product.store.whatsapp|default:'919629828969' }}"}}?text=${message}`;
-    } else {
-        currentVariant = null;
-        document.getElementById('selected-variant-input').value = "";
+        // Slider update
+        if (imagesStr && slider) {
+            const imgArray = imagesStr.split('|').filter(Boolean);
+            if (imgArray.length > 0) {
+                slider.innerHTML = '';
+                imgArray.forEach(url => {
+                    const div = document.createElement('div');
+                    div.className = 'flex-shrink-0 w-100 h-100';
+                    div.innerHTML = `<img src="${url.trim()}" class="w-100 h-100 object-contain" alt="Variant">`;
+                    slider.appendChild(div);
+                });
+                createDots(imgArray.length);
+                currentSlide = 0;
+                updateSlider();
+            }
+        }
     }
+
+    buttons.forEach(btn => btn.addEventListener('click', () => updateVariantUI(btn)));
+
+    const defaultBtn = document.querySelector('.variant-btn.active, .variant-btn-mobile.active');
+    if (defaultBtn) updateVariantUI(defaultBtn);
 }
 
-// Variant button click
-document.querySelectorAll('.variant-selector').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const attribute = this.dataset.attribute;
-        // Deactivate others in same group
-        document.querySelectorAll(`.variant-selector[data-attribute="${attribute}"]`).forEach(b => {
-            b.classList.remove('active');
-            b.classList.add('btn-outline-primary');
-            b.classList.remove('btn-success');
-        });
-        // Activate this
-        this.classList.add('active', 'btn-success');
-        this.classList.remove('btn-outline-primary');
-
-        updateVariant();
-    });
+// Initialize mobile thumbnails
+document.addEventListener('DOMContentLoaded', function() {
+    if (!hasVariants && window.innerWidth < 992) {
+        const firstThumbMobile = document.querySelector('#mobileThumbnails img');
+        if (firstThumbMobile) {
+            firstThumbMobile.classList.remove('border-light');
+            firstThumbMobile.classList.add('border-primary');
+        }
+    }
+   
+    formatDescription('descriptionList');
+    formatDescription('descriptionListMobile');
 });
 
+// Enquiry form (unchanged)
+document.addEventListener('DOMContentLoaded', function () {
+    const modal = document.getElementById('enquiryModal');
+    const modalContent = document.getElementById('modalContent');
+    if (!modal || !modalContent) return;
+    const originalFormHTML = modalContent.innerHTML;
+   
+    function attachFormHandler() {
+        const form = document.getElementById('enquiryForm');
+        if (!form) return;
+        form.reset();
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            form.querySelectorAll('.text-danger').forEach(el => el.remove());
+           
+            const nameInput = form.querySelector('[name="customer_name"]');
+            const phoneInput = form.querySelector('[name="phone"]');
+            const cityInput = form.querySelector('[name="city"]');
+            const name = nameInput.value.trim();
+            const phoneRaw = phoneInput.value.trim();
+            const city = cityInput.value.trim();
+            let hasError = false;
+           
+            if (!name || name.length < 2 || !/^[a-zA-Z\s.\-]+$/.test(name)) {
+                showError(nameInput, "Enter valid name");
+                hasError = true;
+            }
+           
+            let phoneClean = phoneRaw.replace(/[\s\-\(\)]/g, '');
+            if (!phoneClean || !/^\+?\d+$/.test(phoneClean) || phoneClean.length < 8 || phoneClean.length > 15) {
+                showError(phoneInput, "Enter valid phone");
+                hasError = true;
+            }
+           
+            if (!city || city.length < 3 || !/^[a-zA-Z\s.\-]+$/.test(city)) {
+                showError(cityInput, "Enter valid city");
+                hasError = true;
+            }
+           
+            if (hasError) return;
+           
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
+           
+            const formData = new FormData(form);
+            fetch(window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    modalContent.innerHTML = `<div class="text-center py-4"><i class="fas fa-check-circle text-success" style="font-size:4rem;"></i><h4 class="fw-bold text-success mt-3">Enquiry Sent!</h4><p class="text-muted">Thank you, ${escapeHtml(name)}</p><p>We'll contact you soon.</p></div>`;
+                    const finalWhatsAppURL = window.currentWhatsAppURL || data.whatsapp_url;
+                    window.open(finalWhatsAppURL, '_blank');
+                } else if (data.already) {
+                    const finalWhatsAppURL = window.currentWhatsAppURL || data.whatsapp_url;
+                    modalContent.innerHTML = `<div class="text-center py-4"><i class="fas fa-info-circle text-warning" style="font-size:4rem;"></i><h4 class="fw-bold text-warning mt-3">Already Enquired</h4><p class="text-muted">You've already enquired today.<br>We'll contact you soon!</p><a href="${finalWhatsAppURL}" target="_blank" class="btn btn-success rounded-pill px-5 py-3 fw-bold mt-2"><i class="fab fa-whatsapp me-2"></i>Chat on WhatsApp</a></div>`;
+                } else {
+                    alert(data.message || "Error occurred");
+                }
+            })
+            .catch(() => alert("Network error"))
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            });
+        });
+    }
+   
+    modal.addEventListener('hidden.bs.modal', function () {
+        modalContent.innerHTML = originalFormHTML;
+        attachFormHandler();
+    });
+   
+    attachFormHandler();
+});
 
+function showError(input, msg) {
+    const small = document.createElement('small');
+    small.className = 'text-danger d-block mt-1 ps-3';
+    small.textContent = msg;
+    input.parentNode.appendChild(small);
+    input.focus();
+}
+
+function escapeHtml(text) {
+    const d = document.createElement('div');
+    d.textContent = text;
+    return d.innerHTML;
+}
 </script>
+
 {% endblock %}

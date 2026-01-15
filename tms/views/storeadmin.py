@@ -23,6 +23,8 @@ from ..forms import (
    ProductForm, ProductSpecFormSet, VariantAttributeFormSet,
     get_variant_value_formset, VariantSpecFormSet
 )
+from django.urls import reverse
+from django.utils import timezone
 from django.db import transaction
 
 # Fixed imports
@@ -149,14 +151,14 @@ def store_products(request):
 
     if original_q:
         q = original_q
-        price_match = re.search(r'(under|below|less than|upto|budget)\s*₹?([\d,]+)', q)
+        price_match = re.search(r'(under|below|less than|upto|budget)\s*&#8377;?([\d,]+)', q)
         if price_match:
             max_price = int(price_match.group(2).replace(',', ''))
             products_qs = products_qs.filter(
                 Q(offer_price__lte=max_price) | Q(regular_price__lte=max_price) |
                 Q(min_variant_price__lte=max_price)
             )
-            applied_filters.append(f"Under ₹{max_price:,}")
+            applied_filters.append(f"Under &#8377;{max_price:,}")
         elif q.replace(',', '').isdigit():
             number = int(q.replace(',', ''))
             max_price = number * 1000
@@ -164,7 +166,7 @@ def store_products(request):
                 Q(offer_price__lte=max_price) | Q(regular_price__lte=max_price) |
                 Q(min_variant_price__lte=max_price)
             )
-            applied_filters.append(f"Under ₹{number:,}000")
+            applied_filters.append(f"Under &#8377{number:,}000")
         else:
             keyword_applied = False
             for words, field in [
@@ -213,9 +215,9 @@ def store_products(request):
         p.has_variants = p.variant_attributes.exists()
         if p.has_variants:
             min_price = p.variants.aggregate(min_price=Min('offer_price') or Min('regular_price'))['min_price']
-            p.display_price = f"From ₹{int(min_price):,}" if min_price else "Price on variants"
+            p.display_price = f"From &#8377; {int(min_price):,}" if min_price else "Price on variants"
         else:
-            p.display_price = f"₹{int(p.offer_price or p.regular_price):,}" if p.regular_price else "Call for Price"
+            p.display_price = f"&#8377; {int(p.offer_price or p.regular_price):,}" if p.regular_price else "Call for Price"
 
     context = {
         'store': store,
@@ -229,7 +231,6 @@ def store_products(request):
         'applied_filters': applied_filters,
     }
     return render(request, 'TMS/storeadmin/products.html', context)
-
 
 # 2. Edit Basic Product Info
 @login_required
@@ -249,17 +250,24 @@ def edit_product(request, pk):
             try:
                 with transaction.atomic():
                     product = form.save(commit=False)
+
+                    # Handle boolean flags properly
                     for field in ['call_for_price', 'is_new_arrival', 'is_best_seller',
                                   'is_limited_deal', 'is_special_offer', 'is_featured', 'in_stock']:
                         setattr(product, field, field in request.POST)
 
+                    # Only save pricing fields when NO variants
                     if not has_variants:
                         product.regular_price = form.cleaned_data.get('regular_price')
                         product.offer_price = form.cleaned_data.get('offer_price')
                         product.deal_end_date = form.cleaned_data.get('deal_end_date')
                     else:
-                        product.regular_price = product.offer_price = product.deal_end_date = None
+                        # When variants exist → clear top-level pricing
+                        product.regular_price = None
+                        product.offer_price = None
+                        product.deal_end_date = None
 
+                    # Handle video replacement
                     if 'video' in request.FILES:
                         if product.video:
                             product.video.delete(save=False)
@@ -268,6 +276,7 @@ def edit_product(request, pk):
                     product.save()
                     spec_formset.save()
 
+                    # Handle extra images (non-variant case)
                     if not has_variants and 'extra_images' in request.FILES:
                         files = request.FILES.getlist('extra_images')
                         has_main = product.images.filter(is_main=True).exists()
@@ -277,13 +286,32 @@ def edit_product(request, pk):
                                 img.is_main = True
                                 img.save()
 
+                    # Handle multi-delete
+                    if 'delete_selected_images' in request.POST:
+                        selected_ids = request.POST.getlist('selected_images')
+                        if selected_ids:
+                            ProductImage.objects.filter(product=product, id__in=selected_ids).delete()
+                            messages.success(request, f"{len(selected_ids)} image(s) deleted!")
+
+                    # Handle set main image
+                    if 'set_main_image' in request.POST:
+                        img_id = request.POST.get('set_main_image')
+                        try:
+                            img = ProductImage.objects.get(product=product, id=img_id)
+                            product.images.update(is_main=False)
+                            img.is_main = True
+                            img.save()
+                            messages.success(request, "Main image updated!")
+                        except ProductImage.DoesNotExist:
+                            messages.error(request, "Image not found.")
+
                 messages.success(request, "Product updated successfully!")
-                return redirect('edit_product', pk=pk)
+                return redirect(f"{reverse('edit_product', kwargs={'pk': pk})}?t={timezone.now().timestamp()}")
+
             except Exception as e:
-                storeadmin_logger.error(f"Error updating product: {e}", exc_info=True)
                 messages.error(request, f"Error: {str(e)}")
         else:
-            messages.error(request, "Please correct the form errors.")
+            messages.error(request, "Please correct the form errors below.")
 
     else:
         form = ProductForm(instance=product, has_variants=has_variants)
@@ -297,7 +325,6 @@ def edit_product(request, pk):
         'has_variants': has_variants,
     }
     return render(request, 'TMS/storeadmin/edit_product.html', context)
-
 
 # 3. Manage Variants (Types + List)
 @login_required
@@ -313,6 +340,17 @@ def manage_variants(request, product_id):
                 messages.success(request, "Variant types saved successfully!")
             else:
                 messages.error(request, "Please correct variant type errors.")
+
+        # Handle variant deletion
+        elif 'delete_selected_variants' in request.POST or 'delete_variant' in request.POST:
+            selected_ids = request.POST.getlist('selected_variants') if 'delete_selected_variants' in request.POST else [request.POST.get('delete_variant')]
+            if selected_ids and any(selected_ids):
+                deleted_count = ProductVariant.objects.filter(
+                    product=product, id__in=selected_ids
+                ).delete()[0]  # [0] returns number of deleted objects
+                messages.success(request, f"{deleted_count} variant(s) deleted successfully!")
+            else:
+                messages.warning(request, "No variants selected for deletion.")
 
         elif 'generate_variants' in request.POST:
             if attr_formset.is_valid():
@@ -363,13 +401,13 @@ def manage_variants(request, product_id):
     }
     return render(request, 'TMS/storeadmin/manage_variants.html', context)
 
-# 4. Edit / Add Single Variant (with populated dropdowns)
+# 4. Edit / Add Single Variant (with populated dropdowns)@login_required
 @login_required
 def edit_variant(request, product_id, variant_id=0):
     product = get_object_or_404(Product, id=product_id, store=request.user.storeadmin.store)
 
     if variant_id == 0:
-        variant = None  # New variant
+        variant = None
     else:
         variant = get_object_or_404(ProductVariant, id=variant_id, product=product)
 
@@ -377,43 +415,35 @@ def edit_variant(request, product_id, variant_id=0):
         form = ProductVariantForm(request.POST, request.FILES, instance=variant) if variant else ProductVariantForm(request.POST, request.FILES)
 
         value_formset = get_variant_value_formset(product=product)(
-            request.POST,
-            instance=variant or ProductVariant(),
-            prefix='val'
+            request.POST, instance=variant or ProductVariant(), prefix='val'
         )
         spec_formset = VariantSpecFormSet(
-            request.POST,
-            instance=variant or ProductVariant(),
-            prefix='vspec'
+            request.POST, instance=variant or ProductVariant(), prefix='vspec'
         )
 
         if all([form.is_valid(), value_formset.is_valid(), spec_formset.is_valid()]):
             try:
                 with transaction.atomic():
-                    # Step 1: Save or create the main variant instance FIRST
                     if not variant:
                         variant = form.save(commit=False)
                         variant.product = product
-                        variant.save()  # Save here so pk exists!
-                    else:
-                        form.save()
+                    variant = form.save()
 
-                    # Step 2: Now safe to attach formsets (pk exists)
                     value_formset.instance = variant
                     value_formset.save()
 
                     spec_formset.instance = variant
                     spec_formset.save()
 
-                    # Step 3: Main image (after save)
+                    # Handle new main image (single file)
                     if 'image' in request.FILES:
                         variant.image = request.FILES['image']
                         variant.save(update_fields=['image'])
 
-                    # Step 4: Extra images – now safe because variant.pk exists
+                    # Handle extra images
                     files = request.FILES.getlist('extra_images')
                     if files:
-                        has_main = variant.images.filter(is_main=True).exists() if variant.pk else False
+                        has_main = variant.images.filter(is_main=True).exists()
                         for i, f in enumerate(files):
                             img = ProductVariantImage.objects.create(variant=variant, image=f)
                             if i == 0 and not has_main:
@@ -422,23 +452,56 @@ def edit_variant(request, product_id, variant_id=0):
                                 variant.image = img.image
                                 variant.save(update_fields=['image'])
 
-                messages.success(request, f"Variant '{variant.get_display_title() or 'New Variant'}' saved successfully!")
-                return redirect('manage_variants', product_id=product.id)
+                    # Handle deletes
+                    deleted = False
+
+                    if 'delete_selected_images' in request.POST:
+                        selected_ids = request.POST.getlist('selected_images')
+                        if selected_ids:
+                            ProductVariantImage.objects.filter(
+                                variant=variant, id__in=selected_ids
+                            ).delete()
+                            deleted = True
+                            messages.success(request, f"{len(selected_ids)} image(s) deleted!")
+
+                    if 'delete_image' in request.POST:
+                        img_id = request.POST.get('delete_image')
+                        if img_id:
+                            try:
+                                img = ProductVariantImage.objects.get(variant=variant, id=img_id)
+                                img.delete()
+                                deleted = True
+                                messages.success(request, "Image deleted!")
+                            except ProductVariantImage.DoesNotExist:
+                                messages.error(request, "Image not found.")
+
+                    if deleted:
+                        if variant.image and not variant.images.filter(image=variant.image).exists():
+                            variant.image = None
+                            variant.save(update_fields=['image'])
+
+                    if deleted and not variant.images.filter(is_main=True).exists() and variant.images.exists():
+                        first_img = variant.images.first()
+                        first_img.is_main = True
+                        first_img.save()
+                        variant.image = first_img.image
+                        variant.save(update_fields=['image'])
+
+                messages.success(request, "Variant updated successfully!")
+                return redirect('edit_variant', product_id=product.id, variant_id=variant.id)
+
             except Exception as e:
-                storeadmin_logger.error(f"Variant save failed: {e}", exc_info=True)
-                messages.error(request, f"Error saving variant: {str(e)}")
+                messages.error(request, f"Error: {str(e)}")
         else:
-            messages.error(request, "Please correct the errors in the form.")
+            messages.error(request, "Please correct the form errors.")
 
     else:
         form = ProductVariantForm(instance=variant) if variant else ProductVariantForm()
         value_formset = get_variant_value_formset(product=product)(
-            instance=variant or ProductVariant(),
-            prefix='val'
+            instance=variant or ProductVariant(), prefix='val'
         )
         spec_formset = VariantSpecFormSet(
-            instance=variant or ProductVariant(),
-            prefix='vspec'
+            instance=variant or ProductVariant(), prefix='vspec'
         )
 
     context = {
@@ -547,10 +610,10 @@ def store_banners(request):
 def store_leads(request):
     if not hasattr(request.user, 'storeadmin'):
         return redirect('login')
-    
+
     store = request.user.storeadmin.store
-    
-    # Base query with select_related for performance
+
+    # Base query - select_related for product
     leads_qs = Lead.objects.filter(store=store)\
         .select_related('product')\
         .order_by('-created_at')
@@ -568,13 +631,14 @@ def store_leads(request):
     if status:
         leads_qs = leads_qs.filter(status=status)
 
-    # Server-side search
+    # Search - now also searches in product_display_name
     if search:
         leads_qs = leads_qs.filter(
             Q(customer_name__icontains=search) |
             Q(phone__icontains=search) |
             Q(city__icontains=search) |
-            Q(product__name__icontains=search)
+            Q(product__name__icontains=search) |
+            Q(product_display_name__icontains=search)
         )
 
     # Preserve query params for pagination & export
@@ -583,7 +647,7 @@ def store_leads(request):
         del page_params['page']
     page_params_str = page_params.urlencode()
 
-    # Pagination - 100 per page
+    # Pagination - 100 leads per page
     paginator = Paginator(leads_qs, 100)
     page = request.GET.get('page')
     leads = paginator.get_page(page)
@@ -594,51 +658,72 @@ def store_leads(request):
         'lead_status_choices': Lead.STATUS_CHOICES,
         'page_params': page_params_str + "&" if page_params_str else "",
     }
-    
+
     return render(request, 'TMS/storeadmin/leads.html', context)
+
 
 @login_required
 def update_lead_status(request, lead_id):
     lead = get_object_or_404(Lead, id=lead_id, store=request.user.storeadmin.store)
     client_ip = request.META.get('REMOTE_ADDR', 'unknown')
-    
+
     if request.method == 'POST':
         old_status = lead.get_status_display()
         status = request.POST.get('status')
+
         if status in [choice[0] for choice in Lead.STATUS_CHOICES]:
             lead.status = status
             lead.save()
 
-            # ← ADD THIS LINE: Clear dashboard cache instantly
+            # Clear dashboard cache
             cache.delete(f"dashboard_{lead.store.id}")
-            storeadmin_logger.info(f"Lead status updated: {old_status} to {lead.get_status_display()} | Lead ID: {lead.id} | Customer: {lead.customer_name} | Store: {lead.store.name} | User: {request.user.username}")
-            messages.success(request, f"Lead status updated to {status}!")
+
+            storeadmin_logger.info(
+                f"Lead status updated: {old_status} → {lead.get_status_display()} | "
+                f"Lead ID: {lead.id} | Customer: {lead.customer_name} | "
+                f"Product: {lead.product_display_name or 'N/A'} | "
+                f"Store: {lead.store.name} | User: {request.user.username}"
+            )
+
+            messages.success(request, f"Lead status updated to {lead.get_status_display()}!")
+
     return redirect('store_leads')
 
 
 @login_required
 def export_leads_csv(request):
     store = request.user.storeadmin.store
-    
+
     leads = Lead.objects.filter(store=store).order_by('-created_at')
-    
+
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = f'attachment; filename="{store.slug}_leads.csv"'
-    
+    response['Content-Disposition'] = f'attachment; filename="{store.slug}_leads_{timezone.now().strftime("%Y%m%d_%H%M")}.csv"'
+
     writer = csv.writer(response)
-    writer.writerow(['Date', 'Name', 'Phone', 'City', 'Product', 'Status', 'Source'])
+    writer.writerow([
+        'Date (IST)',
+        'Customer Name',
+        'Phone',
+        'City',
+        'Product (with Variant if any)',
+        'Status',
+        'Source',
+        'Notes'
+    ])
+
     for lead in leads:
         writer.writerow([
-            lead.created_at.strftime('%d-%m-%Y %I:%M %p'),
+            lead.created_at_ist(),
             lead.customer_name,
             lead.phone,
             lead.city or '-',
-            lead.product.name if lead.product else 'General',
+            lead.product_display_name or (lead.product.name if lead.product else 'General Enquiry'),
             lead.get_status_display(),
-            lead.source  # ← Fixed
+            lead.source,
+            lead.notes or '-'
         ])
-    return response
 
+    return response
 
 @login_required
 def store_categories(request):
